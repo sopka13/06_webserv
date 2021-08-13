@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/11 23:29:44 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/13 17:10:21 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,3 +112,12 @@
 ** • Handle multiple CGI.
 ** // Обработка нескольких сиджи
 */
+
+#include "../includes/headers.hpp"
+
+int		main(void)
+{
+	std::cout << "main start" << std::endl;
+	std::cout << "main end" << std::endl;
+	return (0);
+}
