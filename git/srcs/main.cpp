@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/15 15:37:21 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/15 23:02:30 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,7 @@ int		main(int argc, char **argv, char **envp)
 				<< " || "
 				<< serv_addr.sin_zero
 				<< " || "
-				<< inet_addr(IP_ADDRESS)
+				<< inet_addr(IP_ADDRESS)			//FORBIDDEN
 				<< std::endl;
 
 	// step 4: Assigning a name to a socket
@@ -194,7 +194,7 @@ int		main(int argc, char **argv, char **envp)
 	write(1, buff, sizeof(buff));
 
 	// step 8: Write data for client
-	char buff_1[] = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!', '!', '!' };
+	char buff_1[] = { 'H', 'e', 'l', 'l', 'o', ' ', 'M', 'y', ' ', 'f', 'a', 'm', 'i', 'l', 'y', '!' };
 	ret = send(fd, buff_1, sizeof(buff_1), 0);
 
 	close(fd);	//FORBIDDEN
