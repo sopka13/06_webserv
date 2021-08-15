@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/13 17:10:21 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/15 15:37:21 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@
 ** Again trying to read/recv or write/send in any FD without going
 ** through a poll (or equivalent) will give you a mark equal to 0 and
 ** the end of the evaluation.
-** // Так как ты используешб неблокирующий ФД, ты можешь использовать
+** // Так как ты используешь еблокирующий ФД, ты можешь использовать
 ** // райт/сенд функции без пулов и твой сервер не будет заблокирован
 ** // Но мы этого не хотим.
 ** // Использование рид/рес или райт/сенд в любых ФД без прохождения пула
@@ -115,9 +115,90 @@
 
 #include "../includes/headers.hpp"
 
-int		main(void)
+int		main(int argc, char **argv, char **envp)
 {
-	std::cout << "main start" << std::endl;
+	std::cout	<< "main start; argc = "
+				<< argc
+				<< "; argv[0] = "
+				<< argv[0]
+				<< "; envp[0] = "
+				<< envp[0]
+				<< std::endl;
+
+	// step 0: Inicialise data
+	int						ret = 0;						// return value
+	int						tcp_sockfd = 0;					// socket fd
+	struct sockaddr_in		serv_addr;						// name for ipv4
+	socklen_t				sock_len = sizeof(serv_addr);	// length of serv_addr
+	int						fd = 0;							// fd received after the acept call
+	char					buff[1024] = {0};				// buffer for read from client
+
+	// step 1: Create socket
+	tcp_sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (tcp_sockfd < 0)
+	{
+		std::cout << "ERROR opening socket 1: " << strerror(errno) << std::endl;
+		return (1);
+	}
+
+	// step 2: Clear socket struct
+	ft_memset(&serv_addr, 0x0, sizeof(struct sockaddr_in)); 
+
+	// step 3: Set family socket, portno, ip address
+	serv_addr.sin_family = AF_INET;
+	serv_addr.sin_port = htons(PORT);
+	serv_addr.sin_addr.s_addr = inet_addr(IP_ADDRESS);
+
+	std::cout	<< serv_addr.sin_addr.s_addr
+				<< " || "
+				<< serv_addr.sin_family
+				<< " || "
+				<< serv_addr.sin_port
+				<< " || "
+				<< serv_addr.sin_zero
+				<< " || "
+				<< inet_addr(IP_ADDRESS)
+				<< std::endl;
+
+	// step 4: Assigning a name to a socket
+	ret = bind(tcp_sockfd, (struct sockaddr *) &serv_addr, sock_len);
+	if (ret < 0)
+	{
+		std::cout << "ERROR Assigning name to a socket fail: " << strerror(errno) << std::endl;
+		return (0);
+	}
+
+	// step 5: Create queue connection (очередь)
+	ret = listen(tcp_sockfd, SOMAXCONN);
+	if (ret < 0)
+	{
+		std::cout << "ERROR Listening fail: " << strerror(errno) << std::endl;
+		return (0);
+	}
+
+	// step 6: Accept connection
+	fd = accept(tcp_sockfd, (struct sockaddr *) &serv_addr, &sock_len);
+	if (fd < 0)
+	{
+		std::cout << "ERROR Accept fail: " << strerror(errno) << std::endl;
+		return (0);
+	}
+
+	// step 7: Read data from client
+	ret = recv(fd, &buff, sizeof(buff), 0);
+	if (ret < 0)
+	{
+		std::cout << "ERROR Read fail: " << strerror(errno) << std::endl;
+		return (0);
+	}
+	write(1, buff, sizeof(buff));
+
+	// step 8: Write data for client
+	char buff_1[] = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!', '!', '!' };
+	ret = send(fd, buff_1, sizeof(buff_1), 0);
+
+	close(fd);	//FORBIDDEN
+
 	std::cout << "main end" << std::endl;
 	return (0);
 }
