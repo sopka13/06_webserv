@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/15 23:02:30 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/16 08:32:27 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,87 +117,62 @@
 
 int		main(int argc, char **argv, char **envp)
 {
-	std::cout	<< "main start; argc = "
-				<< argc
-				<< "; argv[0] = "
-				<< argv[0]
-				<< "; envp[0] = "
-				<< envp[0]
-				<< std::endl;
+	t_vars		vars;
 
 	// step 0: Inicialise data
-	int						ret = 0;						// return value
-	int						tcp_sockfd = 0;					// socket fd
-	struct sockaddr_in		serv_addr;						// name for ipv4
-	socklen_t				sock_len = sizeof(serv_addr);	// length of serv_addr
-	int						fd = 0;							// fd received after the acept call
-	char					buff[1024] = {0};				// buffer for read from client
+	ft_init_data(&vars, argc, argv, envp);
 
 	// step 1: Create socket
-	tcp_sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (tcp_sockfd < 0)
+	vars.sock_data.tcp_sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (vars.sock_data.tcp_sockfd < 0)
 	{
 		std::cout << "ERROR opening socket 1: " << strerror(errno) << std::endl;
 		return (1);
 	}
 
-	// step 2: Clear socket struct
-	ft_memset(&serv_addr, 0x0, sizeof(struct sockaddr_in)); 
-
-	// step 3: Set family socket, portno, ip address
-	serv_addr.sin_family = AF_INET;
-	serv_addr.sin_port = htons(PORT);
-	serv_addr.sin_addr.s_addr = inet_addr(IP_ADDRESS);
-
-	std::cout	<< serv_addr.sin_addr.s_addr
-				<< " || "
-				<< serv_addr.sin_family
-				<< " || "
-				<< serv_addr.sin_port
-				<< " || "
-				<< serv_addr.sin_zero
-				<< " || "
-				<< inet_addr(IP_ADDRESS)			//FORBIDDEN
-				<< std::endl;
-
-	// step 4: Assigning a name to a socket
-	ret = bind(tcp_sockfd, (struct sockaddr *) &serv_addr, sock_len);
-	if (ret < 0)
+	// step 2: Assigning a name to a socket
+	vars.ret = bind(vars.sock_data.tcp_sockfd, (struct sockaddr *) &vars.sock_data.serv_addr, vars.sock_data.sock_len);
+	if (vars.ret < 0)
 	{
 		std::cout << "ERROR Assigning name to a socket fail: " << strerror(errno) << std::endl;
 		return (0);
 	}
 
-	// step 5: Create queue connection (очередь)
-	ret = listen(tcp_sockfd, SOMAXCONN);
-	if (ret < 0)
+	// step 3: Create queue connection (очередь)
+	vars.ret = listen(vars.sock_data.tcp_sockfd, SOMAXCONN);
+	if (vars.ret < 0)
 	{
 		std::cout << "ERROR Listening fail: " << strerror(errno) << std::endl;
 		return (0);
 	}
 
-	// step 6: Accept connection
-	fd = accept(tcp_sockfd, (struct sockaddr *) &serv_addr, &sock_len);
-	if (fd < 0)
+	// step 4: Accept connection
+	vars.sock_data.fd = accept(vars.sock_data.tcp_sockfd, (struct sockaddr *) &vars.sock_data.serv_addr, &vars.sock_data.sock_len);
+	if (vars.sock_data.fd < 0)
 	{
 		std::cout << "ERROR Accept fail: " << strerror(errno) << std::endl;
 		return (0);
 	}
 
-	// step 7: Read data from client
-	ret = recv(fd, &buff, sizeof(buff), 0);
-	if (ret < 0)
+	// step 5: Read data from client
+	vars.ret = recv(vars.sock_data.fd, &vars.sock_data.buff, sizeof(vars.sock_data.buff), 0);
+	if (vars.ret < 0)
 	{
 		std::cout << "ERROR Read fail: " << strerror(errno) << std::endl;
 		return (0);
 	}
-	write(1, buff, sizeof(buff));
+	write(1, vars.sock_data.buff, sizeof(vars.sock_data.buff));
 
-	// step 8: Write data for client
+	// step 6: Write data for client
 	char buff_1[] = { 'H', 'e', 'l', 'l', 'o', ' ', 'M', 'y', ' ', 'f', 'a', 'm', 'i', 'l', 'y', '!' };
-	ret = send(fd, buff_1, sizeof(buff_1), 0);
+	vars.ret = send(vars.sock_data.fd, buff_1, sizeof(buff_1), 0);
+	if (vars.ret < 0)
+	{
+		std::cout << "ERROR Response fail: " << strerror(errno) << std::endl;
+		return (0);
+	}
 
-	close(fd);	//FORBIDDEN
+	close(vars.sock_data.fd);	//FORBIDDEN
 
 	std::cout << "main end" << std::endl;
 	return (0);
