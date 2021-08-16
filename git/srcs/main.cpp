@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/16 08:32:27 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/16 09:32:36 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,57 +123,21 @@ int		main(int argc, char **argv, char **envp)
 	ft_init_data(&vars, argc, argv, envp);
 
 	// step 1: Create socket
-	vars.sock_data.tcp_sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (vars.sock_data.tcp_sockfd < 0)
-	{
-		std::cout << "ERROR opening socket 1: " << strerror(errno) << std::endl;
-		return (1);
-	}
+	if (ft_create_socket(&vars))
+		ft_exit();
 
-	// step 2: Assigning a name to a socket
-	vars.ret = bind(vars.sock_data.tcp_sockfd, (struct sockaddr *) &vars.sock_data.serv_addr, vars.sock_data.sock_len);
-	if (vars.ret < 0)
+	// step 2: Accept and handle request
+	while (1)
 	{
-		std::cout << "ERROR Assigning name to a socket fail: " << strerror(errno) << std::endl;
-		return (0);
+		if ((vars.sock_data.fd = accept(vars.sock_data.tcp_sockfd,
+										(struct sockaddr *) &vars.sock_data.serv_addr,
+										&vars.sock_data.sock_len)) < 0)
+			ft_exit();
+		if (ft_handle_request(&vars))
+			ft_exit();
 	}
-
-	// step 3: Create queue connection (очередь)
-	vars.ret = listen(vars.sock_data.tcp_sockfd, SOMAXCONN);
-	if (vars.ret < 0)
-	{
-		std::cout << "ERROR Listening fail: " << strerror(errno) << std::endl;
-		return (0);
-	}
-
-	// step 4: Accept connection
-	vars.sock_data.fd = accept(vars.sock_data.tcp_sockfd, (struct sockaddr *) &vars.sock_data.serv_addr, &vars.sock_data.sock_len);
-	if (vars.sock_data.fd < 0)
-	{
-		std::cout << "ERROR Accept fail: " << strerror(errno) << std::endl;
-		return (0);
-	}
-
-	// step 5: Read data from client
-	vars.ret = recv(vars.sock_data.fd, &vars.sock_data.buff, sizeof(vars.sock_data.buff), 0);
-	if (vars.ret < 0)
-	{
-		std::cout << "ERROR Read fail: " << strerror(errno) << std::endl;
-		return (0);
-	}
-	write(1, vars.sock_data.buff, sizeof(vars.sock_data.buff));
-
-	// step 6: Write data for client
-	char buff_1[] = { 'H', 'e', 'l', 'l', 'o', ' ', 'M', 'y', ' ', 'f', 'a', 'm', 'i', 'l', 'y', '!' };
-	vars.ret = send(vars.sock_data.fd, buff_1, sizeof(buff_1), 0);
-	if (vars.ret < 0)
-	{
-		std::cout << "ERROR Response fail: " << strerror(errno) << std::endl;
-		return (0);
-	}
-
-	close(vars.sock_data.fd);	//FORBIDDEN
 
 	std::cout << "main end" << std::endl;
+	ft_exit();
 	return (0);
 }
