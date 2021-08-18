@@ -10,6 +10,8 @@
 #                                                                              #
 # **************************************************************************** #
 
+
+
 NAME			= webserv
 
 SRCS			= ${shell find ./srcs -type f -name *.cpp}		#take all source files
