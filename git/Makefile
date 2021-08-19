@@ -6,11 +6,11 @@
 #    By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/08/13 16:55:16 by eyohn             #+#    #+#              #
-#    Updated: 2021/08/19 15:50:30 by eyohn            ###   ########.fr        #
+#    Updated: 2021/08/19 15:55:56 by eyohn            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME			= webserv
+NAME			= webserv	#program name
 
 SRCS			= ${shell find ./srcs -type f -name *.cpp}		#take all source files
 
