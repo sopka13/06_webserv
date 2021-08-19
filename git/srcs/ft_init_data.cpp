@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:02:30 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/16 09:08:41 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/19 15:50:28 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ void		ft_init_data(t_vars *vars, int argc, char** argv, char** envp)
 	vars->sock_data.sock_len = sizeof(vars->sock_data.serv_addr);
 
 	// step 4: Parse config file
-	// if (ft_parse_config(vars))
-	// 	ft_exit();
+	if (ft_parse_config(vars))
+		ft_exit(vars);
 
 	// step 5: Set family socket, portno, ip address
 	vars->sock_data.serv_addr.sin_family = AF_INET;

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/16 09:32:36 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/19 15:50:27 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,20 +124,20 @@ int		main(int argc, char **argv, char **envp)
 
 	// step 1: Create socket
 	if (ft_create_socket(&vars))
-		ft_exit();
+		ft_exit(&vars);
 
 	// step 2: Accept and handle request
-	while (1)
-	{
-		if ((vars.sock_data.fd = accept(vars.sock_data.tcp_sockfd,
-										(struct sockaddr *) &vars.sock_data.serv_addr,
-										&vars.sock_data.sock_len)) < 0)
-			ft_exit();
-		if (ft_handle_request(&vars))
-			ft_exit();
-	}
+	// while (1)
+	// {
+	if ((vars.sock_data.fd = accept(vars.sock_data.tcp_sockfd,
+									(struct sockaddr *) &vars.sock_data.serv_addr,
+									&vars.sock_data.sock_len)) < 0)
+		ft_exit(&vars);
+	if (ft_handle_request(&vars))
+		ft_exit(&vars);
+	// }
 
 	std::cout << "main end" << std::endl;
-	ft_exit();
+	ft_exit(&vars);
 	return (0);
 }

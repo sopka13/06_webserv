@@ -5,17 +5,17 @@
 configuration file
 // Можешь вдохновиться серверной частью конфигфайла нджинкс
 
-◦	choose the port and host of each "server"
+◦	choose the port and host of each "server"															#http
 	// выбери порт и хост каждого сервера
-◦	setup the server_names or not
+◦	setup the server_names or not																		#http
 	// установи имя сервера или нет
-◦	The first server for a host:port will be the default for this host:port (meaning
+◦	The first server for a host:port will be the default for this host:port (meaning					#http
 	it will answer to all request that doesn’t belong to an other server)
-	// Первый сервер для зост::порт должен быть по умолчанию для хост::порт
+	// Первый сервер для хост::порт должен быть по умолчанию для хост::порт
 	// (значит что он отвечает на все запросы если они не идут другим серверам)
-◦	setup default error pages
+◦	setup default error pages																			#main
 	// установи еррор пайдж
-◦	limit client body size
+◦	limit client body size																				#http
 	// лимит размера тела клиента
 ◦	setup routes with one or multiple of the following rules/configuration (routes
 	wont be using regexp):
@@ -25,7 +25,7 @@ configuration file
 		// определите список принятых НТТР методов для маршрута
 	∗	define an HTTP redirection.
 		// определите редиректы НТТР
-	∗	define a directory or a file from where the file should be search (for example
+	∗	define a directory or a file from where the file should be search (for example					#location
 		if url /kapouet is rooted to /tmp/www, url /kapouet/pouic/toto/pouet is
 		/tmp/www/pouic/toto/pouet)
 		// определите дирректорию или файл в котом файл должен быть найден
