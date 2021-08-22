@@ -21,17 +21,17 @@ configuration file
 	wont be using regexp):
 	// настроить маршруты одним или несколькими правилами/конф (
 	// марщруты не будут использовать регулярные выражения)
-	∗	define a list of accepted HTTP Methods for the route
+	∗	define a list of accepted HTTP Methods for the route											#???
 		// определите список принятых НТТР методов для маршрута
-	∗	define an HTTP redirection.
+	∗	define an HTTP redirection.																		#location
 		// определите редиректы НТТР
 	∗	define a directory or a file from where the file should be search (for example					#location
 		if url /kapouet is rooted to /tmp/www, url /kapouet/pouic/toto/pouet is
 		/tmp/www/pouic/toto/pouet)
 		// определите дирректорию или файл в котом файл должен быть найден
-	∗	turn on or off directory listing
+	∗	turn on or off directory listing																#autoindex
 		// включить или выключить списки каталогов
-	∗	default file to answer if the request is a directory
+	∗	default file to answer if the request is a directory											#??? 403
 		// файл по умолчанию если запрос это дирректория
 	∗	execute CGI based on certain file extension (for example .php)
 		// выполнение сиджи основано на определенном расширении файла ( .пхп)

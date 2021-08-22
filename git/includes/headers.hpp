@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/19 15:50:28 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/20 15:23:40 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,18 @@ typedef struct		s_socket
 	char					buff[BUF_FOR_RESP];		// buffer for read from client
 }					t_socket;
 
+typedef struct 		s_server
+{
+	std::string							ip;					// ip adress
+	unsigned short						port;				// 1 : 65535
+	std::string							*server_name;		// server name
+	std::map<std::string, std::string>	locations;			// locations
+	bool								autoindex;			// autoindex
+	bool								redirect;			// redirect (on / off)
+	std::string							redirect_adress;	// adress for redirect
+}					t_server;
+
+
 typedef struct		s_vars
 {
 	int				argc;
@@ -46,6 +58,8 @@ typedef struct		s_vars
 	char			**envp;
 	t_socket		sock_data;						// data for socket
 	std::ofstream	*log_file;						// logfile
+	std::string		max_body_size;					// client max body size
+
 	int				ret;							// return value
 }					t_vars;
 
