@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/20 15:23:40 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/22 22:06:14 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,14 +30,6 @@
 #define BUF_FOR_RESP 1024							// buff for response to client
 #define DEF_ADR_CONF_FILE "./conf/webserv.conf"		// default config file
 
-typedef struct		s_socket
-{
-	int						tcp_sockfd;				// socket fd
-	struct sockaddr_in		serv_addr;				// name for ipv4
-	socklen_t				sock_len;				// length of serv_addr
-	int						fd;						// fd received after the acept call
-	char					buff[BUF_FOR_RESP];		// buffer for read from client
-}					t_socket;
 
 typedef struct 		s_server
 {

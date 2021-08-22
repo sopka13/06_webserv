@@ -16,7 +16,7 @@ SRCS			= ${shell find ./srcs -type f -name *.cpp}		#take all source files
 
 OBJS			= ${SRCS:.cpp=.o}
 
-CC				= clang++
+CC				= g++
 
 FLAGS			= #-Wall -Wextra -Werror -std=c++98 -g
 

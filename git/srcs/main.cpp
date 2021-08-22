@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/20 11:21:32 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/22 22:08:46 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,30 +114,46 @@
 */
 
 #include "../includes/headers.hpp"
+#include "../includes/Socket.hpp"
 
-int		main(int argc, char **argv, char **envp)
+int		main(/*int argc, char **argv, char **envp*/void)
 {
-	t_vars		vars;
+	// t_vars		vars;
 
 	// step 0: Inicialise data
-	ft_init_data(&vars, argc, argv, envp);
+	// vars.argc = argc;
+	// vars.argv = argv;
+	// vars.envp = envp;
+	
 
 	// step 1: Create socket
-	if (ft_create_socket(&vars))
-		ft_exit(&vars);
+	// if (ft_create_socket(&vars))
+	// 	ft_exit(&vars);
 
 	// step 2: Accept and handle request
 	// while (1)
 	// {
-	if ((vars.sock_data.fd = accept(vars.sock_data.tcp_sockfd,
-									(struct sockaddr *) &vars.sock_data.serv_addr,
-									&vars.sock_data.sock_len)) < 0)
-		ft_exit(&vars);
-	if (ft_handle_request(&vars))
-		ft_exit(&vars);
+	// if ((vars.sock_data.fd = accept(vars.sock_data.tcp_sockfd,
+	// 								(struct sockaddr *) &vars.sock_data.serv_addr,
+	// 								&vars.sock_data.sock_len)) < 0)
+	// 	ft_exit(&vars);
+	// if (ft_handle_request(&vars))
+	// 	ft_exit(&vars);
 	// }
+	Socket socket = Socket();
+	// if (ft_create_socket(&vars))
+	// 	ft_exit();
+
+	// step 2: Accept and handle request
+	while (1)
+	{
+		socket.setFd();
+			
+		if (socket.ft_handle_request())
+		 	ft_exit();
+	}
 
 	std::cout << "main end" << std::endl;
-	ft_exit(&vars);
+	// ft_exit(&vars);
 	return (0);
 }
