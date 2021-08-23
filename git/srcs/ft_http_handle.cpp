@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/19 10:54:41 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/20 15:23:43 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/24 01:10:34 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,11 @@
 
 int			ft_http_handle(t_vars* vars, std::string &str)
 {
+#ifdef DEBUG
 	std::cout << "ft_http_handle start" << std::endl;
+#endif
 
+	// step 0: Init data
 	std::map<std::string, int (*)(t_vars*, std::string&)> functions = {
 		{"client_max_body_size", ft_client_max_body_size_handle},
 		{"server", ft_server_handle}
@@ -30,7 +33,7 @@ int			ft_http_handle(t_vars* vars, std::string &str)
 	std::string				temp;
 	int						i = 0;
 
-	// step 1: set start value for get full section
+	// step 1: Set start value for get full section
 	if (*start == '{')
 	{
 		i++;
@@ -83,6 +86,8 @@ int			ft_http_handle(t_vars* vars, std::string &str)
 
 	// str.clear();
 
+#ifdef DEBUG
 	std::cout << "ft_http_handle end" << std::endl;
+#endif
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:37:55 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/20 14:31:11 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/23 19:47:48 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,11 @@
 
 int		ft_parse_config(t_vars *vars)
 {
+#ifdef DEBUG
 	std::cout	<< "ft_parse_config start"
 				<< vars->ret
 				<< std::endl;
-
+#endif
 	// step 1: Init data
 	std::ifstream	configFile(DEF_ADR_CONF_FILE);
 	std::string		str;
@@ -42,15 +43,15 @@ int		ft_parse_config(t_vars *vars)
 		{"log_file", ft_log_file_handle}
 	};
 
-	// step 4: Read config file
+	// step 4: Read config file in str_sum
 	while(std::getline(configFile, str))
 	{
-		// std::cout << str << std::endl;
 		ft_strtrim(str, " \t\r\n");
 		str_sum += str;
 		std::cout << str_sum << std::endl;
 	}
 
+	// step 5: Get config name and execute handle functions
 	while (str_sum.length())
 	{
 		if (str_sum[0] == ' ' || str_sum[0] == '\t')
@@ -60,11 +61,13 @@ int		ft_parse_config(t_vars *vars)
 		}
 		if ((*functions[ft_get_name_conf(str_sum)])(vars, str_sum))
 			return (1);
-		std::cout << "iteration      " << str_sum << std::endl;
+		// std::cout << "iteration      " << str_sum << std::endl;
 	}
 
-	// step : Close config file
+	// step 6: Close config file
 	configFile.close();
+#ifdef DEBUG
 	std::cout	<< "ft_parse_config end" << std::endl;
+#endif
 	return (0);
 }

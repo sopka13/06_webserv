@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/19 10:53:15 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/20 15:04:13 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/23 19:55:16 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,11 @@
 
 int			ft_client_max_body_size_handle(t_vars* vars, std::string &str)
 {
+#ifdef DEBUG
 	std::cout << "ft_client_max_body_size_handle start" << std::endl;
+#endif
+
+	// step 0: Init data
 	std::string::iterator	start = str.begin();
 
 	// step 1: Get first value
@@ -47,6 +51,8 @@ int			ft_client_max_body_size_handle(t_vars* vars, std::string &str)
 		return (1);
 	}
 
+#ifdef DEBUG
 	std::cout << "ft_client_max_body_size_handle end" << std::endl;
+#endif
 	return (0);
 }

@@ -22,7 +22,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "C/C++: clang++ сборка активного файла",
+            "preLaunchTask": "Make",
             "miDebuggerPath": "/usr/bin/gdb"
         }
     ]

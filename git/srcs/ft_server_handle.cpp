@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/19 10:57:36 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/20 15:23:42 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/24 01:59:34 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,13 @@
 
 int			ft_server_handle(t_vars* vars, std::string &str)
 {
+#ifdef DEBUG
 	std::cout << "ft_server_handle start" << std::endl;
+#endif
+	vars->servers.push_back(Server(str));
+
+/*
+	// step 0: Init data
 	std::map<std::string, int (*)(t_vars*, std::string&)> functions = {
 		{"listen", ft_listen_handle},
 		{"server_name", ft_server_name_handle},
@@ -76,7 +82,10 @@ int			ft_server_handle(t_vars* vars, std::string &str)
 
 
 	// std::cout << "!!!!" << str << std::endl;
+*/
 
+#ifdef DEBUG
 	std::cout << "ft_server_handle end" << std::endl;
+#endif
 	return (0);
 }

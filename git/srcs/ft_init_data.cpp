@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:02:30 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/20 14:31:48 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/23 19:47:44 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 
 void		ft_init_data(t_vars *vars, int argc, char** argv, char** envp)
 {
+#ifdef DEBUG
+	std::cout << "ft_init_data start" << std::endl;
+#endif
 	// step 1: Clear struct
 	ft_bzero(vars, sizeof(t_vars));
 
@@ -22,15 +25,17 @@ void		ft_init_data(t_vars *vars, int argc, char** argv, char** envp)
 	vars->argv = argv;
 	vars->envp = envp;
 
-	// step 3: Length of serv_addr
-	vars->sock_data.sock_len = sizeof(vars->sock_data.serv_addr);
-
-	// step 4: Parse config file
+	// step 3: Parse config file
 	if (ft_parse_config(vars))
 		ft_exit(vars);
 
-	// step 5: Set family socket, portno, ip address
-	vars->sock_data.serv_addr.sin_family = AF_INET;
-	vars->sock_data.serv_addr.sin_port = htons(PORT);
-	vars->sock_data.serv_addr.sin_addr.s_addr = inet_addr(IP_ADDRESS);		//FORBIDDEN
+	// step 4: Set family socket, portno, ip address
+	// vars->servers.sock_data.serv_addr.sin_family = AF_INET;							//const
+	// vars->servers.sock_data.serv_addr.sin_port = htons(PORT);						//from config file
+	// vars->servers.sock_data.serv_addr.sin_addr.s_addr = inet_addr(IP_ADDRESS);		//FORBIDDEN
+
+#ifdef DEBUG
+	std::cout << "ft_init_data end" << std::endl;
+#endif
+	return ;
 }
