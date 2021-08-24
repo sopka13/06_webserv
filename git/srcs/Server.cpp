@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:57 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/24 10:40:41 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/24 23:55:48 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 Server::~Server()
 {}
 
-static int		setListen(t_server *server_data, std::string &str)
+static int		setListen(t_server *server_data, std::string &str, std::map<std::string, std::string> *locations)
 {
 #ifdef DEBUG
 	std::cout << "setListen start; str = " << str << std::endl;
@@ -91,12 +91,12 @@ static int		setListen(t_server *server_data, std::string &str)
 		str.erase(start);
 
 #ifdef DEBUG
-	std::cout << "setListen end" << std::endl;
+	std::cout << "setListen end" << locations->size() << std::endl;
 #endif
 	return (0);
 }
 
-static int		setName(t_server *server_data, std::string &str)
+static int		setName(t_server *server_data, std::string &str, std::map<std::string, std::string> *locations)
 {
 #ifdef DEBUG
 	std::cout << "setName start; str = " << str << std::endl;
@@ -125,12 +125,12 @@ static int		setName(t_server *server_data, std::string &str)
 		return (1);
 
 #ifdef DEBUG
-	std::cout << "setName end" << std::endl;
+	std::cout << "setName end" << locations->size() << std::endl;
 #endif
 	return (0);
 }
 
-static int		setLocation(t_server *server_data, std::string &str)
+static int		setLocation(t_server *server_data, std::string &str, std::map<std::string, std::string> *locations)
 {
 #ifdef DEBUG
 	std::cout << "setLocation start; str = " << str << std::endl;
@@ -200,6 +200,7 @@ static int		setLocation(t_server *server_data, std::string &str)
 		temp.erase(start);
 		start = temp.begin();
 	}
+	// std::cout << temp_user << std::endl;
 
 	// step 6: Trim spaces and tabs
 	while (temp.length() && (*start == ' ' || *start == '\t'))
@@ -207,6 +208,7 @@ static int		setLocation(t_server *server_data, std::string &str)
 		temp.erase(start);
 		start = temp.begin();
 	}
+	// std::cout << temp << std::endl;
 
 	// step 7: Get value
 	while (temp.length() && *start != ' ' && *start != '\t' && *start != ';')
@@ -215,6 +217,7 @@ static int		setLocation(t_server *server_data, std::string &str)
 		temp.erase(start);
 		start = temp.begin();
 	}
+	// std::cout << temp_value << std::endl;
 
 	// step 8: Set value settings
 	if (temp_user == "redirect")
@@ -234,14 +237,15 @@ static int		setLocation(t_server *server_data, std::string &str)
 	}
 	else if (temp_user == "root")
 	{
-		server_data->locations.insert({temp_key, temp_value});
-	// std::cout << temp_user << "|||" << temp_key << "|||" << temp_value << std::endl;
+		std::cout << temp_user << "|||" << temp_key << "|||" << temp_value << std::endl;
+		locations->insert({temp_key, temp_value});
+		// server_data->locations->insert({temp_key, temp_value});
 	}
 	else
 		return (1);
 	// std::cout << "fine" << std::endl;
 #ifdef DEBUG
-	std::cout << "setLocation end" << std::endl;
+	std::cout << "setLocation end; Location size = " << locations->size() << std::endl;
 #endif
 	return (0);
 }
@@ -253,7 +257,8 @@ Server::Server(std::string &str)
 #endif
 	// step 0: Init data
 	ft_bzero(&server_data, sizeof(t_server));
-	std::map<std::string, int (*)(t_server*, std::string &)> functions = {
+	// server_data.locations = new std::map<std::string, std::string>;
+	std::map<std::string, int (*)(t_server*, std::string &, std::map<std::string, std::string>*)> functions = {
 		{"listen", setListen},
 		{"server_name", setName},
 		{"location", setLocation}
@@ -301,13 +306,12 @@ Server::Server(std::string &str)
 			temp.erase(0);
 			continue ;
 		}
-		(*functions[ft_get_name_conf(temp)])(&server_data, temp);
+		(*functions[ft_get_name_conf(temp)])(&server_data, temp, &locations);
 		// std::cout << "iteration 1      " << temp << std::endl;
 	}
 
 	// step 4: Set port number and ip for socket data
 	server_data.sock_data.sock_len = sizeof(server_data.sock_data.serv_addr);
-	
 	server_data.sock_data.serv_addr.sin_family = AF_INET;
 	server_data.sock_data.serv_addr.sin_port = htons(server_data.port);
 	server_data.sock_data.serv_addr.sin_addr.s_addr = inet_addr(server_data.ip.c_str());// FORBIDDEN
@@ -367,7 +371,7 @@ bool				Server::getAutoindex() const
 
 std::string&		Server::getLocations(std::string str)
 {
-	return (server_data.locations[str]);
+	return (locations[str]);
 }
 
 socklen_t*			Server::getSockLen()

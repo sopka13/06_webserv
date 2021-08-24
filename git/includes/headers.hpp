@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/24 09:58:11 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/24 23:55:59 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,13 +58,13 @@ typedef struct 		s_server
 	std::string							ip;					// ip adress
 	int									port;				// 1 : 65535
 	std::vector<std::string>			server_name;		// server name
-	std::map<std::string, std::string>	locations;			// locations
 	bool								autoindex;			// autoindex
 	bool								default_server;		// default flag
 	bool								redirect;			// redirect (on / off)
 	std::string							redirect_location;	// redirect location
 	std::string							redirect_adress;	// adress for redirect
 	t_socket							sock_data;			// data for socket
+	// std::map<std::string, std::string>	*locations;			// locations
 }					t_server;
 
 

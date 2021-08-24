@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/19 13:53:05 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/24 08:40:39 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/24 23:55:47 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ std::string	ft_get_name_conf(std::string &str)
 		start = str.begin();
 	}
 #ifdef DEBUG
-	std::cout << "ft_get_name_conf end: " << name_conf << "### str: " << str << std::endl;
+	std::cout << "ft_get_name_conf end: " << name_conf << " ### str: " << str << std::endl;
 #endif
 	return (name_conf);
 }

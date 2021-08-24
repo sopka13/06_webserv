@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:37:55 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/24 10:40:38 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/24 23:55:52 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,23 @@ int		ft_parse_config(t_vars *vars)
 		str_sum += str;
 		// std::cout << str_sum << std::endl;
 	}
+
+	// step 5: Reserve memory for vector and map elements
+	int i = 0;
+	int pos = 0;
+	for (long unsigned int k = 0; k < str_sum.length(); ++k)
+	{
+		pos = str_sum.find("server", k);
+		if (pos)
+		{
+			i++;
+			k += pos + 1;
+		}
+		else
+			break ;
+	}
+	// vars->servers->resize(i);
+	vars->sockets->reserve(i);
 
 	// step 5: Get config name and execute handle functions
 	while (str_sum.length())

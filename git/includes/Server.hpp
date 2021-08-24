@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:47 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/24 10:40:43 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/24 23:55:58 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 
 class Server
 {
-	t_server	server_data;
+	t_server							server_data;
+	std::map<std::string, std::string>	locations;			// locations
 	// Server();
 	// Server(const Server &other);
 	// Server&	operator= (const Server &other);
