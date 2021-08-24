@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/24 01:59:42 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/24 09:58:11 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@
 #include <iterator>			//iterator
 #include <deque>			//deque
 #include <vector>			//vector
+#include <string>			
 
 class Socket;
 class Server;
@@ -59,6 +60,7 @@ typedef struct 		s_server
 	std::vector<std::string>			server_name;		// server name
 	std::map<std::string, std::string>	locations;			// locations
 	bool								autoindex;			// autoindex
+	bool								default_server;		// default flag
 	bool								redirect;			// redirect (on / off)
 	std::string							redirect_location;	// redirect location
 	std::string							redirect_adress;	// adress for redirect
@@ -74,8 +76,8 @@ typedef struct		s_vars
 	std::ofstream		*log_file;						// logfile
 	std::string			max_body_size;					// client max body size
 	int					ret;							// return value
-	std::deque<Server>	servers;						// all supported servers
-	std::vector<Socket>	sockets;						// all listen sockets
+	std::deque<Server>	*servers;						// all supported servers
+	std::vector<Socket>	*sockets;						// all listen sockets
 }					t_vars;
 
 

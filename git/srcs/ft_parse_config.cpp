@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:37:55 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/23 19:47:48 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/24 10:40:38 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,7 @@
 int		ft_parse_config(t_vars *vars)
 {
 #ifdef DEBUG
-	std::cout	<< "ft_parse_config start"
-				<< vars->ret
-				<< std::endl;
+	std::cout	<< "ft_parse_config start" << std::endl;
 #endif
 	// step 1: Init data
 	std::ifstream	configFile(DEF_ADR_CONF_FILE);
@@ -48,7 +46,7 @@ int		ft_parse_config(t_vars *vars)
 	{
 		ft_strtrim(str, " \t\r\n");
 		str_sum += str;
-		std::cout << str_sum << std::endl;
+		// std::cout << str_sum << std::endl;
 	}
 
 	// step 5: Get config name and execute handle functions

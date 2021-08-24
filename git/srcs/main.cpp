@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/24 02:00:10 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/24 10:40:40 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,8 +127,8 @@ int		main(int argc, char **argv, char **envp)
 	ft_init_data(&vars, argc, argv, envp);
 
 	// step 3: Create socket
-	for (long unsigned int i = 0; i < vars.servers.size(); ++i)
-		vars.sockets.push_back(Socket(&vars.servers[i]));
+	for (unsigned long int i = 0; i < vars.servers->size(); ++i)
+		vars.sockets->push_back(Socket(&vars.servers->operator[](i)));
 
 	// step 4: Get request and send response				// need several pthread
 	// while (1)

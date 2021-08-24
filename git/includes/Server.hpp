@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:47 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/24 01:10:16 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/24 10:40:43 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ public:
 	};
 	Server(std::string &str);
 	~Server();
+
 	const std::string*	getName(std::string &name) const;	// Return Name server compare geter
 	const std::string*	getName() const;					// Return Name server
 	const std::string&	getIp() const;						// Return ip adress

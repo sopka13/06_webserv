@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:57 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/24 01:51:13 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/24 10:40:41 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,15 @@ Server::~Server()
 
 static int		setListen(t_server *server_data, std::string &str)
 {
+#ifdef DEBUG
+	std::cout << "setListen start; str = " << str << std::endl;
+#endif
 	// step 1: Init data
 	std::string::iterator	start = str.begin();
 	std::string				temp;
 
 	// step 2: Get ip
-	while (str.length() && *start != ':')
+	while (str.length() && (isdigit(*start) || *start == '.') && server_data->ip.length() <= 15)
 	{
 		server_data->ip += *start;
 		str.erase(start);
@@ -39,34 +42,65 @@ static int		setListen(t_server *server_data, std::string &str)
 	}
 
 	// step 3: Check errors
-	if (!str.length() || server_data->ip.length() > 15)
+	if (!str.length() || *start != ':')
 		return (1);
+	else
+	{
+		str.erase(start);
+		start = str.begin();
+	}
 
 	// step 4: Get port
-	while (str.length() && (*start != ' ' && *start != '\t' && *start != ';'))
+	while (str.length() && (isdigit(*start) && temp.length() <= 5))
 	{
 		temp += *start;
 		str.erase(start);
 		start = str.begin();
 	}
-	server_data->port = atoi(temp.c_str());
+	server_data->port = atoi(temp.c_str());									// FORBIDDEN ???
 
 	// step 5: Trim space and tabs
-	while (*start == ' ' || *start == '\t' || *start == ';')
+	while (*start == ' ' || *start == '\t')
 	{
 		str.erase(start);
 		start = str.begin();
 	}
 
-	// step 6: Check errors
-	if (server_data->port <= 0 || server_data->port > 65535)
-		return (1);
+	// step 6: Check "default" server
+	if (str.find("default") == 0) 
+	{
+		server_data->default_server = true;
+		for(int i = 0; i < 7; ++i)
+		{
+			str.erase(start);
+			start = str.begin();
+		}
+	}
 
+	// step 7: Trim space and tabs
+	while (*start == ' ' || *start == '\t')
+	{
+		str.erase(start);
+		start = str.begin();
+	}
+
+	// step 8: Check errors
+	if (server_data->port <= 0 || server_data->port > 65535 || !str.length() || *start != ';')
+		return (1);
+	else
+		str.erase(start);
+
+#ifdef DEBUG
+	std::cout << "setListen end" << std::endl;
+#endif
 	return (0);
 }
 
 static int		setName(t_server *server_data, std::string &str)
 {
+#ifdef DEBUG
+	std::cout << "setName start; str = " << str << std::endl;
+#endif
 	// step 1: Init data
 	std::string::iterator	start = str.begin();
 	std::string				temp;
@@ -90,12 +124,14 @@ static int		setName(t_server *server_data, std::string &str)
 	else
 		return (1);
 
+#ifdef DEBUG
+	std::cout << "setName end" << std::endl;
+#endif
 	return (0);
 }
 
 static int		setLocation(t_server *server_data, std::string &str)
 {
-	/// Не до конца обрабатывает кусок кода в фигурных скобках
 #ifdef DEBUG
 	std::cout << "setLocation start; str = " << str << std::endl;
 #endif
@@ -216,6 +252,7 @@ Server::Server(std::string &str)
 	std::cout << "Server ctor start" << std::endl;
 #endif
 	// step 0: Init data
+	ft_bzero(&server_data, sizeof(t_server));
 	std::map<std::string, int (*)(t_server*, std::string &)> functions = {
 		{"listen", setListen},
 		{"server_name", setName},
@@ -323,22 +360,22 @@ const std::string&	Server::getRedirectAdress() const
 	return (server_data.redirect_adress);
 }
 
-bool			Server::getAutoindex() const
+bool				Server::getAutoindex() const
 {
 	return (server_data.autoindex);
 }
 
-std::string&	Server::getLocations(std::string str)
+std::string&		Server::getLocations(std::string str)
 {
 	return (server_data.locations[str]);
 }
 
-socklen_t*		Server::getSockLen()
+socklen_t*			Server::getSockLen()
 {
 	return (&(server_data.sock_data.sock_len));
 }
 
-sockaddr_in*	Server::getServAddr()
+sockaddr_in*		Server::getServAddr()
 {
 	return (&(server_data.sock_data.serv_addr));
 }
