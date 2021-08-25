@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/19 10:53:15 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/24 08:40:33 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/25 10:56:50 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@
 int			ft_client_max_body_size_handle(t_vars* vars, std::string &str)
 {
 #ifdef DEBUG
-	std::cout << "ft_client_max_body_size_handle start" << std::endl;
+	std::cout	<< "ft_client_max_body_size_handle start: str = |" << str << "|"
+				<< std::endl;
 #endif
 
 	// step 0: Init data
@@ -43,7 +44,7 @@ int			ft_client_max_body_size_handle(t_vars* vars, std::string &str)
 	}
 
 	// step 3: Check next character and trim it or return error
-	if (*start == ';')
+	if (*start == ';' && vars->max_body_size.length())
 		str.erase(start);
 	else
 	{
@@ -52,7 +53,9 @@ int			ft_client_max_body_size_handle(t_vars* vars, std::string &str)
 	}
 
 #ifdef DEBUG
-	std::cout << "ft_client_max_body_size_handle end" << std::endl;
+	std::cout	<< "ft_client_max_body_size_handle end: str = |" << str << "|"
+				<< " max body size = |" << vars->max_body_size
+				<< std::endl;
 #endif
 	return (0);
 }

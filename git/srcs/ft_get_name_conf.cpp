@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/19 13:53:05 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/24 23:55:47 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/25 08:29:04 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 std::string	ft_get_name_conf(std::string &str)
 {
 #ifdef DEBUG
-	std::cout << "ft_get_name_conf start" << std::endl;
+	std::cout << "ft_get_name_conf start: str = |" << str << "|" << std::endl;
 #endif
 	// step 0: Init data
 	std::string::iterator	start = str.begin();
@@ -40,7 +40,7 @@ std::string	ft_get_name_conf(std::string &str)
 		start = str.begin();
 	}
 #ifdef DEBUG
-	std::cout << "ft_get_name_conf end: " << name_conf << " ### str: " << str << std::endl;
+	std::cout << "ft_get_name_conf end: name = |" << name_conf << "| str: |" << str << "|" << std::endl;
 #endif
 	return (name_conf);
 }

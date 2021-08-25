@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:57 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/24 23:55:48 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/25 21:44:11 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,25 @@
 Server::~Server()
 {}
 
+// static int		setRoot(t_server *server_data, std::string &str, t_location *location)
+// {
+// 	return (0);
+// }
+
+// static int		setAutoindex(t_server *server_data, std::string &str, t_location *location)
+// {
+// 	return (0);
+// }
+
+// static int		setRedirect(t_server *server_data, std::string &str, t_location *location)
+// {
+// 	return (0);
+// }
+
 static int		setListen(t_server *server_data, std::string &str, std::map<std::string, std::string> *locations)
 {
 #ifdef DEBUG
-	std::cout << "setListen start; str = " << str << std::endl;
+	std::cout << "setListen start; str = |" << str << "|" << std::endl;
 #endif
 	// step 1: Init data
 	std::string::iterator	start = str.begin();
@@ -91,7 +106,10 @@ static int		setListen(t_server *server_data, std::string &str, std::map<std::str
 		str.erase(start);
 
 #ifdef DEBUG
-	std::cout << "setListen end" << locations->size() << std::endl;
+	std::cout	<< "setListen end: ip = |" << server_data->ip << "|\n"
+				<< "port = |" << server_data->port << "|\n"
+				<< "default = |" << server_data->default_server << "|\n"
+				<< locations->size() << std::endl;
 #endif
 	return (0);
 }
@@ -99,7 +117,7 @@ static int		setListen(t_server *server_data, std::string &str, std::map<std::str
 static int		setName(t_server *server_data, std::string &str, std::map<std::string, std::string> *locations)
 {
 #ifdef DEBUG
-	std::cout << "setName start; str = " << str << std::endl;
+	std::cout << "setName start; str = |" << str << "|" << std::endl;
 #endif
 	// step 1: Init data
 	std::string::iterator	start = str.begin();
@@ -108,19 +126,31 @@ static int		setName(t_server *server_data, std::string &str, std::map<std::strin
 	// step 2: Get server_name
 	while (str.length() && *start != ';')
 	{
-		temp += *start;
 		if (*start == ' ' || *start == '\t')
 		{
 			server_data->server_name.push_back(temp);
+			#ifdef DEBUG
+				std::cout << "name = |" << temp << "|" << std::endl;
+			#endif
 			temp.clear();
+			str.erase(start);
+			start = str.begin();
+			continue ;
 		}
+		temp += *start;
 		str.erase(start);
 		start = str.begin();
 	}
 
 	// step 3: Trim ';' character and check error
 	if (*start == ';')
+	{
+		server_data->server_name.push_back(temp);
+		#ifdef DEBUG
+			std::cout << "name = |" << temp << "|" << std::endl;
+		#endif
 		str.erase(start);
+	}
 	else
 		return (1);
 
@@ -133,8 +163,14 @@ static int		setName(t_server *server_data, std::string &str, std::map<std::strin
 static int		setLocation(t_server *server_data, std::string &str, std::map<std::string, std::string> *locations)
 {
 #ifdef DEBUG
-	std::cout << "setLocation start; str = " << str << std::endl;
+	std::cout << "setLocation start; str = |" << str << "|" << std::endl;
 #endif
+	// std::map<std::string, int (*)(t_vars*, std::string&, t_location*)> functions = {
+	// 	{"root", setRoot},
+	// 	{"autoindex", setAutoindex},
+	// 	{"redirect", setRedirect}
+	// };
+
 	std::string::iterator	start = str.begin();
 	std::string				temp;
 	std::string				temp_key;
@@ -225,6 +261,12 @@ static int		setLocation(t_server *server_data, std::string &str, std::map<std::s
 		server_data->redirect = true;
 		server_data->redirect_location = temp_key;
 		server_data->redirect_adress = temp_value;
+#ifdef DEBUG
+	std::cout	<< "redirect = " << server_data->redirect
+				<< "redirect_location = " << server_data->redirect_location
+				<< "redirect_adress = " << server_data->redirect_adress
+				<< std::endl;
+#endif
 	}
 	else if (temp_user == "autoindex")
 	{
@@ -234,12 +276,19 @@ static int		setLocation(t_server *server_data, std::string &str, std::map<std::s
 			server_data->autoindex = false;
 		else
 			return (1);
+#ifdef DEBUG
+	std::cout	<< "autoindex = " << server_data->autoindex
+				<< std::endl;
+#endif
 	}
 	else if (temp_user == "root")
 	{
-		std::cout << temp_user << "|||" << temp_key << "|||" << temp_value << std::endl;
 		locations->insert({temp_key, temp_value});
-		// server_data->locations->insert({temp_key, temp_value});
+#ifdef DEBUG
+	std::cout	<< "locations key = |" << temp_key
+				<< "| locations value = " << temp_value << "|"
+				<< std::endl;
+#endif
 	}
 	else
 		return (1);
@@ -306,8 +355,8 @@ Server::Server(std::string &str)
 			temp.erase(0);
 			continue ;
 		}
-		(*functions[ft_get_name_conf(temp)])(&server_data, temp, &locations);
-		// std::cout << "iteration 1      " << temp << std::endl;
+		if ((*functions[ft_get_name_conf(temp)])(&server_data, temp, &locations))
+			throw Error();
 	}
 
 	// step 4: Set port number and ip for socket data
@@ -315,6 +364,10 @@ Server::Server(std::string &str)
 	server_data.sock_data.serv_addr.sin_family = AF_INET;
 	server_data.sock_data.serv_addr.sin_port = htons(server_data.port);
 	server_data.sock_data.serv_addr.sin_addr.s_addr = inet_addr(server_data.ip.c_str());// FORBIDDEN
+
+	// step 5: Check errors
+	if (server_data.sock_data.serv_addr.sin_addr.s_addr == INADDR_NONE)
+		throw Error();
 #ifdef DEBUG
 	std::cout << "Server ctor end" << std::endl;
 #endif

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:37:55 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/24 23:55:52 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/25 09:37:51 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,18 @@ int		ft_parse_config(t_vars *vars)
 #ifdef DEBUG
 	std::cout	<< "ft_parse_config start" << std::endl;
 #endif
+	// step 0: Check file get from args
+	if (vars->argc == 2 || vars->argc == 3)
+	{
+		if (ft_check_args_files(vars))
+			return (1);
+	}
+	else if (vars->argc > 3)
+	{
+		std::cout	<< "ERROR: Too many args" << std::endl;
+		return (1);
+	}
+
 	// step 1: Init data
 	std::ifstream	configFile(DEF_ADR_CONF_FILE);
 	std::string		str;
@@ -31,7 +43,7 @@ int		ft_parse_config(t_vars *vars)
 	if (!configFile.is_open())
 	{
 		std::cout	<< "ERROR: Config file open error" << std::endl;
-		ft_exit(vars);
+		return (1);
 	}
 
 	// step 3: Init data for read config file
@@ -63,7 +75,6 @@ int		ft_parse_config(t_vars *vars)
 		else
 			break ;
 	}
-	// vars->servers->resize(i);
 	vars->sockets->reserve(i);
 
 	// step 5: Get config name and execute handle functions
@@ -76,7 +87,6 @@ int		ft_parse_config(t_vars *vars)
 		}
 		if ((*functions[ft_get_name_conf(str_sum)])(vars, str_sum))
 			return (1);
-		// std::cout << "iteration      " << str_sum << std::endl;
 	}
 
 	// step 6: Close config file

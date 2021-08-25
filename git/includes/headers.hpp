@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/24 23:55:59 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/25 21:43:45 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,18 +53,23 @@ typedef struct		s_socket
 	socklen_t				sock_len;				// length of serv_addr
 }					t_socket;
 
+// typedef struct		s_location
+// {
+// 	/* data */
+// }					t_location;
+
+
 typedef struct 		s_server
 {
 	std::string							ip;					// ip adress
 	int									port;				// 1 : 65535
 	std::vector<std::string>			server_name;		// server name
-	bool								autoindex;			// autoindex
 	bool								default_server;		// default flag
+	bool								autoindex;			// autoindex
 	bool								redirect;			// redirect (on / off)
 	std::string							redirect_location;	// redirect location
 	std::string							redirect_adress;	// adress for redirect
 	t_socket							sock_data;			// data for socket
-	// std::map<std::string, std::string>	*locations;			// locations
 }					t_server;
 
 
@@ -74,6 +79,7 @@ typedef struct		s_vars
 	char				**argv;
 	char				**envp;
 	std::ofstream		*log_file;						// logfile
+	std::string			config_file_name;				// configuration file name
 	std::string			max_body_size;					// client max body size
 	int					ret;							// return value
 	std::deque<Server>	*servers;						// all supported servers
@@ -85,17 +91,18 @@ typedef struct		s_vars
 #include "../includes/Server.hpp"
 
 
-void		ft_bzero(void *s, size_t n);											// 2
-int			ft_client_max_body_size_handle(t_vars* vars, std::string &str);			// 9
-void		ft_exit(t_vars *vars);													// 3
-std::string	ft_get_name_conf(std::string &str);										// 8
-int			ft_http_handle(t_vars* vars, std::string &str);							// 5
-void		ft_init_data(t_vars *vars, int argc, char** argv, char** envp);			// 1
-int			ft_log_file_handle(t_vars* vars, std::string &str);						// 6
+void		ft_bzero(void *s, size_t n);
+int			ft_check_args_files(t_vars *vars);
+int			ft_client_max_body_size_handle(t_vars* vars, std::string &str);
+void		ft_exit(t_vars *vars);
+std::string	ft_get_name_conf(std::string &str);
+int			ft_http_handle(t_vars* vars, std::string &str);
+void		ft_init_data(t_vars *vars, int argc, char** argv, char** envp);
+int			ft_log_file_handle(t_vars* vars, std::string &str);
 void		*ft_memset(void *s, int c, size_t n);
-int			ft_parse_config(t_vars* vars);											// 4
-int			ft_server_handle(t_vars* vars, std::string &str);						// 9
+int			ft_parse_config(t_vars* vars);
+int			ft_server_handle(t_vars* vars, std::string &str);
 char		*ft_strcpy(char *dest, char *src);
 size_t		ft_strlen(const char *s);
-int			ft_strtrim(std::string &str, std::string chars);						// 7
-int			main(int argc, char **argv, char **envp);								// 0
+int			ft_strtrim(std::string &str, std::string chars);
+int			main(int argc, char **argv, char **envp);
