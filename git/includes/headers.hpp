@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/25 21:43:45 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/25 22:14:18 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,10 +53,15 @@ typedef struct		s_socket
 	socklen_t				sock_len;				// length of serv_addr
 }					t_socket;
 
-// typedef struct		s_location
-// {
-// 	/* data */
-// }					t_location;
+typedef struct		s_location
+{
+	std::string							location_user;		// location user
+	std::string							location_addr;		// local addr
+	bool								autoindex;			// autoindex
+	bool								redirect;			// redirect (on / off)
+	// std::string							redirect_location;	// redirect location
+	std::string							redirect_adress;	// adress for redirect
+}					t_location;
 
 
 typedef struct 		s_server
@@ -65,10 +70,6 @@ typedef struct 		s_server
 	int									port;				// 1 : 65535
 	std::vector<std::string>			server_name;		// server name
 	bool								default_server;		// default flag
-	bool								autoindex;			// autoindex
-	bool								redirect;			// redirect (on / off)
-	std::string							redirect_location;	// redirect location
-	std::string							redirect_adress;	// adress for redirect
 	t_socket							sock_data;			// data for socket
 }					t_server;
 

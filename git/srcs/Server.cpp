@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:57 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/25 21:44:11 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/25 22:59:00 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,22 +24,139 @@
 Server::~Server()
 {}
 
-// static int		setRoot(t_server *server_data, std::string &str, t_location *location)
-// {
-// 	return (0);
-// }
+static int		setRoot(std::string &str, t_location *location)
+{
+#ifdef DEBUG
+	std::cout << "setRoot start; str = |" << str << "|" << std::endl;
+#endif
+	// step 1: Init data
+	std::string::iterator	start = str.begin();
+	std::string				temp_value;
 
-// static int		setAutoindex(t_server *server_data, std::string &str, t_location *location)
-// {
-// 	return (0);
-// }
+	// step 2: Get value
+	while (str.length() && *start != ' ' && *start != '\t' && *start != ';')
+	{
+		temp_value += *start;
+		str.erase(start);
+		start = str.begin();
+	}
+	// std::cout << temp_value << std::endl;
 
-// static int		setRedirect(t_server *server_data, std::string &str, t_location *location)
-// {
-// 	return (0);
-// }
+	// step 3: Trim spaces and tabs
+	while (str.length() && (*start == ' ' || *start == '\t'))
+	{
+		str.erase(start);
+		start = str.begin();
+	}
+	// std::cout << str << std::endl;
 
-static int		setListen(t_server *server_data, std::string &str, std::map<std::string, std::string> *locations)
+	// step 4: Check errors and write data
+	if (*start == ';')
+	{
+		str.erase(start);
+		location->location_addr = temp_value;
+	}
+	else
+		return (1);
+
+#ifdef DEBUG
+	std::cout	<< "setRoot end; str = |" << str << "|"
+				<< " location addr = |" << location->location_addr << "|"
+				<< std::endl;
+#endif
+	return (0);
+}
+
+static int		setAutoindex(std::string &str, t_location *location)
+{
+#ifdef DEBUG
+	std::cout << "setAutoindex start; str = |" << str << "|" << std::endl;
+#endif
+	// step 1: Init data
+	std::string::iterator	start = str.begin();
+	std::string				temp_value;
+
+	// step 2: Get value
+	while (str.length() && *start != ' ' && *start != '\t' && *start != ';')
+	{
+		temp_value += *start;
+		str.erase(start);
+		start = str.begin();
+	}
+	// std::cout << temp_value << std::endl;
+
+	// step 3: Trim spaces and tabs
+	while (str.length() && (*start == ' ' || *start == '\t'))
+	{
+		str.erase(start);
+		start = str.begin();
+	}
+	// std::cout << str << std::endl;
+
+	// step 4: Check errors and write data
+	if (*start == ';' && (temp_value == "on" || temp_value == "off"))
+	{
+		str.erase(start);
+		if (temp_value == "yes")
+			location->autoindex = true;
+	}
+	else
+		return (1);
+
+#ifdef DEBUG
+	std::cout	<< "setAutoindex end; str = |" << str << "|"
+				<< " Autoindex = |" << location->autoindex << "|"
+				<< std::endl;
+#endif
+	return (0);
+}
+
+static int		setRedirect(std::string &str, t_location *location)
+{
+#ifdef DEBUG
+	std::cout << "setRedirect start; str = |" << str << "|" << std::endl;
+#endif
+	// step 1: Init data
+	std::string::iterator	start = str.begin();
+	std::string				temp_value;
+
+	// step 2: Get value
+	while (str.length() && *start != ' ' && *start != '\t' && *start != ';')
+	{
+		temp_value += *start;
+		str.erase(start);
+		start = str.begin();
+	}
+	// std::cout << temp_value << std::endl;
+
+	// step 3: Trim spaces and tabs
+	while (str.length() && (*start == ' ' || *start == '\t'))
+	{
+		str.erase(start);
+		start = str.begin();
+	}
+	// std::cout << str << std::endl;
+
+	// step 4: Check errors and write data
+	if (*start == ';')
+	{
+		str.erase(start);
+		location->redirect = true;
+		location->redirect_adress = temp_value;
+	}
+	else
+		return (1);
+
+#ifdef DEBUG
+	std::cout	<< "setRedirect end; str = |" << str << "|"
+				<< " redirect = |" << location->redirect << "|"
+				<< " redirect addr = |" << location->redirect_adress << "|"
+				<< std::endl;
+#endif
+	return (0);
+}
+
+static int		setListen(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
 {
 #ifdef DEBUG
 	std::cout << "setListen start; str = |" << str << "|" << std::endl;
@@ -114,7 +231,7 @@ static int		setListen(t_server *server_data, std::string &str, std::map<std::str
 	return (0);
 }
 
-static int		setName(t_server *server_data, std::string &str, std::map<std::string, std::string> *locations)
+static int		setName(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
 {
 #ifdef DEBUG
 	std::cout << "setName start; str = |" << str << "|" << std::endl;
@@ -160,16 +277,19 @@ static int		setName(t_server *server_data, std::string &str, std::map<std::strin
 	return (0);
 }
 
-static int		setLocation(t_server *server_data, std::string &str, std::map<std::string, std::string> *locations)
+static int		setLocation(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
 {
 #ifdef DEBUG
 	std::cout << "setLocation start; str = |" << str << "|" << std::endl;
 #endif
-	// std::map<std::string, int (*)(t_vars*, std::string&, t_location*)> functions = {
-	// 	{"root", setRoot},
-	// 	{"autoindex", setAutoindex},
-	// 	{"redirect", setRedirect}
-	// };
+	std::map<std::string, int (*)(std::string&, t_location*)> functions = {
+		{"root", setRoot},
+		{"autoindex", setAutoindex},
+		{"redirect", setRedirect}
+	};
+	t_location				location_flags;
+	location_flags.autoindex = false;
+	location_flags.redirect = false;
 
 	std::string::iterator	start = str.begin();
 	std::string				temp;
@@ -228,73 +348,24 @@ static int		setLocation(t_server *server_data, std::string &str, std::map<std::s
 	}
 	// std::cout << temp << std::endl;
 
-	// step 5: Get user
-	start = temp.begin();
-	while (temp.length() && *start != ' ' && *start != '\t' && *start != ';')
+	// step 3: start handle all settings from fttp section
+	while (temp.length())
 	{
-		temp_user += *start;
-		temp.erase(start);
-		start = temp.begin();
-	}
-	// std::cout << temp_user << std::endl;
-
-	// step 6: Trim spaces and tabs
-	while (temp.length() && (*start == ' ' || *start == '\t'))
-	{
-		temp.erase(start);
-		start = temp.begin();
-	}
-	// std::cout << temp << std::endl;
-
-	// step 7: Get value
-	while (temp.length() && *start != ' ' && *start != '\t' && *start != ';')
-	{
-		temp_value += *start;
-		temp.erase(start);
-		start = temp.begin();
-	}
-	// std::cout << temp_value << std::endl;
-
-	// step 8: Set value settings
-	if (temp_user == "redirect")
-	{
-		server_data->redirect = true;
-		server_data->redirect_location = temp_key;
-		server_data->redirect_adress = temp_value;
-#ifdef DEBUG
-	std::cout	<< "redirect = " << server_data->redirect
-				<< "redirect_location = " << server_data->redirect_location
-				<< "redirect_adress = " << server_data->redirect_adress
-				<< std::endl;
-#endif
-	}
-	else if (temp_user == "autoindex")
-	{
-		if (temp_value == "on")
-			server_data->autoindex = true;
-		else if (temp_value == "off")
-			server_data->autoindex = false;
-		else
+		if (temp[0] == ' ' || temp[0] == '\t')
+		{
+			temp.erase(0);
+			continue ;
+		}
+		if ((*functions[ft_get_name_conf(temp)])(temp, &location_flags))
 			return (1);
-#ifdef DEBUG
-	std::cout	<< "autoindex = " << server_data->autoindex
-				<< std::endl;
-#endif
 	}
-	else if (temp_user == "root")
-	{
-		locations->insert({temp_key, temp_value});
+
+	locations->insert({temp_key, location_flags});
+
 #ifdef DEBUG
-	std::cout	<< "locations key = |" << temp_key
-				<< "| locations value = " << temp_value << "|"
+	std::cout	<< "setLocation end; Location size = " << locations->size()
+				<< " server_name size = " << server_data->server_name.size()
 				<< std::endl;
-#endif
-	}
-	else
-		return (1);
-	// std::cout << "fine" << std::endl;
-#ifdef DEBUG
-	std::cout << "setLocation end; Location size = " << locations->size() << std::endl;
 #endif
 	return (0);
 }
@@ -307,7 +378,7 @@ Server::Server(std::string &str)
 	// step 0: Init data
 	ft_bzero(&server_data, sizeof(t_server));
 	// server_data.locations = new std::map<std::string, std::string>;
-	std::map<std::string, int (*)(t_server*, std::string &, std::map<std::string, std::string>*)> functions = {
+	std::map<std::string, int (*)(t_server*, std::string &, std::map<std::string, t_location>*)> functions = {
 		{"listen", setListen},
 		{"server_name", setName},
 		{"location", setLocation}
@@ -402,29 +473,36 @@ int					Server::getPort() const
 	return (server_data.port);
 }
 
-bool				Server::getRedirect() const
+bool				Server::getRedirect(std::string &str)
 {
-	return (server_data.redirect);
+	std::map<std::string, t_location>::iterator it = locations.find(str);
+	if (it == locations.end())
+		return (false);
+	return ((locations[str]).redirect);
 }
 
-const std::string&	Server::getRedirectLocation() const
+std::string			Server::getRedirectAdress(std::string &str)
 {
-	return (server_data.redirect_location);
+	std::map<std::string, t_location>::iterator it = locations.find(str);
+	if (it == locations.end())
+		return ("");
+	return ((locations[str]).redirect_adress);
 }
 
-const std::string&	Server::getRedirectAdress() const
+bool				Server::getAutoindex(std::string &str)
 {
-	return (server_data.redirect_adress);
+	std::map<std::string, t_location>::iterator it = locations.find(str);
+	if (it == locations.end())
+		return (false);
+	return ((locations[str]).autoindex);
 }
 
-bool				Server::getAutoindex() const
+std::string			Server::getLocations(std::string str)
 {
-	return (server_data.autoindex);
-}
-
-std::string&		Server::getLocations(std::string str)
-{
-	return (locations[str]);
+	std::map<std::string, t_location>::iterator it = locations.find(str);
+	if (it == locations.end())
+		return ("");
+	return ((locations[str]).location_addr);
 }
 
 socklen_t*			Server::getSockLen()
