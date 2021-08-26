@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/26 08:54:06 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/26 17:33:42 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,14 +130,31 @@ int		main(int argc, char **argv, char **envp)
 	for (unsigned long int i = 0; i < vars.servers->size(); ++i)
 		vars.sockets->push_back(Socket(&vars.servers->operator[](i)));
 
-	// step 4: Get request and send response				// need several pthread
-	while (1)
+	// step 4: Create thread and start listen ports
+	for (long unsigned int i = 0; i < vars.sockets->size(); ++i)
 	{
-		vars.sockets->operator[](0).setFd();
-			
-		if (vars.sockets->operator[](0).ft_handle_request())
-		 	ft_exit(&vars);
+		vars.threads.emplace_back(std::thread(ft_in_thread, std::ref(vars), i));
+		sem_wait(vars.sema);
+		sleep(1);
 	}
+
+	// step 5: Wait feedback from threads
+	sem_wait(vars.sema);
+	vars.exit = true;
+	for (long unsigned int i = 0; i < vars.threads.size(); ++i)
+	{
+		vars.threads.operator[](i).join();
+	}
+
+
+	// step 4: Get request and send response				// need several pthread
+	// while (1)
+	// {
+	// 	vars.sockets->operator[](0).setFd();
+			
+	// 	if (vars.sockets->operator[](0).ft_handle_request())
+	// 	 	ft_exit(&vars);
+	// }
 
 #ifdef DEBUG
 	std::cout << "main end" << std::endl;

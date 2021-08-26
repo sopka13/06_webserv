@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:37:55 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/25 09:37:51 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/26 16:55:56 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ int		ft_parse_config(t_vars *vars)
 			break ;
 	}
 	vars->sockets->reserve(i);
+	// std::cout << vars->sockets->capacity() << std::endl;
 
 	// step 5: Get config name and execute handle functions
 	while (str_sum.length())

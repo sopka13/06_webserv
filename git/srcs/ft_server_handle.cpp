@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/19 10:57:36 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/26 08:39:30 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/26 16:16:44 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,9 @@
 **	return (0) - Success
 **	return (1) - Error
 */
+
+// Need sorter servers for check single default server
+
 
 #include "../includes/headers.hpp"
 

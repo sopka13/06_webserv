@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/26 08:40:01 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/26 17:32:16 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 // #define PORT 8080
 #define BUF_FOR_RESP 1024							// buff for response to client
 #define DEF_ADR_CONF_FILE "./conf/webserv.conf"		// default config file
+#define SEM_NAME_1 "sem_threads"
 
 #include <iostream>
 #include <fstream>			//ifstream
@@ -25,7 +26,7 @@
 #include <sys/socket.h>		//socket
 #include <netdb.h>			//gethostbyname
 #include <stdlib.h>			//exit		FORBIDDEN
-#include <arpa/inet.h>		//inet_addr	FORBIDDEN
+#include <arpa/inet.h>		//inet_addr
 #include <unistd.h>			//write		FORBIDDEN
 #include <errno.h>			//errno		FORBIDDEN
 #include <string.h>			//strerror	FORBIDDEN
@@ -33,7 +34,9 @@
 #include <iterator>			//iterator
 #include <deque>			//deque
 #include <vector>			//vector
-#include <string>			
+#include <string>
+#include <thread>
+#include <semaphore.h>
 
 class Socket;
 class Server;
@@ -76,15 +79,18 @@ typedef struct 		s_server
 
 typedef struct		s_vars
 {
-	int					argc;
-	char				**argv;
-	char				**envp;
-	std::ofstream		*log_file;						// logfile
-	std::string			config_file_name;				// configuration file name
-	std::string			max_body_size;					// client max body size
-	int					ret;							// return value
-	std::deque<Server>	*servers;						// all supported servers
-	std::vector<Socket>	*sockets;						// all listen sockets
+	int							argc;
+	char						**argv;
+	char						**envp;
+	std::ofstream				*log_file;			// logfile
+	std::string					config_file_name;	// configuration file name
+	std::string					max_body_size;		// client max body size
+	int							ret;				// return value
+	std::deque<Server>			*servers;			// all supported servers
+	std::vector<Socket>			*sockets;			// all listen sockets
+	std::vector<std::thread>	threads;			// threads for servers
+	sem_t						*sema;				// semaphores
+	bool						exit;				// exit flag for threads
 }					t_vars;
 
 
@@ -98,6 +104,7 @@ int			ft_client_max_body_size_handle(t_vars* vars, std::string &str);
 void		ft_exit(t_vars *vars);
 std::string	ft_get_name_conf(std::string &str);
 int			ft_http_handle(t_vars* vars, std::string &str);
+void		ft_in_thread(t_vars &vars, int i);
 void		ft_init_data(t_vars *vars, int argc, char** argv, char** envp);
 int			ft_log_file_handle(t_vars* vars, std::string &str);
 void		*ft_memset(void *s, int c, size_t n);
