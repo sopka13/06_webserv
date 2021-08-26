@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/26 17:33:42 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/26 23:44:28 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,11 +115,17 @@
 
 #include "../includes/headers.hpp"
 
+bool	exit_flag;
+
 int		main(int argc, char **argv, char **envp)
 {
 #ifdef DEBUG
 	std::cout << "main start" << std::endl;
 #endif
+	// Signals
+	// signal(SIGINT, ft_signal_handler);
+	// signal(SIGQUIT, ft_signal_handler);
+	
 	// step 1: Inicialise data
 	t_vars		vars;
 
@@ -138,23 +144,17 @@ int		main(int argc, char **argv, char **envp)
 		sleep(1);
 	}
 
-	// step 5: Wait feedback from threads
+	// step 5: Write in log_file
+	ft_write_in_log_file(&vars, "Server start");
+
+	// step 6: Wait feedback from threads
 	sem_wait(vars.sema);
-	vars.exit = true;
+	exit_flag = true;
 	for (long unsigned int i = 0; i < vars.threads.size(); ++i)
 	{
 		vars.threads.operator[](i).join();
 	}
 
-
-	// step 4: Get request and send response				// need several pthread
-	// while (1)
-	// {
-	// 	vars.sockets->operator[](0).setFd();
-			
-	// 	if (vars.sockets->operator[](0).ft_handle_request())
-	// 	 	ft_exit(&vars);
-	// }
 
 #ifdef DEBUG
 	std::cout << "main end" << std::endl;

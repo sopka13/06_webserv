@@ -1,33 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_exit.cpp                                        :+:      :+:    :+:   */
+/*   ft_write_in_log_file.cpp                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/08/16 09:09:14 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/26 23:09:31 by eyohn            ###   ########.fr       */
+/*   Created: 2021/08/26 22:12:46 by eyohn             #+#    #+#             */
+/*   Updated: 2021/08/26 22:27:26 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /*
-** This function ends the programm
+** This function write get str in log file
 */
 
 #include "../includes/headers.hpp"
 
-void	ft_exit(t_vars *vars)
+void		ft_write_in_log_file(t_vars *vars, const char *str)
 {
-	ft_write_in_log_file(vars, "Server stop");
-	vars->log_file->close();
-	if (vars->log_file) {
-		delete vars->log_file;
-	}
-	if (vars->servers) {
-		delete vars->servers;
-	}
-	if (vars->sockets) {
-		delete vars->sockets;
-	}
-	exit(0);
+	time_t	now = time(0);
+	std::string		date(ctime(&now));
+	date.erase(date.end() - 1);
+
+	vars->print_in_log.lock();
+	*(vars->log_file) << date << ": " << str << std::endl;
+	vars->print_in_log.unlock();
+	return ;
 }

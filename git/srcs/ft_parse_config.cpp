@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:37:55 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/26 16:55:56 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/26 23:09:35 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,20 @@ int		ft_parse_config(t_vars *vars)
 
 	// step 6: Close config file
 	configFile.close();
+
+	// step 7: Check errors in default server flags
+	int k = 0;
+	for (long unsigned int i = 0; i < vars->servers->size(); ++i)
+	{
+		if (vars->servers->operator[](i).getDefault())
+			k++;
+	}
+	if (k > 1)
+	{
+		std::cout	<< "ERROR: Config file contains more than one default server" << std::endl;
+		return (1);
+	}
+
 #ifdef DEBUG
 	std::cout	<< "ft_parse_config end" << std::endl;
 #endif

@@ -1,33 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_exit.cpp                                        :+:      :+:    :+:   */
+/*   ft_signal_handler.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/08/16 09:09:14 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/26 23:09:31 by eyohn            ###   ########.fr       */
+/*   Created: 2021/08/26 23:23:19 by eyohn             #+#    #+#             */
+/*   Updated: 2021/08/26 23:44:07 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /*
-** This function ends the programm
+** This function handle SIGINT signal
 */
 
 #include "../includes/headers.hpp"
 
-void	ft_exit(t_vars *vars)
+void		ft_signal_handler(int signal_num)
 {
-	ft_write_in_log_file(vars, "Server stop");
-	vars->log_file->close();
-	if (vars->log_file) {
-		delete vars->log_file;
-	}
-	if (vars->servers) {
-		delete vars->servers;
-	}
-	if (vars->sockets) {
-		delete vars->sockets;
-	}
-	exit(0);
+	std::cout << "Get signal " << signal_num << std::endl;
+	exit_flag = true;
 }

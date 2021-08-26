@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/26 17:32:16 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/26 23:29:17 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,13 @@
 #include <string>
 #include <thread>
 #include <semaphore.h>
+#include <mutex>
+#include <csignal>
 
 class Socket;
 class Server;
 
+extern	bool	exit_flag;				// exit flag for threads
 
 typedef struct		s_request
 {
@@ -90,7 +93,7 @@ typedef struct		s_vars
 	std::vector<Socket>			*sockets;			// all listen sockets
 	std::vector<std::thread>	threads;			// threads for servers
 	sem_t						*sema;				// semaphores
-	bool						exit;				// exit flag for threads
+	std::mutex					print_in_log;		// mutex for write in log file
 }					t_vars;
 
 
@@ -110,7 +113,9 @@ int			ft_log_file_handle(t_vars* vars, std::string &str);
 void		*ft_memset(void *s, int c, size_t n);
 int			ft_parse_config(t_vars* vars);
 int			ft_server_handle(t_vars* vars, std::string &str);
+void		ft_signal_handler(int signal_num);
 char		*ft_strcpy(char *dest, char *src);
 size_t		ft_strlen(const char *s);
 int			ft_strtrim(std::string &str, std::string chars);
+void		ft_write_in_log_file(t_vars *vars, const char *str);
 int			main(int argc, char **argv, char **envp);

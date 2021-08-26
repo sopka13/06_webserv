@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:57 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/26 08:50:26 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/26 23:09:38 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -522,4 +522,9 @@ socklen_t*			Server::getSockLen()
 sockaddr_in*		Server::getServAddr()
 {
 	return (&(server_data.sock_data.serv_addr));
+}
+
+bool				Server::getDefault()
+{
+	return (server_data.default_server);
 }

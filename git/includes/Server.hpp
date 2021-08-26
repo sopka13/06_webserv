@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:47 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/25 23:04:11 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/26 22:41:11 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,4 +40,5 @@ public:
 	std::string			getLocations(std::string);			// Return locations
 	socklen_t*			getSockLen();						// Return sock length
 	sockaddr_in*		getServAddr();						// Return serv addr
+	bool				getDefault();						// Return default or not
 };

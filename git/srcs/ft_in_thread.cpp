@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/26 16:18:23 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/26 17:31:47 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/26 23:26:11 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void		ft_in_thread(t_vars &vars, int i)
 			sem_post(vars.sema);
 		 	ft_exit(&vars);
 		}
-		if (vars.exit)
+		if (exit_flag)
 			ft_exit(&vars);
 	}
 	// std::cout << "i = " << i << std::endl;
