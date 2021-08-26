@@ -50,12 +50,12 @@ Socket::~Socket(){}
 // 	return (*this);
 // }
 
-static std::string toString(int a)
-{
-	std::ostringstream oss;
-	oss << a;
-	return (oss.str());
-}
+// static std::string toString(int a)
+// {
+// 	std::ostringstream oss;
+// 	oss << a;
+// 	return (oss.str());
+// }
 
 int			Socket::ft_handle_request()
 {
@@ -71,8 +71,9 @@ int			Socket::ft_handle_request()
 	//parsing_of_sock_buff(_buff);
 
 	// step 2: Write data for client
-	std::string	buff_1 = "Request accepted! Time: " + toString(static_cast<int>(clock()));
-	ret = send(_fd, buff_1.c_str(), sizeof(buff_1), 0);
+	std::string	buff_1 = "HTTP/1.1 200 OK\n Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n<html><head><title>Tata</title></head><body><p>Hello world</p></body></html>\n";
+	ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
+	if (ret >0) std::cout << "Respons " << ret << std::endl;
 	// if (vars->ret < 0)
 	// {
 	// 	std::cout << "ERROR Response fail: " << strerror(errno) << std::endl;
