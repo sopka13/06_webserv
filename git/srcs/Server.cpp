@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:57 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/25 22:59:00 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/26 08:50:26 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,6 +161,9 @@ static int		setListen(t_server *server_data, std::string &str, std::map<std::str
 #ifdef DEBUG
 	std::cout << "setListen start; str = |" << str << "|" << std::endl;
 #endif
+	if (locations == NULL)
+		std::cout << "Bad args in setListen" << std::endl;
+
 	// step 1: Init data
 	std::string::iterator	start = str.begin();
 	std::string				temp;
@@ -226,7 +229,7 @@ static int		setListen(t_server *server_data, std::string &str, std::map<std::str
 	std::cout	<< "setListen end: ip = |" << server_data->ip << "|\n"
 				<< "port = |" << server_data->port << "|\n"
 				<< "default = |" << server_data->default_server << "|\n"
-				<< locations->size() << std::endl;
+				<< std::endl;
 #endif
 	return (0);
 }
@@ -237,6 +240,9 @@ static int		setName(t_server *server_data, std::string &str, std::map<std::strin
 	std::cout << "setName start; str = |" << str << "|" << std::endl;
 #endif
 	// step 1: Init data
+	if (locations == NULL)
+		std::cout << "Bad args in setName" << std::endl;
+
 	std::string::iterator	start = str.begin();
 	std::string				temp;
 
@@ -282,6 +288,9 @@ static int		setLocation(t_server *server_data, std::string &str, std::map<std::s
 #ifdef DEBUG
 	std::cout << "setLocation start; str = |" << str << "|" << std::endl;
 #endif
+	if (server_data == NULL)
+		std::cout << "Bad args in setLocation" << std::endl;
+
 	std::map<std::string, int (*)(std::string&, t_location*)> functions = {
 		{"root", setRoot},
 		{"autoindex", setAutoindex},

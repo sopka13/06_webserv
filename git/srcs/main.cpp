@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/25 00:01:42 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/26 08:54:06 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,13 +131,13 @@ int		main(int argc, char **argv, char **envp)
 		vars.sockets->push_back(Socket(&vars.servers->operator[](i)));
 
 	// step 4: Get request and send response				// need several pthread
-	// while (1)
-	// {
-	// 	socket.setFd();
+	while (1)
+	{
+		vars.sockets->operator[](0).setFd();
 			
-	// 	if (socket.ft_handle_request())
-	// 	 	ft_exit(&vars);
-	// }
+		if (vars.sockets->operator[](0).ft_handle_request())
+		 	ft_exit(&vars);
+	}
 
 #ifdef DEBUG
 	std::cout << "main end" << std::endl;

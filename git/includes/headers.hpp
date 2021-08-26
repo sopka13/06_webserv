@@ -6,16 +6,16 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/25 22:14:18 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/08/26 08:40:01 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#define DEBUG 1
+// #define DEBUG 1
 
-#define IP_ADDRESS "127.0.0.10"
-#define PORT 8080
+// #define IP_ADDRESS "127.0.0.10"
+// #define PORT 8080
 #define BUF_FOR_RESP 1024							// buff for response to client
 #define DEF_ADR_CONF_FILE "./conf/webserv.conf"		// default config file
 
@@ -55,7 +55,7 @@ typedef struct		s_socket
 
 typedef struct		s_location
 {
-	std::string							location_user;		// location user
+	// std::string							location_user;		// location user
 	std::string							location_addr;		// local addr
 	bool								autoindex;			// autoindex
 	bool								redirect;			// redirect (on / off)
