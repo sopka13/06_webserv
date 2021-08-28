@@ -1,6 +1,7 @@
 #include "../includes/Socket.hpp"
 #include <sstream>
 #include <ctime>
+#include "../includes/Response.hpp"
 
 //Socket::Socket(){};
 Socket::Socket(Server *server):
@@ -71,8 +72,26 @@ int			Socket::ft_handle_request()
 	//parsing_of_sock_buff(_buff);
 
 	// step 2: Write data for client
-	std::string	buff_1 = "HTTP/1.1 200 OK\n Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n<html><head><title>Tata</title></head><body><p>Hello world</p></body></html>\n";
-	ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
+	std::ifstream	fileIndex(DEF_ADR_INDEX_FILE);
+	Response response(static_cast<std::string>(_buff));
+	if (response.getMetod() == 1 && (response.getPath() == "/" || response.getPath() == "/favicon.ico")){
+		std::string	buff_1 = response.getHttp() + " 200 OK\n  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
+		if (!fileIndex.is_open()){
+			std::cout	<< "ERROR: Config file open error" << std::endl;
+			return (1);
+		}
+		std::string str;
+		while(std::getline(fileIndex, str))
+		{
+			buff_1 += str;
+			// std::cout << str_sum << std::endl;
+		}
+		ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
+	}
+	
+
+	//std::string	buff_1 = "HTTP/1.1 200 OK\n Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n<html><head><title>Tata</title></head><body><p>Hello world</p></body></html>\n";
+	//ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
 	if (ret >0) std::cout << "Respons " << ret << std::endl;
 	// if (vars->ret < 0)
 	// {
