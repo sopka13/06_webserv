@@ -1,0 +1,576 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR BeTheme
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: BeOnePage Lite 1.0.0\n"
+"Report-Msgid-Bugs-To: hi@betheme.me\n"
+"POT-Creation-Date: 2015-11-13 05:57+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: 404.php:31
+msgid "Oops! That page can&rsquo;t be found."
+msgstr ""
+
+#: 404.php:32
+msgid "It looks like nothing was found at this location. Maybe try a search?"
+msgstr ""
+
+#: comments.php:31
+#, php-format
+msgctxt "comments title"
+msgid "One thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] ""
+msgstr[1] ""
+
+#: comments.php:40 comments.php:62
+msgid "Comment navigation"
+msgstr ""
+
+#: comments.php:43 comments.php:65
+msgid "Older Comments"
+msgstr ""
+
+#: comments.php:44 comments.php:66
+msgid "Newer Comments"
+msgstr ""
+
+#: comments.php:77
+msgid "Comments are closed."
+msgstr ""
+
+#: comments.php:88
+msgid "Submit Comment"
+msgstr ""
+
+#: comments.php:90
+msgid "Leave a <span>Comment</span>"
+msgstr ""
+
+#: comments.php:93
+msgid "Comment"
+msgstr ""
+
+#: comments.php:100 template-home-page.php:329
+msgid "Name"
+msgstr ""
+
+#: comments.php:105
+msgid "E-Mail"
+msgstr ""
+
+#: comments.php:110
+msgid "Website"
+msgstr ""
+
+#: footer.php:25
+#, php-format
+msgid " Build with %s."
+msgstr ""
+
+#: functions.php:50
+msgid "Header Menu"
+msgstr ""
+
+#: functions.php:94
+msgid "Sidebar"
+msgstr ""
+
+#: header.php:25
+msgid "Skip to content"
+msgstr ""
+
+#: search.php:16
+#, php-format
+msgid "Search Results for: %s"
+msgstr ""
+
+#: searchform.php:13
+msgid "Search"
+msgstr ""
+
+#: template-home-page.php:316
+msgid "This field is required."
+msgstr ""
+
+#: template-home-page.php:317
+msgid "Please check your math."
+msgstr ""
+
+#: template-home-page.php:318
+msgid "Invalid email address."
+msgstr ""
+
+#: template-home-page.php:333
+msgid "Email"
+msgstr ""
+
+#: template-home-page.php:337
+msgid "Phone"
+msgstr ""
+
+#: template-home-page.php:341
+msgid "Subject"
+msgstr ""
+
+#: template-home-page.php:345
+msgid "Message"
+msgstr ""
+
+#: inc/breadcrumb.php:11
+msgid "Home"
+msgstr ""
+
+#: inc/breadcrumb.php:12
+msgid "Blog"
+msgstr ""
+
+#: inc/breadcrumb.php:13
+#, php-format
+msgid "Archive by Category \"%s\""
+msgstr ""
+
+#: inc/breadcrumb.php:14
+#, php-format
+msgid "Search Results for \"%s\" Query"
+msgstr ""
+
+#: inc/breadcrumb.php:15
+#, php-format
+msgid "Posts Tagged \"%s\""
+msgstr ""
+
+#: inc/breadcrumb.php:16
+#, php-format
+msgid "Articles Posted by %s"
+msgstr ""
+
+#: inc/breadcrumb.php:17
+msgid "Error 404"
+msgstr ""
+
+#: inc/breadcrumb.php:214
+msgid "Page"
+msgstr ""
+
+#: inc/comments-callback.php:42
+#, php-format
+msgctxt "post date"
+msgid "%1$s at %2$s"
+msgstr ""
+
+#: inc/comments-callback.php:50
+msgctxt "edit comment"
+msgid "Edit"
+msgstr ""
+
+#: inc/comments-callback.php:57
+msgid "Your comment is awaiting moderation."
+msgstr ""
+
+#: inc/extras.php:92
+msgid "Upgrade to"
+msgstr ""
+
+#: inc/extras.php:94
+msgid "to enjoy"
+msgstr ""
+
+#: inc/extras.php:96
+msgid "Premium Features"
+msgstr ""
+
+#: inc/extras.php:97
+msgid "and support continued development"
+msgstr ""
+
+#: inc/extras.php:179
+msgid "Verification error. Try again!"
+msgstr ""
+
+#: inc/extras.php:191
+msgid "phone"
+msgstr ""
+
+#: inc/extras.php:196
+msgid "Thank you. The Mailman is on his way!"
+msgstr ""
+
+#: inc/extras.php:198
+msgid "Sorry, don't know what happened. Try later!"
+msgstr ""
+
+#: inc/extras.php:232
+msgid "First"
+msgstr ""
+
+#: inc/extras.php:236
+msgid "Prev"
+msgstr ""
+
+#: inc/extras.php:246
+msgid "Next"
+msgstr ""
+
+#: inc/extras.php:250
+msgid "Last"
+msgstr ""
+
+#: inc/extras.php:372
+msgid "icon found."
+msgstr ""
+
+#: inc/extras.php:373
+msgid "icons found."
+msgstr ""
+
+#: inc/extras.php:374
+msgid "No icons found."
+msgstr ""
+
+#: inc/extras.php:375
+msgid "Upgrade to Pro Version"
+msgstr ""
+
+#: inc/template-tags.php:21
+msgid "Posts navigation"
+msgstr ""
+
+#: inc/template-tags.php:25
+msgid "Older posts"
+msgstr ""
+
+#: inc/template-tags.php:29
+msgid "Newer posts"
+msgstr ""
+
+#: inc/template-tags.php:51
+msgid "Post navigation"
+msgstr ""
+
+#: inc/template-tags.php:81
+#, php-format
+msgctxt "post date"
+msgid "Posted on %s"
+msgstr ""
+
+#: inc/template-tags.php:86
+#, php-format
+msgctxt "post author"
+msgid "by %s"
+msgstr ""
+
+#: inc/template-tags.php:103 inc/template-tags.php:109
+#: template-parts/content-blog.php:43
+msgid ", "
+msgstr ""
+
+#: inc/template-tags.php:105 template-parts/content-blog.php:38
+#, php-format
+msgid "Posted in %1$s"
+msgstr ""
+
+#: inc/template-tags.php:111
+#, php-format
+msgid "Tagged %1$s"
+msgstr ""
+
+#: inc/template-tags.php:117
+msgid "Leave a comment"
+msgstr ""
+
+#: inc/template-tags.php:117
+msgid "1 Comment"
+msgstr ""
+
+#: inc/template-tags.php:117
+msgid "% Comments"
+msgstr ""
+
+#: inc/template-tags.php:124 template-parts/content-page.php:28
+#, php-format
+msgid "Edit %s"
+msgstr ""
+
+#: inc/kirki/config.php:34
+msgid "General"
+msgstr ""
+
+#: inc/kirki/config.php:35
+msgid "You may need to refresh the page to see the changes."
+msgstr ""
+
+#: inc/kirki/config.php:40
+msgid "Site Icon"
+msgstr ""
+
+#: inc/kirki/config.php:41
+msgid "Here you can upload your own custom favicon image"
+msgstr ""
+
+#: inc/kirki/config.php:47 inc/kirki/config.php:137
+msgid "Front Page"
+msgstr ""
+
+#: inc/kirki/config.php:53
+msgid "Slider Module"
+msgstr ""
+
+#: inc/kirki/config.php:59
+msgid "Icon Service Module"
+msgstr ""
+
+#: inc/kirki/config.php:65
+msgid "Portfolio Module"
+msgstr ""
+
+#: inc/kirki/config.php:71
+msgid "Vertical Promotion Module"
+msgstr ""
+
+#: inc/kirki/config.php:77
+msgid "Blog Module"
+msgstr ""
+
+#: inc/kirki/config.php:83
+msgid "Contact Module"
+msgstr ""
+
+#: inc/kirki/config.php:90
+msgid "Blog Page"
+msgstr ""
+
+#: inc/kirki/config.php:91
+msgid "Here you can customize your blog pages."
+msgstr ""
+
+#: inc/kirki/config.php:97
+msgid "Site Footer"
+msgstr ""
+
+#: inc/kirki/config.php:98
+msgid "Here you can customize the footer on your site."
+msgstr ""
+
+#: inc/kirki/config.php:103
+msgid "Upgrade"
+msgstr ""
+
+#: inc/kirki/config.php:120
+msgid "Site Title"
+msgstr ""
+
+#: inc/kirki/config.php:138
+msgid "Create a blank page with Home Page template and set it as Front Page."
+msgstr ""
+
+#: inc/kirki/config.php:147
+msgid "Posts Page"
+msgstr ""
+
+#: inc/kirki/config.php:148
+msgid "Create a blank page and set it as Posts Page."
+msgstr ""
+
+#: inc/kirki/config.php:157
+msgid "Enable Sticky Menu?"
+msgstr ""
+
+#: inc/kirki/config.php:158
+msgid ""
+"If enable, the menu will be accessible from anywhere without having to "
+"scroll."
+msgstr ""
+
+#: inc/kirki/config.php:167
+msgid "Enable Go to Top Button?"
+msgstr ""
+
+#: inc/kirki/config.php:179 inc/kirki/config.php:442
+msgid "Heading"
+msgstr ""
+
+#: inc/kirki/config.php:180 inc/kirki/config.php:300 inc/kirki/config.php:362
+#: inc/kirki/config.php:443 inc/kirki/config.php:525 inc/kirki/config.php:607
+msgid "If you want to color the word, just wrap it with \\\"span\\\" tag."
+msgstr ""
+
+#: inc/kirki/config.php:197 inc/kirki/config.php:460
+msgid "Content"
+msgstr ""
+
+#: inc/kirki/config.php:214 inc/kirki/config.php:477
+msgid "Button Text"
+msgstr ""
+
+#: inc/kirki/config.php:231 inc/kirki/config.php:494
+msgid "Button URL"
+msgstr ""
+
+#: inc/kirki/config.php:248
+msgid "Background Image"
+msgstr ""
+
+#: inc/kirki/config.php:261
+msgid "Enable Parallax Scrolling?"
+msgstr ""
+
+#: inc/kirki/config.php:270
+msgid "Enable Scroll Down Button?"
+msgstr ""
+
+#: inc/kirki/config.php:288 inc/kirki/config.php:350 inc/kirki/config.php:431
+#: inc/kirki/config.php:513 inc/kirki/config.php:595
+msgid "Module ID"
+msgstr ""
+
+#: inc/kirki/config.php:289 inc/kirki/config.php:351 inc/kirki/config.php:432
+#: inc/kirki/config.php:514 inc/kirki/config.php:596
+msgid ""
+"Set up a unique ID for the module, the ID will be used for page scrolling "
+"navigation."
+msgstr ""
+
+#: inc/kirki/config.php:299 inc/kirki/config.php:361 inc/kirki/config.php:524
+#: inc/kirki/config.php:606
+msgid "Title"
+msgstr ""
+
+#: inc/kirki/config.php:317 inc/kirki/config.php:379 inc/kirki/config.php:542
+#: inc/kirki/config.php:624
+msgid "Subtitle"
+msgstr ""
+
+#: inc/kirki/config.php:334
+msgid "Layout"
+msgstr ""
+
+#: inc/kirki/config.php:335
+msgid "Choose the layout for the container."
+msgstr ""
+
+#: inc/kirki/config.php:340
+msgid "Fixed-width"
+msgstr ""
+
+#: inc/kirki/config.php:341
+msgid "Full-width"
+msgstr ""
+
+#: inc/kirki/config.php:396
+msgid "Enable Portfolio Filter?"
+msgstr ""
+
+#: inc/kirki/config.php:405
+msgid "Show All Button Text"
+msgstr ""
+
+#: inc/kirki/config.php:559
+msgid "Read More Button Text"
+msgstr ""
+
+#: inc/kirki/config.php:576
+msgid "View More Button Text"
+msgstr ""
+
+#: inc/kirki/config.php:641
+msgid "Send Button Text"
+msgstr ""
+
+#: inc/kirki/config.php:660
+msgid "Header Image"
+msgstr ""
+
+#: inc/kirki/config.php:674
+msgid "Copyright Information"
+msgstr ""
+
+#: inc/kirki/config.php:675
+msgid ""
+"Want to remove the theme byline? See section \"Upgrade\" for more "
+"information."
+msgstr ""
+
+#: inc/kirki/config.php:677
+msgid "Copyrights &copy; 2015. All Rights Reserved."
+msgstr ""
+
+#: inc/kirki/config.php:684
+msgid "Show Site Title?"
+msgstr ""
+
+#: inc/kirki/config.php:695
+msgid "Want to remove the theme byline from your website's footer?"
+msgstr ""
+
+#: inc/kirki/config.php:695
+msgid "Upgrade to BeOnePage Pro Now"
+msgstr ""
+
+#: template-parts/content-ajax-portfolio.php:59
+msgid "Created by"
+msgstr ""
+
+#: template-parts/content-ajax-portfolio.php:63
+msgid "Completed on"
+msgstr ""
+
+#: template-parts/content-ajax-portfolio.php:67
+msgid "Skills"
+msgstr ""
+
+#: template-parts/content-ajax-portfolio.php:71
+msgid "Client"
+msgstr ""
+
+#: template-parts/content-blog.php:40
+#, php-format
+msgid "Posted in %1$s, "
+msgstr ""
+
+#: template-parts/content-none.php:13
+msgid "Nothing Found"
+msgstr ""
+
+#: template-parts/content-none.php:22
+#, php-format
+msgid ""
+"Ready to publish your first portfolio? <a href=\"%1$s\">Get started here</a>."
+msgstr ""
+
+#: template-parts/content-none.php:33
+#, php-format
+msgid ""
+"Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr ""
+
+#: template-parts/content-none.php:41
+msgid ""
+"Sorry, but nothing matched your search terms. Please try again with some "
+"different keywords."
+msgstr ""
+
+#: template-parts/content-none.php:46
+msgid ""
+"It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps "
+"searching can help."
+msgstr ""
+
+#: template-parts/content-page.php:17 template-parts/content-single.php:40
+msgid "Pages:"
+msgstr ""
+
+#: template-parts/content.php:44
+msgid "Read More"
+msgstr ""
