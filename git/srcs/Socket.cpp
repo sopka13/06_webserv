@@ -108,6 +108,7 @@ int			Socket::ft_handle_request()
 	return (0);
 }
 
+
 int Socket::getFd(){
 	return (_fd);
 }
