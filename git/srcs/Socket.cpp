@@ -77,7 +77,7 @@ int			Socket::ft_handle_request()
 	// step 2: Write data for client
 	
 	Response response(static_cast<std::string>(_buff));
-	if (response.getMetod() == 1 && (response.getPath() == "/" /*|| response.getPath() == "/favicon.ico")*/)){
+	if (response.getMetod() == 1 && (response.getPath() == "/")){
 		std::string	buff_1 = response.getHttp() + " 200 OK\n  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
 		std::ifstream	fileIndex(getLoc(response.getPath()) + "index.html");																// файл может быть .html/.htm/.php
 		if (!fileIndex.is_open()){
@@ -92,11 +92,40 @@ int			Socket::ft_handle_request()
 		}
 		ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
 	}
+	std::string path = response.getPath();
+	std::string tile = "";
+	std::string::iterator slesh = path.end() - 1;
+	//std::cout << "not in if " << getLoc(path) << std::endl;
+	while (getLoc(path) == "" && path.length() > 1){
+		std::cout << "while " << getLoc(path) << "path " << path << std::endl;
+		while (*slesh != '/' && slesh != path.begin()){
+			tile += *slesh;
+			path.erase(slesh, path.end());
+			--slesh;
+		}
+		tile += *slesh;
+		path.erase(slesh, path.end());
+		--slesh;
+	}
 	
+	if (response.getMetod() == 1 && (getLoc(path) != "")){
+		std::string	buff_1 = response.getHttp() + " 200 OK\n  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
+		std::cout << "in if " << getLoc(path)  + tile + "/index.html" << std::endl;
+		std::ifstream	fileIndex(getLoc(path)  + tile + "/index.html");																// файл может быть .html/.htm/.php
+		if (!fileIndex.is_open()){
+			std::cout	<< "ERROR: Config file open error" << std::endl;
+			return (1);
+		}
+		std::string str;
+		while(std::getline(fileIndex, str))
+		{
+			buff_1 += str;
+		}
+		ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
+	}
 
-	//std::string	buff_1 = "HTTP/1.1 200 OK\n Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n<html><head><title>Tata</title></head><body><p>Hello world</p></body></html>\n";
-	//ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
-	if (ret > 0) std::cout << "Respons " << ret << std::endl;
+	if (ret > 0) 
+		std::cout << "Respons " << ret << std::endl;
 	// if (vars->ret < 0)
 	// {
 	// 	std::cout << "ERROR Response fail: " << strerror(errno) << std::endl;
