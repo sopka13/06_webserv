@@ -14,6 +14,7 @@ public:
 	int getFd();
 	void setFd();
 	int getTcp_sockfd();
+	std::string getLoc(std::string);
 
 private:
 	int						_tcp_sockfd;				// socket fd

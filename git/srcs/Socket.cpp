@@ -1,6 +1,7 @@
 #include "../includes/Socket.hpp"
 #include <sstream>
 #include <ctime>
+#include <string>
 #include "../includes/Response.hpp"
 
 //Socket::Socket(){};
@@ -57,7 +58,9 @@ Socket::~Socket(){}
 // 	oss << a;
 // 	return (oss.str());
 // }
-
+std::string Socket::getLoc(std::string path){
+	return(_server->getLocations(path));
+}
 int			Socket::ft_handle_request()
 {
 	bzero(_buff, sizeof(_buff));
@@ -72,10 +75,11 @@ int			Socket::ft_handle_request()
 	//parsing_of_sock_buff(_buff);
 
 	// step 2: Write data for client
-	std::ifstream	fileIndex(DEF_ADR_INDEX_FILE);
+	
 	Response response(static_cast<std::string>(_buff));
-	if (response.getMetod() == 1 && (response.getPath() == "/" || response.getPath() == "/favicon.ico")){
+	if (response.getMetod() == 1 && (response.getPath() == "/" /*|| response.getPath() == "/favicon.ico")*/)){
 		std::string	buff_1 = response.getHttp() + " 200 OK\n  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
+		std::ifstream	fileIndex(getLoc(response.getPath()) + "index.html");
 		if (!fileIndex.is_open()){
 			std::cout	<< "ERROR: Config file open error" << std::endl;
 			return (1);
@@ -92,7 +96,7 @@ int			Socket::ft_handle_request()
 
 	//std::string	buff_1 = "HTTP/1.1 200 OK\n Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n<html><head><title>Tata</title></head><body><p>Hello world</p></body></html>\n";
 	//ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
-	if (ret >0) std::cout << "Respons " << ret << std::endl;
+	if (ret > 0) std::cout << "Respons " << ret << std::endl;
 	// if (vars->ret < 0)
 	// {
 	// 	std::cout << "ERROR Response fail: " << strerror(errno) << std::endl;
@@ -103,6 +107,7 @@ int			Socket::ft_handle_request()
 	close(_fd);	//FORBIDDEN
 	return (0);
 }
+
 
 int Socket::getFd(){
 	return (_fd);

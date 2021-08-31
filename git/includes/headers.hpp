@@ -18,7 +18,7 @@
 // #define PORT 8080
 #define BUF_FOR_RESP 1024							// buff for response to client
 #define DEF_ADR_CONF_FILE "./conf/webserv.conf"     // default config file
-#define DEF_ADR_INDEX_FILE "./html/index.html"		
+//#define DEF_ADR_INDEX_FILE "./html/index.html"		
 #define SEM_NAME_1 "sem_threads"
 
 #include <iostream>
