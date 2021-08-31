@@ -55,5 +55,6 @@ std::string Response::getHttp(){
 	return (_http);
 }
 std::string Response::getPath(){
+	// std::cout << "Return path = " << _path << std::endl;
 	return (_path);
 }
