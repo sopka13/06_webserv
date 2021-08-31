@@ -79,7 +79,7 @@ int			Socket::ft_handle_request()
 	Response response(static_cast<std::string>(_buff));
 	if (response.getMetod() == 1 && (response.getPath() == "/" /*|| response.getPath() == "/favicon.ico")*/)){
 		std::string	buff_1 = response.getHttp() + " 200 OK\n  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
-		std::ifstream	fileIndex(getLoc(response.getPath()) + "index.html");
+		std::ifstream	fileIndex(getLoc(response.getPath()) + "index.html");																// файл может быть .html/.htm/.php
 		if (!fileIndex.is_open()){
 			std::cout	<< "ERROR: Config file open error" << std::endl;
 			return (1);
