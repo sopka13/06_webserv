@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/31 10:34:05 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/01 08:30:35 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,7 @@
 
 /*
 ** 2. Execute test
+** 3. understand how the answer is formed 
 */
 
 #include "../includes/headers.hpp"
@@ -138,7 +139,7 @@ int		main(int argc, char **argv, char **envp)
 
 	// step 3: Create socket
 	for (unsigned long int i = 0; i < vars.servers->size(); ++i)
-		vars.sockets->push_back(Socket(&vars.servers->operator[](i)));
+		vars.sockets->emplace_back(Socket(&vars.servers->operator[](i)));
 
 	// step 4: Create thread and start listen ports
 	for (long unsigned int i = 0; i < vars.sockets->size(); ++i)
