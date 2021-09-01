@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/01 08:30:35 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/01 09:40:42 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,8 +114,9 @@
 */
 
 /*
-** 2. Execute test
-** 3. understand how the answer is formed 
+** 4. Add method for location in config_file		/config + code
+** 5. Add cgi execute								/config + code
+** 6. Add default index_file for request by folder	/config + code
 */
 
 #include "../includes/headers.hpp"
