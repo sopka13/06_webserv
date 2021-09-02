@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:57 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/26 23:09:38 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/02 12:11:42 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,6 +156,99 @@ static int		setRedirect(std::string &str, t_location *location)
 	return (0);
 }
 
+static int		setMethods(std::string &str, t_location *location)
+{
+#ifdef DEBUG
+	std::cout << "setMethods start; str = |" << str << "|" << std::endl;
+#endif
+	// step 1: Init data
+	std::string::iterator	start = str.begin();
+	std::string				temp;
+
+	// step 2: Get index names
+	while (str.length() && *start != ';')
+	{
+		if (*start == ' ' || *start == '\t')
+		{
+			location->allowed_methods.push_back(temp);
+			#ifdef DEBUG
+				std::cout << "name = |" << temp << "|" << std::endl;
+			#endif
+			temp.clear();
+			str.erase(start);
+			start = str.begin();
+			continue ;
+		}
+		temp += *start;
+		str.erase(start);
+		start = str.begin();
+	}
+
+	// step 3: Trim ';' character and check error
+	if (*start == ';')
+	{
+		location->allowed_methods.push_back(temp);
+		#ifdef DEBUG
+			std::cout << "name = |" << temp << "|" << std::endl;
+		#endif
+		str.erase(start);
+	}
+	else
+		return (1);
+#ifdef DEBUG
+	std::cout << "setMethods end; str = |" << str << "|" << std::endl;
+#endif
+	return (0);
+}
+
+static int		setIndex(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
+{
+#ifdef DEBUG
+	std::cout << "setIndex start; str = |" << str << "|" << std::endl;
+#endif
+	// step 1: Init data
+	if (locations == NULL)
+		std::cout << "Bad args in setName" << std::endl;
+
+	std::string::iterator	start = str.begin();
+	std::string				temp;
+
+	// step 2: Get index names
+	while (str.length() && *start != ';')
+	{
+		if (*start == ' ' || *start == '\t')
+		{
+			server_data->index.push_back(temp);
+			#ifdef DEBUG
+				std::cout << "name = |" << temp << "|" << std::endl;
+			#endif
+			temp.clear();
+			str.erase(start);
+			start = str.begin();
+			continue ;
+		}
+		temp += *start;
+		str.erase(start);
+		start = str.begin();
+	}
+
+	// step 3: Trim ';' character and check error
+	if (*start == ';')
+	{
+		server_data->index.push_back(temp);
+		#ifdef DEBUG
+			std::cout << "name = |" << temp << "|" << std::endl;
+		#endif
+		str.erase(start);
+	}
+	else
+		return (1);
+#ifdef DEBUG
+	std::cout << "setIndex end; str = |" << str << "|" << std::endl;
+#endif
+	return (0);
+}
+
 static int		setListen(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
 {
 #ifdef DEBUG
@@ -294,7 +387,8 @@ static int		setLocation(t_server *server_data, std::string &str, std::map<std::s
 	std::map<std::string, int (*)(std::string&, t_location*)> functions = {
 		{"root", setRoot},
 		{"autoindex", setAutoindex},
-		{"redirect", setRedirect}
+		{"redirect", setRedirect},
+		{"methods", setMethods}
 	};
 	t_location				location_flags;
 	location_flags.autoindex = false;
@@ -365,8 +459,15 @@ static int		setLocation(t_server *server_data, std::string &str, std::map<std::s
 			temp.erase(0);
 			continue ;
 		}
-		if ((*functions[ft_get_name_conf(temp)])(temp, &location_flags))
+		std::map<std::string, int (*)(std::string&, t_location*)>::iterator it = functions.find(ft_get_name_conf(temp));
+		if (it != functions.end())
+		{
+			if ((*it->second)(temp, &location_flags))
+				return (1);
+		}
+		else
 			return (1);
+		
 	}
 
 	locations->insert({temp_key, location_flags});
@@ -390,7 +491,8 @@ Server::Server(std::string &str)
 	std::map<std::string, int (*)(t_server*, std::string &, std::map<std::string, t_location>*)> functions = {
 		{"listen", setListen},
 		{"server_name", setName},
-		{"location", setLocation}
+		{"location", setLocation},
+		{"index", setIndex}
 	};
 	std::string::iterator	start = str.begin();
 	std::string				temp;
@@ -435,8 +537,17 @@ Server::Server(std::string &str)
 			temp.erase(0);
 			continue ;
 		}
-		if ((*functions[ft_get_name_conf(temp)])(&server_data, temp, &locations))
+		std::map<std::string, int (*)(t_server*, std::string &, std::map<std::string, t_location>*)>::iterator it = functions.find(ft_get_name_conf(temp));
+		if (it != functions.end())
+		{
+			if ((*it->second)(&server_data, temp, &locations))
+				throw Error();
+		}
+		else
 			throw Error();
+		
+		// if ((*functions[ft_get_name_conf(temp)])(&server_data, temp, &locations))
+		// 	throw Error();
 	}
 
 	// step 4: Set port number and ip for socket data
@@ -527,4 +638,22 @@ sockaddr_in*		Server::getServAddr()
 bool				Server::getDefault()
 {
 	return (server_data.default_server);
+}
+
+bool				Server::getMethods(std::string &key, std::string &method)
+{
+	std::map<std::string, t_location>::iterator it = locations.find(key);
+	if (it == locations.end())
+		return (false);
+
+	std::vector<std::string>::iterator it_2 = (locations[key]).allowed_methods.begin();
+	std::vector<std::string>::iterator it_3 = (locations[key]).allowed_methods.end();
+
+	while (it_2 != it_3)
+	{
+		if (*it_2 == method)
+			return (true);
+		it_2++;
+	}
+	return (false);
 }
