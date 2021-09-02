@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:57 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/02 12:11:42 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/02 12:18:42 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -656,4 +656,9 @@ bool				Server::getMethods(std::string &key, std::string &method)
 		it_2++;
 	}
 	return (false);
+}
+
+std::vector<std::string>::iterator		Server::getIndexName()
+{
+	return (server_data.index.begin());
 }

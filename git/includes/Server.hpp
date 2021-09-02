@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:47 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/02 11:40:49 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/02 12:18:28 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,4 +42,5 @@ public:
 	sockaddr_in*		getServAddr();						// Return serv addr
 	bool				getDefault();						// Return default or not
 	bool				getMethods(std::string &, std::string &);		// Return allowed or not passed method for passed location key
+	std::vector<std::string>::iterator		Server::getIndexName();	// Return iterator for indexfile vector
 };
