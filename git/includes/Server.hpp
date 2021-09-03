@@ -42,5 +42,5 @@ public:
 	sockaddr_in*		getServAddr();						// Return serv addr
 	bool				getDefault();						// Return default or not
 	bool				getMethods(std::string &, std::string &);		// Return allowed or not passed method for passed location key
-	std::vector<std::string>::iterator		Server::getIndexName();	// Return iterator for indexfile vector
+	std::vector<std::string>::iterator		getIndexName();	// Return iterator for indexfile vector
 };

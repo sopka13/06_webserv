@@ -58,6 +58,14 @@ Socket::~Socket(){}
 // 	oss << a;
 // 	return (oss.str());
 // }
+char *charPath(std::string str){
+	char *path = new char(str.length());
+	for(size_t i = 0; i < str.length(); ++i){
+		path[i] = str[i];
+	}
+	return (path);
+}
+
 std::string Socket::getLoc(std::string path){
 	return(_server->getLocations(path));
 }
@@ -77,25 +85,9 @@ int			Socket::ft_handle_request()
 	// step 2: Write data for client
 	
 	Response response(static_cast<std::string>(_buff));
-	if (response.getMetod() == 1 && (response.getPath() == "/")){
-		std::string	buff_1 = response.getHttp() + " 200 OK\n  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
-		std::ifstream	fileIndex(getLoc(response.getPath()) + "index.html");																// файл может быть .html/.htm/.php
-		if (!fileIndex.is_open()){
-			std::cout	<< "ERROR: Config file open error" << std::endl;
-			return (1);
-		}
-		std::string str;
-		while(std::getline(fileIndex, str))
-		{
-			buff_1 += str;
-			// std::cout << str_sum << std::endl;
-		}
-		ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
-	}
 	std::string path = response.getPath();
 	std::string tile = "";
 	std::string::iterator slesh = path.end() - 1;
-	//std::cout << "not in if " << getLoc(path) << std::endl;
 	while (getLoc(path) == "" && path.length() > 1){
 		std::cout << "while " << getLoc(path) << "path " << path << std::endl;
 		while (*slesh != '/' && slesh != path.begin()){
@@ -107,21 +99,31 @@ int			Socket::ft_handle_request()
 		path.erase(slesh, path.end());
 		--slesh;
 	}
-	
-	if (response.getMetod() == 1 && (getLoc(path) != "")){
+	std::string m = "GET";
+	struct stat is_a_dir;
+	if (response.getMetod() == 1 && (getLoc(path) != "") && _server->getMethods(path, m)){
+		char *p = charPath(getLoc(path) + tile);
+		lstat(p, &is_a_dir);
 		std::string	buff_1 = response.getHttp() + " 200 OK\n  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
-		std::cout << "in if " << getLoc(path)  + tile + "/index.html" << std::endl;
-		std::ifstream	fileIndex(getLoc(path)  + tile + "/index.html");																// файл может быть .html/.htm/.php
+		std::string rezult_path;
+		if(S_ISDIR(is_a_dir.st_mode))
+			rezult_path = getLoc(path)  + tile + "index.html";
+		else
+			rezult_path = getLoc(path)  + tile;
+		std::ifstream	fileIndex(rezult_path);															// файл может быть .html/.htm/.php
 		if (!fileIndex.is_open()){
 			std::cout	<< "ERROR: Config file open error" << std::endl;
 			return (1);
 		}
+		
 		std::string str;
 		while(std::getline(fileIndex, str))
 		{
 			buff_1 += str;
+			//std::cout << "222 " << str << std::endl;
 		}
 		ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
+		delete p;
 	}
 
 	if (ret > 0) 
