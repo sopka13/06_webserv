@@ -102,31 +102,37 @@ int			Socket::ft_handle_request()
 	std::string m = "GET";
 	struct stat is_a_dir;
 	if (response.getMetod() == 1 && (getLoc(path) != "") && _server->getMethods(path, m)){
-		char *p = charPath(getLoc(path) + tile);
-		lstat(p, &is_a_dir);
+		std::cout << "111 " << std::endl;
+		std::string ppp = getLoc(path) + tile;
+		// char *p = charPath(getLoc(path) + tile);
+		std::cout << "222 " << std::endl;
+		lstat(ppp.c_str(), &is_a_dir);
+		std::cout << "333 " << std::endl;
 		std::string	buff_1 = response.getHttp() + " 200 OK\n  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
 		std::string rezult_path;
+		std::cout << "444 " << std::endl;
 		if(S_ISDIR(is_a_dir.st_mode))
 			rezult_path = getLoc(path)  + tile + "index.html";
 		else
 			rezult_path = getLoc(path)  + tile;
+		std::cout << "555 " << std::endl;
 		std::ifstream	fileIndex(rezult_path);															// файл может быть .html/.htm/.php
 		if (!fileIndex.is_open()){
 			std::cout	<< "ERROR: Config file open error" << std::endl;
 			return (1);
 		}
-		
+		std::cout << "666 " << std::endl;
 		std::string str;
 		while(std::getline(fileIndex, str))
 		{
 			buff_1 += str;
-			//std::cout << "222 " << str << std::endl;
 		}
+		std::cout << "777 " << std::endl;
 		ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
-		delete p;
+		// delete p;
 	}
 
-	if (ret > 0) 
+	if (ret > 0)
 		std::cout << "Respons " << ret << std::endl;
 	// if (vars->ret < 0)
 	// {

@@ -52,6 +52,7 @@ int Response::getMetod(){
 	return (_metod);
 }
 std::string Response::getHttp(){
+	std::cout << "http = " << _http << std::endl;
 	return (_http);
 }
 std::string Response::getPath(){
