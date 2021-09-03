@@ -2,6 +2,8 @@
 # define SOCKET_HPP
 
 #include "../includes/headers.hpp"
+#include <sys/types.h>
+#include <sys/stat.h>
 class Socket{
 public:
 	// Socket();
