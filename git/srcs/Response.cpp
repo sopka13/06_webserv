@@ -42,7 +42,7 @@ Response::Response(std::string str){
 	str = erase_back(str);
 	_http = setPath(str);
 	str = erase_back(str);
-	std::cout <<_metod << " " << _path << " " << _http << std::endl;
+	//std::cout <<_metod << " " << _path << " " << _http << std::endl;
 }
 Response::~Response(){}
 //Response::Response(const Response& resp){}

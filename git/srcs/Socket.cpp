@@ -60,10 +60,10 @@ Socket::~Socket(){}
 // 	return (oss.str());
 // }
 std::string Socket::getIndexFileName(std::string path){
-	std::vector<std::string>::iterator n = _server->getIndexName();
+	std::vector<std::string> ind = _server->getIndexName();
 	std::string name;
-	bool f = false;
-	while (!f){
+	std::vector<std::string>::iterator n = ind.begin();
+	while (n != ind.end()){
 		name = *n;
 		std::ifstream	file(path + name);															// файл может быть .html/.htm/.php
 		if (file.is_open()){
@@ -89,7 +89,8 @@ int			Socket::ft_handle_request()
 	// 	std::cout << "ERROR Read fail: " << strerror(errno) << std::endl;
 	// 	return (0);
 	// }
-	write(1, _buff, sizeof(_buff));
+	std::cout << _buff << "  " << ret << std::endl;
+
 	//parsing_of_sock_buff(_buff);
 
 	// step 2: Write data for client
@@ -99,7 +100,6 @@ int			Socket::ft_handle_request()
 	std::string tile = "";
 	std::string::iterator slesh = path.end() - 1;
 	while (getLoc(path) == "" && path.length() > 1){
-		std::cout << "while " << getLoc(path) << "path " << path << std::endl;
 		while (*slesh != '/' && slesh != path.begin()){
 			tile += *slesh;
 			path.erase(slesh, path.end());
@@ -118,10 +118,13 @@ int			Socket::ft_handle_request()
 		std::string rezult_path;
 		if(S_ISDIR(is_a_dir.st_mode)){
 			std::string index_name = getIndexFileName(ppp);
-			rezult_path = getLoc(path)  + tile + index_name;
+			//rezult_path = getLoc(path)  + tile + index_name;
+			rezult_path = ppp + index_name;
 		}
-		else
-			rezult_path = getLoc(path)  + tile;
+		else{
+			std::cout << "FILE " << ppp << std::endl;
+			rezult_path = ppp;
+		}
 		std::ifstream	fileIndex(rezult_path);															// файл может быть .html/.htm/.php
 		if (!fileIndex.is_open()){
 			std::cout	<< "ERROR: Config file open error" << std::endl;
@@ -143,7 +146,6 @@ int			Socket::ft_handle_request()
 	// 	std::cout << "ERROR Response fail: " << strerror(errno) << std::endl;
 	// 	return (0);
 	// }
-	++ret; //без этого ругается компилятор
 	// step 3: close fc
 	close(_fd);	//FORBIDDEN
 	return (0);
