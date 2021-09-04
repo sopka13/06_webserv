@@ -25,14 +25,18 @@ void		ft_in_thread(t_vars &vars, int i)
 	while (1)
 	{
 		vars.sockets->operator[](i).setFd();
-			
+		std::cout << "666" << std::endl;	
 		if (vars.sockets->operator[](i).ft_handle_request())
 		{
+			std::cout << "111" << std::endl;
 			sem_post(vars.sema);
 		 	ft_exit(&vars);
 		}
-		if (exit_flag)
+		if (exit_flag){
+			std::cout << "777" << std::endl;
 			ft_exit(&vars);
+		}
+		std::cout << "111" << std::endl;
 	}
 	// std::cout << "i = " << i << std::endl;
 

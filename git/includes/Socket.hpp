@@ -17,6 +17,7 @@ public:
 	void setFd();
 	int getTcp_sockfd();
 	std::string getLoc(std::string);
+	std::string getIndexFileName(std::string path);
 
 private:
 	int						_tcp_sockfd;				// socket fd
