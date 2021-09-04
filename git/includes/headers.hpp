@@ -6,13 +6,13 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/02 13:06:34 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/04 10:56:11 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#define DEBUG 1
+// #define DEBUG 1
 
 // #define IP_ADDRESS "127.0.0.10"
 // #define PORT 8080

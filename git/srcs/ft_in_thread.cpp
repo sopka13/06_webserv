@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/26 16:18:23 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/04 10:36:32 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/04 10:54:13 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@
 
 void		ft_in_thread(t_vars &vars, int i)
 {
-// #ifdef DEBUG
+#ifdef DEBUG
 	std::cout << "ft_in_thread start; thread id = " << std::this_thread::get_id() << std::endl;
-// #endif
+#endif
 
 	while (1)
 	{
