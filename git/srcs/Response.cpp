@@ -36,7 +36,6 @@ std::string setPath(std::string str){
 
 Response::Response(){}
 Response::Response(std::string str){
-    //std::string split_str = split(str, ' ')
     this->_metod = setMetod(str);
 	str = erase_back(str);
 	this->_path = setPath(str);
@@ -52,7 +51,6 @@ int Response::getMetod(){
 	return (_metod);
 }
 std::string Response::getHttp(){
-	std::cout << "http = " << _http << std::endl;
 	return (_http);
 }
 std::string Response::getPath(){
