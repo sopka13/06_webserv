@@ -40,6 +40,7 @@
 #include <semaphore.h>
 #include <mutex>
 #include <csignal>
+#include <algorithm>
 
 class Socket;
 class Server;

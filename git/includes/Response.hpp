@@ -14,11 +14,13 @@ public:
     int getMetod();
     std::string getHttp();
     std::string getPath();
+    bool getClose();
     
 private:
     int _metod;
     std::string _http;
     std::string _path;
+    bool _flag_connect = false;
 
 };
 #endif
