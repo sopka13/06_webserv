@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/02 13:06:28 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/05 19:40:42 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,9 +114,7 @@
 */
 
 /*
-** 4. Add method for location in config_file		/config + code
 ** 5. Add cgi execute								/config + code
-** 6. Add default index_file for request by folder	/config + code
 */
 
 #include "../includes/headers.hpp"
