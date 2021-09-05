@@ -159,7 +159,8 @@ int			Socket::ft_handle_request()
 	// 	return (0);
 	// }
 	// step 3: close fc
-	close(_fd);	//FORBIDDEN
+	ret = close(_fd);
+	std::cout << "ret_close = " << ret << std::endl;
 	return (0);
 }
 

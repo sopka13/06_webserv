@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/26 16:18:23 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/04 10:54:13 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/05 21:38:17 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ void		ft_in_thread(t_vars &vars, int i)
 	while (1)
 	{
 		vars.sockets->operator[](i).setFd();
+		// std::cout << "!!!!!!		" << vars.sockets->operator[](i).getFd() << std::endl;
 		if (vars.sockets->operator[](i).ft_handle_request())
 		{
 			sem_post(vars.sema);
