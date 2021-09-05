@@ -658,7 +658,7 @@ bool				Server::getMethods(std::string &key, std::string &method)
 	return (false);
 }
 
-std::vector<std::string>::iterator		Server::getIndexName()
+std::vector<std::string>		Server::getIndexName()
 {
-	return (server_data.index.begin());
+	return (server_data.index);
 }
