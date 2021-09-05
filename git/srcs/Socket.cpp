@@ -1,5 +1,7 @@
 #include "../includes/Socket.hpp"
 #include <iostream>
+#include <iterator>
+#include <ostream>
 #include <sstream>
 #include <ctime>
 #include <string>
@@ -93,6 +95,7 @@ int Socket::sendingResponseGet(std::string full_path, struct stat is_a_dir, Resp
 		else{
 			rezult_path = full_path;
 		}
+		std::cout << "GET zahod" << rezult_path << std::endl;
 		std::ifstream	fileIndex(rezult_path);															// файл может быть .html/.htm/.php
 		if (!fileIndex.is_open()){
 			std::cout	<< "ERROR: Config file open error" << std::endl;
@@ -132,14 +135,18 @@ int			Socket::ft_handle_request()
 			path.erase(slesh, path.end());
 			--slesh;
 		}
-		tile += *slesh;
-		path.erase(slesh, path.end());
-		--slesh;
+		if (path.length() > 1){
+			tile += *slesh;
+			path.erase(slesh, path.end());
+			--slesh;
+		}
 	}
+	std::reverse(tile.begin(), tile.end());
 	std::string m = "GET";
 	struct stat is_a_dir;
 	if (response.getMetod() == 1 && (getLoc(path) != "") && _server->getMethods(path, m)){
 		std::string full_path = getLoc(path) + tile;
+		std::cout << "FULLPATH" << full_path << " RR" <<std::endl;
 		ret = sendingResponseGet(full_path, is_a_dir, response);
 	}
 
