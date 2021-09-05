@@ -18,6 +18,7 @@ public:
 	int getTcp_sockfd();
 	std::string getLoc(std::string);
 	std::string getIndexFileName(std::string path);
+	int sendingResponseGet(std::string full_path, struct stat is_a_dir, Response response);
 
 private:
 	int						_tcp_sockfd;				// socket fd

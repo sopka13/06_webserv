@@ -43,6 +43,7 @@
 
 class Socket;
 class Server;
+class Response;
 
 extern	bool	exit_flag;				// exit flag for threads
 

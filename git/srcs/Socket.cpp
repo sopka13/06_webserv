@@ -79,6 +79,35 @@ std::string Socket::getIndexFileName(std::string path){
 std::string Socket::getLoc(std::string path){
 	return(_server->getLocations(path));
 }
+
+int Socket::sendingResponseGet(std::string full_path, struct stat is_a_dir, Response response){
+	
+		int ret;
+		lstat(full_path.c_str(), &is_a_dir);
+		std::string	buff_1 = response.getHttp() + " 200 OK\n  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
+		std::string rezult_path;
+		if(S_ISDIR(is_a_dir.st_mode)){
+			std::string index_name = getIndexFileName(full_path);
+			rezult_path = full_path + index_name;
+		}
+		else{
+			rezult_path = full_path;
+		}
+		std::ifstream	fileIndex(rezult_path);															// файл может быть .html/.htm/.php
+		if (!fileIndex.is_open()){
+			std::cout	<< "ERROR: Config file open error" << std::endl;
+			return (-1);
+		}
+		std::string str;
+		while(std::getline(fileIndex, str))
+		{
+			buff_1 += str;
+		}
+		ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
+		fileIndex.close();
+		return (ret);
+}
+
 int			Socket::ft_handle_request()
 {
 	bzero(_buff, sizeof(_buff));
@@ -92,10 +121,8 @@ int			Socket::ft_handle_request()
 	std::cout << _buff << "  " << ret << std::endl;
 
 	//parsing_of_sock_buff(_buff);
-
-	// step 2: Write data for client
-	
 	Response response(static_cast<std::string>(_buff));
+	// step 2: Write data for client
 	std::string path = response.getPath();
 	std::string tile = "";
 	std::string::iterator slesh = path.end() - 1;
@@ -112,31 +139,8 @@ int			Socket::ft_handle_request()
 	std::string m = "GET";
 	struct stat is_a_dir;
 	if (response.getMetod() == 1 && (getLoc(path) != "") && _server->getMethods(path, m)){
-		std::string ppp = getLoc(path) + tile;
-		lstat(ppp.c_str(), &is_a_dir);
-		std::string	buff_1 = response.getHttp() + " 200 OK\n  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
-		std::string rezult_path;
-		if(S_ISDIR(is_a_dir.st_mode)){
-			std::string index_name = getIndexFileName(ppp);
-			//rezult_path = getLoc(path)  + tile + index_name;
-			rezult_path = ppp + index_name;
-		}
-		else{
-			std::cout << "FILE " << ppp << std::endl;
-			rezult_path = ppp;
-		}
-		std::ifstream	fileIndex(rezult_path);															// файл может быть .html/.htm/.php
-		if (!fileIndex.is_open()){
-			std::cout	<< "ERROR: Config file open error" << std::endl;
-			return (1);
-		}
-		std::string str;
-		while(std::getline(fileIndex, str))
-		{
-			buff_1 += str;
-		}
-		ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
-		fileIndex.close();
+		std::string full_path = getLoc(path) + tile;
+		ret = sendingResponseGet(full_path, is_a_dir, response);
 	}
 
 	if (ret > 0)
