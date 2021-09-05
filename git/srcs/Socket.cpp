@@ -125,6 +125,7 @@ int			Socket::ft_handle_request()
 
 	//parsing_of_sock_buff(_buff);
 	Response response(static_cast<std::string>(_buff));
+	std::cout << "Connection  " << response.getClose() << std::endl;
 	// step 2: Write data for client
 	std::string path = response.getPath();
 	std::string tile = "";

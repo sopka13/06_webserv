@@ -41,8 +41,10 @@ Response::Response(std::string str){
 	this->_path = setPath(str);
 	str = erase_back(str);
 	_http = setPath(str);
-	str = erase_back(str);
-	//std::cout <<_metod << " " << _path << " " << _http << std::endl;
+	size_t connection_pos = str.find("Connection: close");
+	if (connection_pos != std::string::npos)
+		_flag_connect = true;
+	//std::cout << "CON" << connection_pos << " " << str << " " << _flag_connect << std::endl;
 }
 Response::~Response(){}
 //Response::Response(const Response& resp){}
@@ -56,4 +58,8 @@ std::string Response::getHttp(){
 std::string Response::getPath(){
 	// std::cout << "Return path = " << _path << std::endl;
 	return (_path);
+}
+bool Response::getClose(){
+	// std::cout << "Return path = " << _path << std::endl;
+	return (_flag_connect);
 }
