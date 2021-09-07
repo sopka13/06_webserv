@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:37:55 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/04 11:41:14 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/07 10:02:31 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,8 @@ int		ft_parse_config(t_vars *vars)
 	std::string		str_sum;
 	std::map<std::string, int (*)(t_vars*, std::string&)> functions = {
 		{"http", ft_http_handle},
-		{"log_file", ft_log_file_handle}
+		{"log_file", ft_log_file_handle},
+		{"error_page", ft_error_page}
 	};
 
 	// step 4: Read config file in str_sum

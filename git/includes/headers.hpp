@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/05 21:38:23 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/07 10:02:38 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ typedef struct		s_vars
 	std::vector<std::thread>	threads;			// threads for servers
 	sem_t						*sema;				// semaphores
 	std::mutex					print_in_log;		// mutex for write in log file
+	std::string					error_page;			// error page addr
 }					t_vars;
 
 
@@ -109,6 +110,7 @@ typedef struct		s_vars
 void		ft_bzero(void *s, size_t n);
 int			ft_check_args_files(t_vars *vars);
 int			ft_client_max_body_size_handle(t_vars* vars, std::string &str);
+int			ft_error_page(t_vars* vars, std::string &str);
 void		ft_exit(t_vars *vars);
 std::string	ft_get_name_conf(std::string &str);
 int			ft_http_handle(t_vars* vars, std::string &str);
