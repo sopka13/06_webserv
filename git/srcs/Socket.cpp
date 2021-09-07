@@ -62,7 +62,7 @@ Socket::~Socket(){}
 // 	return (oss.str());
 // }
 std::string Socket::getIndexFileName(std::string path){
-	std::vector<std::string> ind = _server->getIndexName();
+	std::vector<std::string> ind = *(_server->getIndexName());
 	std::string name;
 	std::vector<std::string>::iterator n = ind.begin();
 	while (n != ind.end()){
@@ -94,7 +94,7 @@ int Socket::sendingResponseGet(std::string full_path, struct stat is_a_dir, Resp
 		if(S_ISDIR(is_a_dir.st_mode)){
 			std::string index_name = getIndexFileName(full_path);
 			if (index_name == "")
-				index_name = "error.html"; 
+				index_name = _server->getErrPage();
 			rezult_path = full_path + index_name;
 		}
 		else{

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:57 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/02 13:10:24 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/07 10:27:00 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -480,7 +480,8 @@ static int		setLocation(t_server *server_data, std::string &str, std::map<std::s
 	return (0);
 }
 
-Server::Server(std::string &str)
+Server::Server(std::string &str, t_vars *vars):
+	_vars(vars)
 {
 #ifdef DEBUG
 	std::cout << "Server ctor start" << std::endl;
@@ -658,7 +659,12 @@ bool				Server::getMethods(std::string &key, std::string &method)
 	return (false);
 }
 
-std::vector<std::string>		Server::getIndexName()
+std::vector<std::string>		*Server::getIndexName()
 {
-	return (server_data.index);
+	return (&server_data.index);
+}
+
+const std::string	&Server::getErrPage()
+{
+	return (_vars->error_page);
 }
