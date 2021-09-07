@@ -72,9 +72,12 @@ std::string Socket::getIndexFileName(std::string path){
 			file.close();
 			return (name);
 		}
+		else {
+			std::cout << "NAME" << path + name << std::endl;
+		}
 		++n;
 	}
-	return (NULL);
+	return ("");
 	//страница не найдена
 }
 
@@ -90,10 +93,13 @@ int Socket::sendingResponseGet(std::string full_path, struct stat is_a_dir, Resp
 		std::string rezult_path;
 		if(S_ISDIR(is_a_dir.st_mode)){
 			std::string index_name = getIndexFileName(full_path);
+			if (index_name == "")
+				index_name = "error.html"; 
 			rezult_path = full_path + index_name;
 		}
 		else{
 			rezult_path = full_path;
+			std::cout << "GET zahod 444" << std::endl;
 		}
 		std::cout << "GET zahod" << rezult_path << std::endl;
 		std::ifstream	fileIndex(rezult_path);															// файл может быть .html/.htm/.php
@@ -147,7 +153,7 @@ int			Socket::ft_handle_request()
 	struct stat is_a_dir;
 	if (response.getMetod() == 1 && (getLoc(path) != "") && _server->getMethods(path, m)){
 		std::string full_path = getLoc(path) + tile;
-		std::cout << "FULLPATH" << full_path << " RR" <<std::endl;
+		//std::cout << "FULLPATH" << full_path << " RR" <<std::endl;
 		ret = sendingResponseGet(full_path, is_a_dir, response);
 	}
 
