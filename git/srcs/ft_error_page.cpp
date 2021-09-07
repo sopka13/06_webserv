@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 09:52:15 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/07 10:02:29 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/07 10:37:47 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,13 @@ int			ft_error_page(t_vars* vars, std::string &str)
 	// step 2: Get file name
 	while (str.length() && *start != ';')
 	{
-		if (*start == ' ' || *start == '\t')
+		if ((*start == ' ' || *start == '\t') && !err_page_name.length())
 			continue;
+		else if ((*start == ' ' || *start == '\t') && err_page_name.length())
+		{
+			std::cout << "ERROR in config file: Error page name - faill" << std::endl;
+			return (1);
+		}
 		err_page_name += *start;
 		str.erase(start);
 		start = str.begin();

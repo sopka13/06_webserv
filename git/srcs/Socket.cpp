@@ -94,8 +94,9 @@ int Socket::sendingResponseGet(std::string full_path, struct stat is_a_dir, Resp
 		if(S_ISDIR(is_a_dir.st_mode)){
 			std::string index_name = getIndexFileName(full_path);
 			if (index_name == "")
-				index_name = _server->getErrPage();
-			rezult_path = full_path + index_name;
+				rezult_path = _server->getErrPage();
+			else
+				rezult_path = full_path + index_name;
 		}
 		else{
 			rezult_path = full_path;
