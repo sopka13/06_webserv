@@ -89,7 +89,7 @@ int Socket::sendingResponseGet(std::string full_path, struct stat is_a_dir, Resp
 	
 		int ret;
 		lstat(full_path.c_str(), &is_a_dir);
-		std::string	buff_1 = response.getHttp() + " 200 OK\n  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
+		std::string	buff_1 = response.getHttp() + " 200 OK\n\n";
 		std::string rezult_path;
 		if(S_ISDIR(is_a_dir.st_mode)){
 			std::string index_name = getIndexFileName(full_path);
@@ -100,7 +100,6 @@ int Socket::sendingResponseGet(std::string full_path, struct stat is_a_dir, Resp
 		}
 		else{
 			rezult_path = full_path;
-			std::cout << "GET zahod 444" << std::endl;
 		}
 		std::cout << "GET zahod" << rezult_path << std::endl;
 		std::ifstream	fileIndex(rezult_path);															// файл может быть .html/.htm/.php
