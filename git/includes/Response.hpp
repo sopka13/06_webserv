@@ -6,21 +6,21 @@
 
 class Response{
 public:
-    Response();
 	Response(std::string str);
 	~Response();
 	//Response(const Response& resp);
 	//Response& operator= (const Response& resp);
-    int getMetod();
-    std::string getHttp();
-    std::string getPath();
-    bool getClose();
-    
+	int				getMetod();
+	std::string		getHttp();
+	std::string		getPath();
+	bool			getClose();
+	
 private:
-    int _metod;
-    std::string _http;
-    std::string _path;
-    bool _flag_connect = false;
+	Response();
+	int _metod;
+	std::string _http;
+	std::string _path;
+	bool _flag_connect = false;
 
 };
 #endif

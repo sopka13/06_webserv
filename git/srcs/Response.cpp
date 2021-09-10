@@ -3,7 +3,7 @@
 #include <string>
 
 int setMetod(std::string sock_buff){
-    int metod = 0;
+	int metod = 0;
 	if (sock_buff.compare(0, 3, "GET") == 0)
 		metod = 1;
 	else if (sock_buff.compare(0, 4, "POST") == 0)
@@ -36,7 +36,7 @@ std::string setPath(std::string str){
 
 Response::Response(){}
 Response::Response(std::string str){
-    this->_metod = setMetod(str);
+	this->_metod = setMetod(str);
 	str = erase_back(str);
 	this->_path = setPath(str);
 	str = erase_back(str);

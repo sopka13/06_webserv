@@ -67,7 +67,7 @@ std::string Socket::getIndexFileName(std::string path){
 	std::vector<std::string>::iterator n = ind.begin();
 	while (n != ind.end()){
 		name = *n;
-		std::ifstream	file(path + name);															// файл может быть .html/.htm/.php
+		std::ifstream	file(path + name);
 		if (file.is_open()){
 			file.close();
 			return (name);
@@ -103,7 +103,7 @@ int Socket::sendingResponseGet(std::string full_path, struct stat is_a_dir, Resp
 			std::cout << "GET zahod 444" << std::endl;
 		}
 		std::cout << "GET zahod" << rezult_path << std::endl;
-		std::ifstream	fileIndex(rezult_path);															// файл может быть .html/.htm/.php
+		std::ifstream	fileIndex(rezult_path);
 		if (!fileIndex.is_open()){
 			std::cout	<< "ERROR: Config file open error" << std::endl;
 			return (-1);

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:02:30 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/26 23:25:27 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/09 10:47:28 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,13 @@ void		ft_init_data(t_vars *vars, int argc, char** argv, char** envp)
 #ifdef DEBUG
 	std::cout << "ft_init_data start" << std::endl;
 #endif
+	// step 0: Check errors in header
+	if (WAIT_CLIENT_USEC > 1000000 || WAIT_CLIENT_SEC >= WAIT_REQUEST_FROM_CLIENT_SEC)
+	{
+		std::cout << "ERROR: timeouts in header have errors" << std::endl;
+		ft_exit(vars);
+	}
+
 	// step 1: Clear struct
 	ft_bzero(vars, sizeof(t_vars));
 	exit_flag = false;

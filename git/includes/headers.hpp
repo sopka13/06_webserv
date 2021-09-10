@@ -6,20 +6,22 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/07 10:34:26 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/10 09:41:57 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#define DEBUG 1
+// #define DEBUG 1
 
-// #define IP_ADDRESS "127.0.0.10"
-// #define PORT 8080
 #define BUF_FOR_RESP 2048							// buff for response to client
-#define DEF_ADR_CONF_FILE "./conf/webserv.conf"     // default config file
-//#define DEF_ADR_INDEX_FILE "./html/index.html"		
+#define DEF_ADR_CONF_FILE "./conf/webserv.conf"		// default config file
 #define SEM_NAME_1 "sem_threads"
+#define EPOLL_QUEUE_LEN 12							// epoll queue length
+#define TIMER_FOR_LISTEN 10							// timeout for listen actions in milliseconds
+#define WAIT_REQUEST_FROM_CLIENT_SEC 10				// timeout for request from client in second
+#define WAIT_CLIENT_SEC 0							// timeout for monitoring request from client in second
+#define WAIT_CLIENT_USEC 10							// timeout for monitoring request from client in microsecond
 
 #include <iostream>
 #include <fstream>			//ifstream
@@ -41,10 +43,13 @@
 #include <mutex>
 #include <csignal>
 #include <algorithm>
+#include <sys/epoll.h>		//epool
+#include <sys/select.h>		//select
 
 class Socket;
 class Server;
 class Response;
+class Response_2;
 
 extern	bool	exit_flag;				// exit flag for threads
 
@@ -64,11 +69,9 @@ typedef struct		s_socket
 
 typedef struct		s_location
 {
-	// std::string							location_user;		// location user
 	std::string							location_addr;		// local addr
 	bool								autoindex;			// autoindex
 	bool								redirect;			// redirect (on / off)
-	// std::string							redirect_location;	// redirect location
 	std::string							redirect_adress;	// adress for redirect
 	std::vector<std::string>			allowed_methods;	// methods
 }					t_location;
@@ -100,11 +103,16 @@ typedef struct		s_vars
 	sem_t						*sema;				// semaphores
 	std::mutex					print_in_log;		// mutex for write in log file
 	std::string					error_page;			// error page addr
+	int							epoll_fd;			// epoll fd
+	struct epoll_event			ev;							// struct for add fd in queue epoll
+	struct epoll_event			events[EPOLL_QUEUE_LEN];	// output events from epoll
 }					t_vars;
 
 
 #include "../includes/Socket.hpp"
 #include "../includes/Server.hpp"
+#include "../includes/Response.hpp"
+#include "../includes/Response_2.hpp"
 
 
 void		ft_bzero(void *s, size_t n);
@@ -113,6 +121,9 @@ int			ft_client_max_body_size_handle(t_vars* vars, std::string &str);
 int			ft_error_page(t_vars* vars, std::string &str);
 void		ft_exit(t_vars *vars);
 std::string	ft_get_name_conf(std::string &str);
+void		ft_handle_epoll_action(t_vars *vars, int fd);
+void		ft_handle_epoll_fd(t_vars *vars, int fd, int i);
+void		ft_handle_epoll_socket(t_vars *vars, int fd);
 int			ft_http_handle(t_vars* vars, std::string &str);
 void		ft_in_thread(t_vars &vars, int i);
 void		ft_init_data(t_vars *vars, int argc, char** argv, char** envp);

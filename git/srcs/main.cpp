@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/05 21:38:20 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/09 11:26:51 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,32 +132,64 @@ int		main(int argc, char **argv, char **envp)
 	
 	// step 1: Inicialise data
 	t_vars		vars;
+	int			nfds;
 
 	// step 2: Parse config file
 	ft_init_data(&vars, argc, argv, envp);
 
-	// step 3: Create socket
-	for (unsigned long int i = 0; i < vars.servers->size(); ++i)
-		vars.sockets->emplace_back(Socket(&vars.servers->operator[](i)));
-
-	// step 4: Create thread and start listen ports
-	for (long unsigned int i = 0; i < vars.sockets->size(); ++i)
+	// step x: Create epoll fd
+	if ((vars.epoll_fd = epoll_create(EPOLL_QUEUE_LEN)) < 0)
 	{
-		vars.threads.emplace_back(std::thread(ft_in_thread, std::ref(vars), i));
-		sem_wait(vars.sema);
-		sleep(1);
+		std::cout << "ERROR in main: Epoll create error" << std::endl;
+		ft_exit(&vars);
 	}
 
+	// step 3: Create socket and add int epoll queue
+	for (unsigned long int i = 0; i < vars.servers->size(); ++i)
+	{
+		vars.sockets->emplace_back(Socket(&vars.servers->operator[](i)));
+
+		vars.ev.events = EPOLLIN | EPOLLOUT;
+		vars.ev.data.fd = vars.sockets->operator[](i).getTcp_sockfd();
+		if (epoll_ctl(vars.epoll_fd, EPOLL_CTL_ADD, vars.sockets->operator[](i).getTcp_sockfd(), &vars.ev) == -1)
+		{
+			std::cout << "ERROR in main: Epoll_ctl add error" << std::endl;
+			ft_exit(&vars);
+		}
+	}
+	
 	// step 5: Write in log_file
 	ft_write_in_log_file(&vars, "Server start");
 
-	// step 6: Wait feedback from threads
-	sem_wait(vars.sema);
-	exit_flag = true;
-	for (long unsigned int i = 0; i < vars.threads.size(); ++i)
+	// step x: wait action in socket or fd
+	while (1)
 	{
-		vars.threads.operator[](i).join();
+		nfds = epoll_wait(vars.epoll_fd, vars.events, EPOLL_QUEUE_LEN, TIMER_FOR_LISTEN);
+		if (nfds == -1)
+		{
+			std::cout << "ERROR in main: Epoll_wait error" << std::endl;
+			ft_exit(&vars);
+		}
+		for (int i = 0; i < nfds; ++i)
+			ft_handle_epoll_action(&vars, vars.events[i].data.fd);
 	}
+
+	// step 4: Create thread and start listen ports
+	// for (long unsigned int i = 0; i < vars.sockets->size(); ++i)
+	// {
+	// 	vars.threads.emplace_back(std::thread(ft_in_thread, std::ref(vars), i));
+	// 	sem_wait(vars.sema);
+	// 	sleep(1);
+	// }
+
+
+	// step 6: Wait feedback from threads
+	// sem_wait(vars.sema);
+	// exit_flag = true;
+	// for (long unsigned int i = 0; i < vars.threads.size(); ++i)
+	// {
+	// 	vars.threads.operator[](i).join();
+	// }
 
 
 #ifdef DEBUG
