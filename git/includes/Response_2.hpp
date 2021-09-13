@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:55:00 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/10 08:50:54 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/13 10:46:18 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,11 @@
 
 class Response_2
 {
-	Server			*_server;				// data for server
-	int				_fd;					// handle fd
-	char			_buff[BUF_FOR_RESP];	// buffer for read from client
-	bool			_close_flag;			// if have close header
+	Server					*_server;				// data for server
+	int						_fd;					// handle fd
+	char					_buff[BUF_FOR_RESP];	// buffer for read from client
+	bool					_close_flag;			// if have close header
+	std::deque<std::string>	_requests;				// all requests
 	Response_2();
 	
 	public:
@@ -29,7 +30,8 @@ class Response_2
 	Response_2(Server *server, int fd);
 	~Response_2();
 
-	void			handleRequest();
+	void			readRequest();
+	int				sendResponse();
 	int 			sendingResponseGet(std::string full_path, struct stat is_a_dir, Response &response);
 	std::string		getIndexFileName(std::string path);
 	bool			getCloseFlag();

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 17:13:43 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/10 09:56:16 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/13 13:53:40 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ void		ft_handle_epoll_action(t_vars *vars, int fd)
 		{
 			vars->sockets->operator[](i).setFd();
 			vars->threads.emplace_back(std::thread(ft_handle_epoll_fd, std::ref(vars), vars->sockets->operator[](i).getFd(), i));
-			// ft_handle_epoll_socket(vars, fd);
 			#ifdef DEBUG
 				std::cout	<< "ft_handle_epoll_action end: fd = " << fd << std::endl;
 			#endif
@@ -44,7 +43,6 @@ void		ft_handle_epoll_action(t_vars *vars, int fd)
 		ft_exit(vars);
 	}
 	vars->threads.emplace_back(std::thread(ft_handle_epoll_fd, std::ref(vars), fd, -1));
-	// ft_handle_epoll_fd(vars, fd);
 
 #ifdef DEBUG
 	std::cout	<< "ft_handle_epoll_action end: fd = " << fd << std::endl;

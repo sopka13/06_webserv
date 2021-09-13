@@ -6,7 +6,7 @@
 
 class Response{
 public:
-	Response(std::string str);
+	Response(std::string &str);
 	~Response();
 	//Response(const Response& resp);
 	//Response& operator= (const Response& resp);

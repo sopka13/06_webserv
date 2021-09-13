@@ -119,54 +119,54 @@ int Socket::sendingResponseGet(std::string full_path, struct stat is_a_dir, Resp
 
 int			Socket::ft_handle_request()
 {
-	bzero(_buff, sizeof(_buff));
-	// step 1: Read data from client
-	int ret = recv(_fd, _buff, sizeof(_buff), 0);
-	// if (vars->ret < 0)
-	// {
-	// 	std::cout << "ERROR Read fail: " << strerror(errno) << std::endl;
-	// 	return (0);
-	// }
-	std::cout << _buff << "  " << ret << std::endl;
+	// bzero(_buff, sizeof(_buff));
+	// // step 1: Read data from client
+	// int ret = recv(_fd, _buff, sizeof(_buff), 0);
+	// // if (vars->ret < 0)
+	// // {
+	// // 	std::cout << "ERROR Read fail: " << strerror(errno) << std::endl;
+	// // 	return (0);
+	// // }
+	// std::cout << _buff << "  " << ret << std::endl;
 
-	//parsing_of_sock_buff(_buff);
-	Response response(static_cast<std::string>(_buff));
-	std::cout << "Connection  " << response.getClose() << std::endl;
-	// step 2: Write data for client
-	std::string path = response.getPath();
-	std::string tile = "";
-	std::string::iterator slesh = path.end() - 1;
-	while (getLoc(path) == "" && path.length() > 1){
-		while (*slesh != '/' && slesh != path.begin()){
-			tile += *slesh;
-			path.erase(slesh, path.end());
-			--slesh;
-		}
-		if (path.length() > 1){
-			tile += *slesh;
-			path.erase(slesh, path.end());
-			--slesh;
-		}
-	}
-	std::reverse(tile.begin(), tile.end());
-	std::string m = "GET";
-	struct stat is_a_dir;
-	if (response.getMetod() == 1 && (getLoc(path) != "") && _server->getMethods(path, m)){
-		std::string full_path = getLoc(path) + tile;
-		//std::cout << "FULLPATH" << full_path << " RR" <<std::endl;
-		ret = sendingResponseGet(full_path, is_a_dir, response);
-	}
-
-	if (ret > 0)
-		std::cout << "Respons " << ret << std::endl;
-	// if (vars->ret < 0)
-	// {
-	// 	std::cout << "ERROR Response fail: " << strerror(errno) << std::endl;
-	// 	return (0);
+	// //parsing_of_sock_buff(_buff);
+	// Response response(static_cast<std::string>(_buff));
+	// std::cout << "Connection  " << response.getClose() << std::endl;
+	// // step 2: Write data for client
+	// std::string path = response.getPath();
+	// std::string tile = "";
+	// std::string::iterator slesh = path.end() - 1;
+	// while (getLoc(path) == "" && path.length() > 1){
+	// 	while (*slesh != '/' && slesh != path.begin()){
+	// 		tile += *slesh;
+	// 		path.erase(slesh, path.end());
+	// 		--slesh;
+	// 	}
+	// 	if (path.length() > 1){
+	// 		tile += *slesh;
+	// 		path.erase(slesh, path.end());
+	// 		--slesh;
+	// 	}
 	// }
-	// step 3: close fc
-	ret = close(_fd);
-	std::cout << "ret_close = " << ret << std::endl;
+	// std::reverse(tile.begin(), tile.end());
+	// std::string m = "GET";
+	// struct stat is_a_dir;
+	// if (response.getMetod() == 1 && (getLoc(path) != "") && _server->getMethods(path, m)){
+	// 	std::string full_path = getLoc(path) + tile;
+	// 	//std::cout << "FULLPATH" << full_path << " RR" <<std::endl;
+	// 	ret = sendingResponseGet(full_path, is_a_dir, response);
+	// }
+
+	// if (ret > 0)
+	// 	std::cout << "Respons " << ret << std::endl;
+	// // if (vars->ret < 0)
+	// // {
+	// // 	std::cout << "ERROR Response fail: " << strerror(errno) << std::endl;
+	// // 	return (0);
+	// // }
+	// // step 3: close fc
+	// ret = close(_fd);
+	// std::cout << "ret_close = " << ret << std::endl;
 	return (0);
 }
 

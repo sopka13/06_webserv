@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/10 09:41:57 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/13 13:55:57 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 #define TIMER_FOR_LISTEN 10							// timeout for listen actions in milliseconds
 #define WAIT_REQUEST_FROM_CLIENT_SEC 10				// timeout for request from client in second
 #define WAIT_CLIENT_SEC 0							// timeout for monitoring request from client in second
-#define WAIT_CLIENT_USEC 10							// timeout for monitoring request from client in microsecond
+#define WAIT_CLIENT_USEC 1							// timeout for monitoring request from client in microsecond
 
 #include <iostream>
 #include <fstream>			//ifstream
@@ -45,6 +45,7 @@
 #include <algorithm>
 #include <sys/epoll.h>		//epool
 #include <sys/select.h>		//select
+#include <ctime>			//clock
 
 class Socket;
 class Server;

@@ -35,7 +35,7 @@ std::string setPath(std::string str){
 }
 
 Response::Response(){}
-Response::Response(std::string str){
+Response::Response(std::string &str){
 	this->_metod = setMetod(str);
 	str = erase_back(str);
 	this->_path = setPath(str);

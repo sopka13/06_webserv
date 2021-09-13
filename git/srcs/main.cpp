@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/09 11:26:51 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/13 13:54:03 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,13 +165,22 @@ int		main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		nfds = epoll_wait(vars.epoll_fd, vars.events, EPOLL_QUEUE_LEN, TIMER_FOR_LISTEN);
+		// std::cout << "nfds = " << nfds << "; count of fd = " << std::endl;
 		if (nfds == -1)
 		{
 			std::cout << "ERROR in main: Epoll_wait error" << std::endl;
 			ft_exit(&vars);
 		}
 		for (int i = 0; i < nfds; ++i)
-			ft_handle_epoll_action(&vars, vars.events[i].data.fd);
+		{
+			if (vars.events[i].events & EPOLLIN)
+				ft_handle_epoll_action(&vars, vars.events[i].data.fd);
+			if (vars.events[i].events & EPOLLOUT)
+			{
+				std::cout << "EPOLLOUT: Need handle" << std::endl;
+				ft_exit(&vars);
+			}
+		}
 	}
 
 	// step 4: Create thread and start listen ports
