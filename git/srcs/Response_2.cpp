@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/14 14:25:32 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/14 19:23:48 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,7 +181,7 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 #endif
 	int ret;
 	lstat(full_path.c_str(), &is_a_dir);
-	std::string	buff_1 = response.getHttp() + " 200 OK\n  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
+	std::string	buff_1 = response.getHttp() + " 200 OK\n\n";//  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
 	std::string rezult_path;
 	if(S_ISDIR(is_a_dir.st_mode)){
 		std::string index_name = getIndexFileName(full_path);
