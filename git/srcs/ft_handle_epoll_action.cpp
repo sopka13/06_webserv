@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 17:13:43 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/14 13:43:04 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/14 19:19:14 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,13 +30,23 @@ void		ft_handle_epoll_action(t_vars *vars, int fd)
 			vars->sockets->operator[](i).setFd();
 
 			// step 1.2: Get request and send response
-			Response_2		resp(&(vars->servers->operator[](i)), vars->sockets->operator[](i).getFd());
-			resp.readRequest();
-			if (resp.sendResponse())
+			try
 			{
-				std::cerr << "ERROR ERROR in ft_handle_epoll_action: no unhandled request !!!" << std::endl;
-				return ;
+				Response_2		resp(&(vars->servers->operator[](i)), vars->sockets->operator[](i).getFd());
+				resp.readRequest();
+				if (resp.sendResponse())
+				{
+					// if == 2 -> close fd
+					std::cerr << "ERROR ERROR in ft_handle_epoll_action: no unhandled request !!!" << std::endl;
+					return ;
+				}
+				/* code */
 			}
+			catch(const std::exception& e)
+			{
+				std::cerr << e.what() << '\n';
+			}
+			
 
 			// step 1.3: Add fd in epoll queue
 			vars->ev.events = EPOLLIN | EPOLLOUT;
@@ -58,13 +68,22 @@ void		ft_handle_epoll_action(t_vars *vars, int fd)
 	}
 
 	// step 2: If handle fd (no socket)
-	Response_2		resp(&(vars->servers->operator[](vars->fd_identify_socket->operator[](fd))), fd);
-	resp.readRequest();
-	if (resp.sendResponse())
+	try
 	{
-		std::cerr << "ERROR ERROR in ft_handle_epoll_action: no unhandled request !!!" << std::endl;
-		return ;
+		Response_2		resp(&(vars->servers->operator[](vars->fd_identify_socket->operator[](fd))), fd);
+		resp.readRequest();
+		if (resp.sendResponse())
+		{
+			std::cerr << "ERROR ERROR in ft_handle_epoll_action: no unhandled request !!!" << std::endl;
+			return ;
+		}
+		/* code */
 	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
+	
 
 	// if want new thread
 	// step 2: Delete fd from queue epoll

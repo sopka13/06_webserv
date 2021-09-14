@@ -14,9 +14,9 @@ static int			setMetod(std::string &sock_buff)
 		sock_buff.erase(0, 4);
 		ret = 2;
 	}
-	else if (sock_buff.compare(0, 4, "HEAD") == 0)
+	else if (sock_buff.compare(0, 3, "PUT") == 0)
 	{
-		sock_buff.erase(0, 4);
+		sock_buff.erase(0, 3);
 		ret = 3;
 	}
 	else if (sock_buff.compare(0, 6, "DELETE") == 0)
@@ -60,10 +60,11 @@ Response::Response(std::string &str):
 {
 	// step 1: Get method
 	this->_metod = setMetod(str);
-	if (!_metod)
+	if (_metod == 0)
 	{
-		std::string str("ERROR in response: method not supported");
-		throw Exeption(str);
+		std::string str_1("ERROR in response: method not supported");
+		std::cout << "fff " << str << std::endl;
+		throw Exeption(str_1);
 	}
 	str = erase_back(str);
 
@@ -71,8 +72,8 @@ Response::Response(std::string &str):
 	this->_path = setPath(str);
 	if (!_path.size())
 	{
-		std::string str("ERROR in response: path missed");
-		throw Exeption(str);
+		std::string str_1("ERROR in response: path missed");
+		throw Exeption(str_1);
 	}
 	str = erase_back(str);
 
@@ -80,8 +81,8 @@ Response::Response(std::string &str):
 	_http = setPath(str);
 	if (!_path.size())
 	{
-		std::string str("ERROR in response: http version missed");
-		throw Exeption(str);
+		std::string str_1("ERROR in response: http version missed");
+		throw Exeption(str_1);
 	}
 
 	// step 4: If close connection set flag
