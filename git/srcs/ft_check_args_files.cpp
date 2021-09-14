@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/25 09:03:49 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/25 09:33:18 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/14 13:05:30 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int			ft_check_args_files(t_vars *vars)
 			vars->config_file_name = file_1;
 		else
 		{
-			std::cout << "ERROR: Invalid configuration file name" << std::endl;
+			std::cerr << "ERROR: Invalid configuration file name" << std::endl;
 			return (1);
 		}
 	}
@@ -51,7 +51,7 @@ int			ft_check_args_files(t_vars *vars)
 			vars->config_file_name = file_2;
 		else
 		{
-			std::cout << "ERROR: Invalid configuration file name" << std::endl;
+			std::cerr << "ERROR: Invalid configuration file name" << std::endl;
 			return (1);
 		}
 	}

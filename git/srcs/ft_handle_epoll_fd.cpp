@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 17:24:01 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/13 13:50:59 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/14 13:08:10 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,13 @@
 void		ft_handle_epoll_fd(t_vars *vars, int fd, int i)
 {
 #ifdef DEBUG
-	std::cout	<< "ft_handle_epoll_fd start: fd = " << fd << std::endl;
+	std::cout	<< "ft_handle_epoll_fd start: fd = "
+				<< fd
+				<< "; i = "
+				<< i
+				<< "; size server = "
+				<< vars->servers->size()
+				<< std::endl;
 #endif
 	// step 1: Init data
 	Response_2		resp(&(vars->servers->operator[](i)), fd);
@@ -46,7 +52,7 @@ void		ft_handle_epoll_fd(t_vars *vars, int fd, int i)
 		ret = select(1, &rfd, &wfd, 0, &tv);
 		if (ret < 0)
 		{
-			std::cout << "ERROR in ft_handle_epoll_fd: select fall" << std::endl;
+			std::cerr << "ERROR in ft_handle_epoll_fd: select fall" << std::endl;
 			return ;
 		}
 		else if (ret == 0)
@@ -69,7 +75,7 @@ void		ft_handle_epoll_fd(t_vars *vars, int fd, int i)
 						close(fd);
 						return ;
 					}
-					std::cout << "NEED HANDLE ERROR: NO FREE REQUEST FROM CLIENT" << std::endl;
+					std::cerr << "NEED HANDLE ERROR: NO FREE REQUEST FROM CLIENT" << std::endl;
 				}
 			}
 		}

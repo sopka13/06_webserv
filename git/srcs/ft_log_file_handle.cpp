@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/19 10:56:07 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/24 08:41:16 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/14 13:08:27 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int			ft_log_file_handle(t_vars* vars, std::string &str)
 	// step 5: Check errors
 	if(!(vars->log_file->is_open()))
 	{
-		std::cout << "ERROR in config file: Logfile open error" << std::endl;
+		std::cerr << "ERROR in config file: Logfile open error" << std::endl;
 		return (1);
 	}
 

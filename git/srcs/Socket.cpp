@@ -15,7 +15,7 @@ Socket::Socket(Server *server):
 	_tcp_sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (_tcp_sockfd < 0)
 	{
-		std::cout << "ERROR opening socket 1: " << strerror(errno) << std::endl;
+		std::cerr << "ERROR opening socket 1: " << strerror(errno) << std::endl;
 		return;
 	}
 
@@ -23,14 +23,14 @@ Socket::Socket(Server *server):
 	int ret = bind(_tcp_sockfd, (struct sockaddr *)(_server->getServAddr()), *_server->getSockLen());
 	// if (vars->ret < 0)
 	// {
-	// 	std::cout << "ERROR Assigning name to a socket fail: " << strerror(errno) << std::endl;
+	// 	std::cerr << "ERROR Assigning name to a socket fail: " << strerror(errno) << std::endl;
 	// 	return (1);
 	// }
 	// step 3: Create queue connection (очередь)
 	ret = listen(_tcp_sockfd, SOMAXCONN);
 	// if (vars->ret < 0)
 	// {
-	// 	std::cout << "ERROR Listening fail: " << strerror(errno) << std::endl;
+	// 	std::cerr << "ERROR Listening fail: " << strerror(errno) << std::endl;
 	// 	return (1);
 	// }
 	++ret; //без этого ругается компилятор
@@ -104,7 +104,7 @@ int Socket::sendingResponseGet(std::string full_path, struct stat is_a_dir, Resp
 		std::cout << "GET zahod" << rezult_path << std::endl;
 		std::ifstream	fileIndex(rezult_path);
 		if (!fileIndex.is_open()){
-			std::cout	<< "ERROR: Config file open error" << std::endl;
+			std::cerr	<< "ERROR: Config file open error" << std::endl;
 			return (-1);
 		}
 		std::string str;

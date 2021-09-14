@@ -23,7 +23,7 @@ public:
 private:
 	int						_tcp_sockfd;				// socket fd
 	int						_fd;						// fd received after the acept call
-	char					_buff[BUF_FOR_RESP];		// buffer for read from client
+	// char					_buff[BUF_FOR_RESP];		// buffer for read from client
 	Server					*_server;					// data for server
 };
 #endif

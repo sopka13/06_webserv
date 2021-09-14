@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:37:55 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/07 10:02:31 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/14 13:08:28 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int		ft_parse_config(t_vars *vars)
 	}
 	else if (vars->argc > 3)
 	{
-		std::cout	<< "ERROR: Too many args" << std::endl;
+		std::cerr	<< "ERROR: Too many args" << std::endl;
 		return (1);
 	}
 
@@ -42,7 +42,7 @@ int		ft_parse_config(t_vars *vars)
 	// step 2: Open config file
 	if (!configFile.is_open())
 	{
-		std::cout	<< "ERROR: Config file open error" << std::endl;
+		std::cerr	<< "ERROR: Config file open error" << std::endl;
 		return (1);
 	}
 
@@ -103,7 +103,7 @@ int		ft_parse_config(t_vars *vars)
 	}
 	if (k > 1)
 	{
-		std::cout	<< "ERROR: Config file contains more than one default server" << std::endl;
+		std::cerr	<< "ERROR: Config file contains more than one default server" << std::endl;
 		return (1);
 	}
 

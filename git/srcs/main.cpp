@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/13 13:54:03 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/14 13:19:35 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,10 +113,6 @@
 ** // Обработка нескольких сиджи
 */
 
-/*
-** 5. Add cgi execute								/config + code
-*/
-
 #include "../includes/headers.hpp"
 
 bool	exit_flag;
@@ -126,10 +122,6 @@ int		main(int argc, char **argv, char **envp)
 #ifdef DEBUG
 	std::cout << "main start" << std::endl;
 #endif
-	// Signals
-	// signal(SIGINT, ft_signal_handler);
-	// signal(SIGQUIT, ft_signal_handler);
-	
 	// step 1: Inicialise data
 	t_vars		vars;
 	int			nfds;
@@ -137,14 +129,14 @@ int		main(int argc, char **argv, char **envp)
 	// step 2: Parse config file
 	ft_init_data(&vars, argc, argv, envp);
 
-	// step x: Create epoll fd
+	// step 3: Create epoll fd
 	if ((vars.epoll_fd = epoll_create(EPOLL_QUEUE_LEN)) < 0)
 	{
-		std::cout << "ERROR in main: Epoll create error" << std::endl;
+		std::cerr << "ERROR in main: Epoll create error" << std::endl;
 		ft_exit(&vars);
 	}
 
-	// step 3: Create socket and add int epoll queue
+	// step 4: Create socket and add in epoll queue
 	for (unsigned long int i = 0; i < vars.servers->size(); ++i)
 	{
 		vars.sockets->emplace_back(Socket(&vars.servers->operator[](i)));
@@ -153,7 +145,7 @@ int		main(int argc, char **argv, char **envp)
 		vars.ev.data.fd = vars.sockets->operator[](i).getTcp_sockfd();
 		if (epoll_ctl(vars.epoll_fd, EPOLL_CTL_ADD, vars.sockets->operator[](i).getTcp_sockfd(), &vars.ev) == -1)
 		{
-			std::cout << "ERROR in main: Epoll_ctl add error" << std::endl;
+			std::cerr << "ERROR in main: Epoll_ctl add error" << std::endl;
 			ft_exit(&vars);
 		}
 	}
@@ -161,14 +153,13 @@ int		main(int argc, char **argv, char **envp)
 	// step 5: Write in log_file
 	ft_write_in_log_file(&vars, "Server start");
 
-	// step x: wait action in socket or fd
+	// step 6: wait action in socket and fd
 	while (1)
 	{
 		nfds = epoll_wait(vars.epoll_fd, vars.events, EPOLL_QUEUE_LEN, TIMER_FOR_LISTEN);
-		// std::cout << "nfds = " << nfds << "; count of fd = " << std::endl;
 		if (nfds == -1)
 		{
-			std::cout << "ERROR in main: Epoll_wait error" << std::endl;
+			std::cerr << "ERROR in main: Epoll_wait error" << std::endl;
 			ft_exit(&vars);
 		}
 		for (int i = 0; i < nfds; ++i)
@@ -178,7 +169,12 @@ int		main(int argc, char **argv, char **envp)
 			if (vars.events[i].events & EPOLLOUT)
 			{
 				std::cout << "EPOLLOUT: Need handle" << std::endl;
-				ft_exit(&vars);
+				close(vars.events[i].data.fd);
+				// if (epoll_ctl(vars.epoll_fd, EPOLL_CTL_DEL, vars.events[i].data.fd, &vars.ev) == -1)
+				// {
+				// 	std::cerr << "ERROR in ft_handle_epoll_action: Epoll_ctl del error" << std::endl;
+				// 	ft_exit(&vars);
+				// }
 			}
 		}
 	}

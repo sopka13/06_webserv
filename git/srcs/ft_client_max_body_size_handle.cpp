@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/19 10:53:15 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/25 10:56:50 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/14 13:05:25 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int			ft_client_max_body_size_handle(t_vars* vars, std::string &str)
 		str.erase(start);
 	else
 	{
-		std::cout << "ERROR in config file (max_body_size): Struct error" << std::endl;
+		std::cerr << "ERROR in config file (max_body_size): Struct error" << std::endl;
 		return (1);
 	}
 

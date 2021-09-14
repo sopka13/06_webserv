@@ -2,10 +2,13 @@
 # define RESPONSE_HPP
 
 #include "../includes/headers.hpp"
-#include <string>
 
 class Response{
 public:
+	class	Exeption : public std::runtime_error {
+		public:
+			Exeption(const std::string& message) : std::runtime_error(message) {}
+	};
 	Response(std::string &str);
 	~Response();
 	//Response(const Response& resp);
@@ -17,10 +20,10 @@ public:
 	
 private:
 	Response();
-	int _metod;
-	std::string _http;
-	std::string _path;
-	bool _flag_connect = false;
+	int				_metod;
+	std::string		_http;
+	std::string		_path;
+	bool			_flag_connect;
 
 };
 #endif

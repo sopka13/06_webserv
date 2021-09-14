@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/19 10:54:41 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/26 22:28:14 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/14 13:08:25 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int			ft_http_handle(t_vars* vars, std::string &str)
 	}
 	else
 	{
-		std::cout << "ERROR in config file (http): Struct error" << std::endl;
+		std::cerr << "ERROR in config file (http): Struct error" << std::endl;
 		return (1);
 	}
 
@@ -58,7 +58,7 @@ int			ft_http_handle(t_vars* vars, std::string &str)
 	}
 	if (i)
 	{
-		std::cout << "ERROR in config file (http): Struct error" << std::endl;
+		std::cerr << "ERROR in config file (http): Struct error" << std::endl;
 		return (1);
 	}
 	else

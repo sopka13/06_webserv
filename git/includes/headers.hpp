@@ -6,19 +6,19 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/13 13:55:57 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/14 14:21:12 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-// #define DEBUG 1
+#define DEBUG 1
 
 #define BUF_FOR_RESP 2048							// buff for response to client
 #define DEF_ADR_CONF_FILE "./conf/webserv.conf"		// default config file
 #define SEM_NAME_1 "sem_threads"
 #define EPOLL_QUEUE_LEN 12							// epoll queue length
-#define TIMER_FOR_LISTEN 10							// timeout for listen actions in milliseconds
+#define TIMER_FOR_LISTEN 0							// timeout for listen actions in milliseconds
 #define WAIT_REQUEST_FROM_CLIENT_SEC 10				// timeout for request from client in second
 #define WAIT_CLIENT_SEC 0							// timeout for monitoring request from client in second
 #define WAIT_CLIENT_USEC 1							// timeout for monitoring request from client in microsecond
@@ -107,6 +107,7 @@ typedef struct		s_vars
 	int							epoll_fd;			// epoll fd
 	struct epoll_event			ev;							// struct for add fd in queue epoll
 	struct epoll_event			events[EPOLL_QUEUE_LEN];	// output events from epoll
+	std::map<int, int>			*fd_identify_socket;	// container for identify socket by fd
 }					t_vars;
 
 

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 09:52:15 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/07 15:31:51 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/14 13:08:22 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int			ft_error_page(t_vars* vars, std::string &str)
 			continue;
 		else if ((*start == ' ' || *start == '\t') && err_page_name.length())
 		{
-			std::cout << "ERROR in config file: Error page name - faill" << std::endl;
+			std::cerr << "ERROR in config file: Error page name - faill" << std::endl;
 			return (1);
 		}
 		err_page_name += *start;
@@ -50,7 +50,7 @@ int			ft_error_page(t_vars* vars, std::string &str)
 	// step 4: Check errors
 	if(!(err_page_name.length()))
 	{
-		std::cout << "ERROR in config file: Error page name - faill" << std::endl;
+		std::cerr << "ERROR in config file: Error page name - faill" << std::endl;
 		return (1);
 	}
 
