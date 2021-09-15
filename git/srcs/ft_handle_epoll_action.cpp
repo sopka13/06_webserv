@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 17:13:43 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/14 19:22:00 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/15 12:08:48 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ void		ft_handle_epoll_action(t_vars *vars, int fd)
 					std::cerr << "ERROR ERROR in ft_handle_epoll_action: no unhandled request !!!" << std::endl;
 					return ;
 				}
+				// std::cout << " FINE" << std::endl;
 				/* code */
 			}
 			catch(const std::exception& e)

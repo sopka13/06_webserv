@@ -6,13 +6,13 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/14 14:21:12 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/15 12:09:23 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-//#define DEBUG 1
+#define DEBUG 1
 
 #define BUF_FOR_RESP 2048							// buff for response to client
 #define DEF_ADR_CONF_FILE "./conf/webserv.conf"		// default config file

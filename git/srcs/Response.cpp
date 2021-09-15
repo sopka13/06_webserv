@@ -123,7 +123,7 @@ Response::Response(std::string &str):
 			con_l += *it;
 			++it;
 		}
-		//_con_len = std::stoi(con_l);
+		_con_len = std::stoi(con_l);
 		std::cout << "CON =" << con_l << "R" << std::endl;
 	}
 	
