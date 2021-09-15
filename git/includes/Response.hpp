@@ -2,6 +2,7 @@
 # define RESPONSE_HPP
 
 #include "../includes/headers.hpp"
+#include <cstddef>
 
 class Response{
 public:
@@ -17,6 +18,10 @@ public:
 	std::string		getHttp();
 	std::string		getPath();
 	bool			getClose();
+	std::string 	setBody(std::string str);
+	void 			setBodySize();
+	std::string 	getBody();
+	size_t 			getBodySize();
 	
 private:
 	Response();
@@ -24,6 +29,9 @@ private:
 	std::string		_http;
 	std::string		_path;
 	bool			_flag_connect;
+	std::string		_body;
+	size_t			_body_size;
+	size_t			_con_len;
 
 };
 #endif
