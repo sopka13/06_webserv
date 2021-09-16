@@ -39,6 +39,21 @@ Response_2::~Response_2()
 #endif
 }
 
+std::string Response_2::setVariables(std::string &str){
+	size_t i = str.find("?");
+	std::string var = "";
+	if (i != std::string::npos){
+		std::string::iterator it = str.begin();
+		it += i + 1;
+		while (it != str.end()){
+			var += *it;
+			++it;
+		}
+		str.erase(i, str.length());
+	}
+	return (var);
+}
+
 int				Response_2::sendResponse()
 {
 #ifdef DEBUG
@@ -65,6 +80,9 @@ int				Response_2::sendResponse()
 
 	// step 4: Write data for client
 	path = response.getPath();
+	_variables = setVariables(path);
+	// std::cout	<< "Response_2::_variables =R" << _variables << "R" << std::endl;
+	// std::cout	<< "Response_2::path =R" << path << "R" << std::endl;
 	tile = "";
 	slesh = path.end() - 1;
 	while (_server->getLocations(path) == "" && path.length() > 1){

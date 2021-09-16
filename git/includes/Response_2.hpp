@@ -20,6 +20,7 @@ class Response_2
 	char					_buff[BUF_FOR_RESP];	// buffer for read from client
 	bool					_close_flag;			// if have close header
 	std::deque<std::string>	_requests;				// all requests
+	std::string				_variables;
 	Response_2();
 	
 	public:
@@ -35,4 +36,5 @@ class Response_2
 	int 			sendingResponseGet(std::string full_path, struct stat is_a_dir, Response &response);
 	std::string		getIndexFileName(std::string path);
 	bool			getCloseFlag();
+	std::string 	setVariables(std::string &str);
 };
