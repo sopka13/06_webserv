@@ -160,3 +160,7 @@ size_t Response::getBodySize(){
 	std::cout << "SIZE " << _body_size << std::endl;
 	return (_body_size);
 }
+size_t Response::getConLen(){
+	std::cout << "CON_LEN " << _con_len << std::endl;
+	return (_con_len);
+}

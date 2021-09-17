@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../includes/Response_2.hpp"
+#include <fstream>
 
 Response_2::Response_2(Server *server, int fd):
 	_server(server),
@@ -39,6 +40,21 @@ Response_2::~Response_2()
 #endif
 }
 
+std::string Response_2::setVariables(std::string &str){
+	size_t i = str.find("?");
+	std::string var = "";
+	if (i != std::string::npos){
+		std::string::iterator it = str.begin();
+		it += i + 1;
+		while (it != str.end()){
+			var += *it;
+			++it;
+		}
+		str.erase(i, str.length());
+	}
+	return (var);
+}
+
 int				Response_2::sendResponse()
 {
 #ifdef DEBUG
@@ -65,6 +81,9 @@ int				Response_2::sendResponse()
 
 	// step 4: Write data for client
 	path = response.getPath();
+	_variables = setVariables(path);
+	// std::cout	<< "Response_2::_variables =R" << _variables << "R" << std::endl;
+	// std::cout	<< "Response_2::path =R" << path << "R" << std::endl;
 	tile = "";
 	slesh = path.end() - 1;
 	while (_server->getLocations(path) == "" && path.length() > 1){
@@ -89,6 +108,21 @@ int				Response_2::sendResponse()
 	{
 		std::string full_path = _server->getLocations(path) + tile;
 		ret = sendingResponseGet(full_path, is_a_dir, response);
+	}
+
+	m = "PUT";
+	if (response.getMetod() == 3 &&
+		(_server->getLocations(path) != "") &&
+		_server->getMethods(path, m))
+	{
+		std::string full_path = _server->getLocations(path) + tile;
+		lstat(full_path.c_str(), &is_a_dir);
+		std::string	buff_1 = response.getHttp() + " 200 OK\n\n";//  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
+		std::ofstream file;
+		file.open("../put_rezalt.txt");
+		file << response.getBody();
+		file.close();
+		ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
 	}
 
 	if (ret > 0)

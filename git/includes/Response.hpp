@@ -22,6 +22,7 @@ public:
 	void 			setBodySize();
 	std::string 	getBody();
 	size_t 			getBodySize();
+	size_t 			getConLen();
 	
 private:
 	Response();

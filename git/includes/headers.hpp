@@ -12,7 +12,7 @@
 
 #pragma once
 
-#define DEBUG 1
+//#define DEBUG 1
 
 #define BUF_FOR_RESP 2048							// buff for response to client
 #define DEF_ADR_CONF_FILE "./conf/webserv.conf"		// default config file
