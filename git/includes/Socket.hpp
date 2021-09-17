@@ -17,13 +17,10 @@ public:
 	void setFd();
 	int getTcp_sockfd();
 	std::string getLoc(std::string);
-	std::string getIndexFileName(std::string path);
-	int sendingResponseGet(std::string full_path, struct stat is_a_dir, Response response);
 
 private:
 	int						_tcp_sockfd;				// socket fd
 	int						_fd;						// fd received after the acept call
-	// char					_buff[BUF_FOR_RESP];		// buffer for read from client
 	Server					*_server;					// data for server
 };
 #endif
