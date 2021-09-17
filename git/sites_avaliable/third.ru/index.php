@@ -1,5 +1,9 @@
-<?php // no direct access 
-//defined( '_JEXEC' ) or die( 'Restricted access' ); 
+<?php
+     echo "Это тест";
+?>
+
+<!-- <?php // no direct access 
+defined( '_JEXEC' ) or die( 'Restricted access' ); 
 $showLeftColumn = (bool) $this->countModules('position-7');
 $showRightColumn = (bool) $this->countModules('position-6');
 $showRightColumn &= JRequest::getCmd('layout') != 'edit';
@@ -222,4 +226,4 @@ window.addEvent('domready',function() {
 
 
 </body>
-</html>
+</html> -->

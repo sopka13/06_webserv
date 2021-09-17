@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/15 12:03:14 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/18 00:51:51 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,6 +226,12 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 	}
 	else
 		rezult_path = full_path;
+
+	// step x: If have cgi go handle
+	std::cout << "RESULT = " << rezult_path << std::endl;
+	if (haveCGI(rezult_path))
+		handleCGI(rezult_path);
+
 	std::ifstream	fileIndex(rezult_path);
 	if (!fileIndex.is_open()){
 		std::cerr	<< "ERROR: Config file open error" << std::endl;
@@ -271,4 +277,108 @@ std::string		Response_2::getIndexFileName(std::string path){
 bool			Response_2::getCloseFlag()
 {
 	return (_close_flag);
+}
+
+int				Response_2::haveCGI(std::string &result_path)
+{
+#ifdef DEBUG
+	std::cout	<< "Response_2::haveCGI start" << std::endl;
+#endif
+	// step 1: If CGI format not defined
+	if (_server->getCGI_format() == "")
+		return (0);
+
+	// step 2: If str length enough and last chars compare CGI format
+	if (result_path.size() > (_server->getCGI_format()).size() &&
+		result_path.find(_server->getCGI_format(), 0) == (result_path.size() - (_server->getCGI_format()).size()))
+		return (1);
+
+#ifdef DEBUG
+	std::cout	<< "Response_2::haveCGI end" << std::endl;
+#endif
+	return (0);
+}
+
+void			Response_2::handleCGI(std::string &result_path)
+{
+#ifdef DEBUG
+	std::cout	<< "Response_2::handleCGI start" << std::endl;
+#endif
+	// step 1: Init data
+	int		ret = 0;
+
+	// step 2: Create argv
+	char		dir[100];
+	getcwd(dir, 100);
+	std::cout << dir << std::endl;
+	std::string cur_dir(dir);
+	result_path.erase(0, 1);
+	cur_dir += result_path;
+	std::cout << cur_dir << std::endl;
+
+	std::vector<char *> argv;
+
+	char *str_2 = new char[(_server->getCGI_handler()).size() + 1];
+	std::copy((_server->getCGI_handler()).begin(), (_server->getCGI_handler()).end(), str_2);
+	str_2[(_server->getCGI_handler()).size()] = '\0';
+	argv.push_back(str_2);
+	
+	
+	char temp[] = "-f";
+
+	if (_server->getCGI_format() == ".php")
+		argv.push_back(temp);
+	char *str = new char[cur_dir.size() + 1];
+	std::copy(cur_dir.begin(), cur_dir.end(), str);
+	str[cur_dir.size()] = '\0';
+	argv.push_back(str);
+	// delete[] str;
+	std::cout << "step 2 ok: " << *argv.begin() << "; argv end = " << *(argv.end() - 1) << std::endl;
+
+	// step 3: Create envp
+	std::vector<char *> envp;
+	if (_variables.size())
+	{
+		std::string				temp;
+		std::string::iterator	start = _variables.begin();
+		std::string::iterator	end = _variables.end();
+		std::cout << "step 3 start 0: str = " << _variables << std::endl;
+		while (start != end)
+		{
+			std::cout << "step 3 start: temp = " << temp << std::endl;
+			if (*start == '&' || start + 1 == end)
+			{
+				if (start + 1 == end && *start != '&')
+					temp += *start;
+				if (temp.size())
+				{
+					// std::cout << "fine" << std::endl;
+					char *str_1 = new char[temp.size() + 1];
+					std::copy(temp.begin(), temp.end(), str_1);
+					str_1[temp.size()] = '\0';
+					envp.push_back(str_1);
+					// delete[] str_1;
+				}
+				temp.clear();
+				start++;
+				continue ;
+			}
+			temp += *start;
+			start++;
+		}
+		std::cout << "step 3 ok: " << *envp.begin() << "; envp end = " << *(envp.end() - 1) << std::endl;
+	}
+	std::cout << "step 3 ok " << (&(*argv.begin()))[0] << " and " << *envp.begin() << std::endl;
+
+
+	// step 4: execute handler
+	if ((ret = execve((_server->getCGI_handler()).c_str(), &(*argv.begin()), &(*envp.begin()))) == -1)
+	{
+		std::cout << strerror(errno) << std::endl;
+		throw Exeption("ERROR in response_2: execve error!");
+	}
+
+#ifdef DEBUG
+	std::cout	<< "Response_2::handleCGI end" << std::endl;
+#endif
 }

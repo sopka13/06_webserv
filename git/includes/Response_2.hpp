@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:55:00 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/14 13:00:38 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/17 22:41:24 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,10 @@ class Response_2
 	std::deque<std::string>	_requests;				// all requests
 	std::string				_variables;
 	Response_2();
+	int				haveCGI(std::string &result_path);
+	void			handleCGI(std::string &result_path);
 	
-	public:
+public:
 	class	Exeption : public std::runtime_error {
 		public:
 			Exeption(const std::string& message) : std::runtime_error(message) {}

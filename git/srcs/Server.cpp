@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:57 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/07 15:31:54 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/17 22:27:05 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -480,6 +480,94 @@ static int		setLocation(t_server *server_data, std::string &str, std::map<std::s
 	return (0);
 }
 
+static int		setCGI_format(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
+{
+#ifdef DEBUG
+	std::cout << "setCGI_format start; str = |" << str << "|" << std::endl;
+#endif
+	// step 1: Init data
+	if (locations == NULL)
+		std::cout << "Bad args in setCGI_format" << std::endl;
+
+	// step 1: Init data
+	std::string::iterator	start = str.begin();
+	std::string				temp_value;
+
+	// step 2: Get value
+	while (str.length() && *start != ' ' && *start != '\t' && *start != ';')
+	{
+		temp_value += *start;
+		str.erase(start);
+		start = str.begin();
+	}
+	// std::cout << temp_value << std::endl;
+
+	// step 3: Trim spaces and tabs
+	while (str.length() && (*start == ' ' || *start == '\t'))
+	{
+		str.erase(start);
+		start = str.begin();
+	}
+	// std::cout << str << std::endl;
+
+	// step 4: Check errors and write data
+	if (*start == ';')
+	{
+		str.erase(start);
+		server_data->CGI_format = temp_value;
+	}
+	else
+		return (1);
+#ifdef DEBUG
+	std::cout << "setCGI_format end; str = |" << str << "|" << std::endl;
+#endif
+	return (0);
+}
+
+static int		setCGI_handler(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
+{
+#ifdef DEBUG
+	std::cout << "setCGI_handler start; str = |" << str << "|" << std::endl;
+#endif
+	// step 1: Init data
+	if (locations == NULL)
+		std::cout << "Bad args in setCGI_handler" << std::endl;
+
+	// step 1: Init data
+	std::string::iterator	start = str.begin();
+	std::string				temp_value;
+
+	// step 2: Get value
+	while (str.length() && *start != ' ' && *start != '\t' && *start != ';')
+	{
+		temp_value += *start;
+		str.erase(start);
+		start = str.begin();
+	}
+	// std::cout << temp_value << std::endl;
+
+	// step 3: Trim spaces and tabs
+	while (str.length() && (*start == ' ' || *start == '\t'))
+	{
+		str.erase(start);
+		start = str.begin();
+	}
+	// std::cout << str << std::endl;
+
+	// step 4: Check errors and write data
+	if (*start == ';')
+	{
+		str.erase(start);
+		server_data->CGI_handler = temp_value;
+	}
+	else
+		return (1);
+#ifdef DEBUG
+	std::cout << "setCGI_handler end; str = |" << str << "|" << std::endl;
+#endif
+	return (0);
+}
+
 Server::Server(std::string &str, t_vars *vars):
 	_vars(vars)
 {
@@ -493,7 +581,9 @@ Server::Server(std::string &str, t_vars *vars):
 		{"listen", setListen},
 		{"server_name", setName},
 		{"location", setLocation},
-		{"index", setIndex}
+		{"index", setIndex},
+		{"CGI_format", setCGI_format},
+		{"CGI_handler", setCGI_handler}
 	};
 	std::string::iterator	start = str.begin();
 	std::string				temp;
@@ -667,4 +757,14 @@ std::vector<std::string>		*Server::getIndexName()
 const std::string	&Server::getErrPage()
 {
 	return (_vars->error_page);
+}
+
+const std::string	&Server::getCGI_format()
+{
+	return (server_data.CGI_format);
+}
+
+const std::string	&Server::getCGI_handler()
+{
+	return (server_data.CGI_handler);
 }

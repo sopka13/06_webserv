@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/15 12:09:23 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/17 22:12:22 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,8 @@ typedef struct 		s_server
 	std::vector<std::string>			index;				// name index files
 	bool								default_server;		// default flag
 	t_socket							sock_data;			// data for socket
+	std::string							CGI_format;			// supported CGI format
+	std::string							CGI_handler;		// handler for CGI scripts
 }					t_server;
 
 
