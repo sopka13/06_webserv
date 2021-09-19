@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/17 22:12:22 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/19 11:29:02 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@
 #include <algorithm>
 #include <sys/epoll.h>		//epool
 #include <sys/select.h>		//select
+#include <sys/wait.h>		//waitpid
 #include <ctime>			//clock
 
 class Socket;

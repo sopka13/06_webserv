@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/18 00:51:51 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/19 16:47:52 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,11 +228,14 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 		rezult_path = full_path;
 
 	// step x: If have cgi go handle
-	std::cout << "RESULT = " << rezult_path << std::endl;
+	// std::cout << "RESULT = " << rezult_path << std::endl;
 	if (haveCGI(rezult_path))
-		handleCGI(rezult_path);
+		rezult_path = handleCGI(rezult_path);
 
-	std::ifstream	fileIndex(rezult_path);
+	// std::cerr << "result returned = " << rezult_path << std::endl;
+
+	std::ifstream	fileIndex;
+	fileIndex.open(rezult_path);
 	if (!fileIndex.is_open()){
 		std::cerr	<< "ERROR: Config file open error" << std::endl;
 		return (-1);
@@ -240,9 +243,16 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 	std::string str;
 	while(std::getline(fileIndex, str))
 	{
+		// std::cout << "str = " << str << std::endl;
 		buff_1 += str;
 	}
+	// std::cout << buff_1 << std::endl;
 	ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
+
+	// step x: Remove temp file
+	if (rezult_path.size() && rezult_path.find(".temp", 0) == (rezult_path.size() - 5))
+		remove(rezult_path.c_str());
+
 	fileIndex.close();
 
 #ifdef DEBUG
@@ -299,65 +309,51 @@ int				Response_2::haveCGI(std::string &result_path)
 	return (0);
 }
 
-void			Response_2::handleCGI(std::string &result_path)
+std::string		Response_2::handleCGI(std::string &result_path)
 {
 #ifdef DEBUG
 	std::cout	<< "Response_2::handleCGI start" << std::endl;
 #endif
 	// step 1: Init data
-	int		ret = 0;
 
 	// step 2: Create argv
+	std::vector<char *> argv;
+
+	// step 3: Add "-f" flag for php scripts
+	char temp[] = "-f";
+	if (_server->getCGI_format() == ".php")
+		argv.push_back(temp);
+
+	// step 4: Add adress script_file in argv
 	char		dir[100];
 	getcwd(dir, 100);
-	std::cout << dir << std::endl;
 	std::string cur_dir(dir);
 	result_path.erase(0, 1);
 	cur_dir += result_path;
-	std::cout << cur_dir << std::endl;
-
-	std::vector<char *> argv;
-
-	char *str_2 = new char[(_server->getCGI_handler()).size() + 1];
-	std::copy((_server->getCGI_handler()).begin(), (_server->getCGI_handler()).end(), str_2);
-	str_2[(_server->getCGI_handler()).size()] = '\0';
-	argv.push_back(str_2);
-	
-	
-	char temp[] = "-f";
-
-	if (_server->getCGI_format() == ".php")
-		argv.push_back(temp);
 	char *str = new char[cur_dir.size() + 1];
 	std::copy(cur_dir.begin(), cur_dir.end(), str);
 	str[cur_dir.size()] = '\0';
 	argv.push_back(str);
-	// delete[] str;
-	std::cout << "step 2 ok: " << *argv.begin() << "; argv end = " << *(argv.end() - 1) << std::endl;
 
-	// step 3: Create envp
+	// step 5: Create envp and add env vars
 	std::vector<char *> envp;
 	if (_variables.size())
 	{
 		std::string				temp;
 		std::string::iterator	start = _variables.begin();
 		std::string::iterator	end = _variables.end();
-		std::cout << "step 3 start 0: str = " << _variables << std::endl;
 		while (start != end)
 		{
-			std::cout << "step 3 start: temp = " << temp << std::endl;
 			if (*start == '&' || start + 1 == end)
 			{
 				if (start + 1 == end && *start != '&')
 					temp += *start;
 				if (temp.size())
 				{
-					// std::cout << "fine" << std::endl;
 					char *str_1 = new char[temp.size() + 1];
 					std::copy(temp.begin(), temp.end(), str_1);
 					str_1[temp.size()] = '\0';
 					envp.push_back(str_1);
-					// delete[] str_1;
 				}
 				temp.clear();
 				start++;
@@ -366,19 +362,50 @@ void			Response_2::handleCGI(std::string &result_path)
 			temp += *start;
 			start++;
 		}
-		std::cout << "step 3 ok: " << *envp.begin() << "; envp end = " << *(envp.end() - 1) << std::endl;
 	}
-	std::cout << "step 3 ok " << (&(*argv.begin()))[0] << " and " << *envp.begin() << std::endl;
 
+	// step 6: Construct file_name for result CGI handler
+	std::string::iterator	end = cur_dir.end();
+	end--;
+	while (cur_dir.size() && *end != '.')
+		cur_dir.erase(end--);
+	cur_dir.erase(end);
+	cur_dir += ".temp";
 
-	// step 4: execute handler
-	if ((ret = execve((_server->getCGI_handler()).c_str(), &(*argv.begin()), &(*envp.begin()))) == -1)
+	// step 7: Create file and clean it
+	std::ofstream	temp_file;
+	temp_file.open(cur_dir, std::ofstream::trunc);
+	if (!temp_file.is_open())
+		throw Exeption("ERROR in response_2: create temp_file error!");
+	temp_file.close();
+
+	
+	// step 8: execute handler
+	int		id = 0;
+	id = fork();
+	if (id == -1)
+		throw Exeption("ERROR in response_2: create process for CGI handlerr error");
+	else if (id == 0)
 	{
-		std::cout << strerror(errno) << std::endl;
-		throw Exeption("ERROR in response_2: execve error!");
+		int ret = 0;
+		freopen(cur_dir.c_str(), "w", stdout);
+		if ((ret = execve((_server->getCGI_handler()).c_str(), &(*argv.begin()), &(*envp.begin()))) == -1)
+			std::cerr << "ERROR CGI: execute CGI handler error" << std::endl;
+		fclose(stdout);
+		exit(0);
 	}
+
+	// step 9: Wait child process
+	int		status;
+	waitpid(id, &status, 0);
+
+	// step 10: Free memory
+	delete[] str;
+	for (int i = 0; i < static_cast<int>(envp.size()); ++i)
+		delete[] envp.operator[](i);
 
 #ifdef DEBUG
 	std::cout	<< "Response_2::handleCGI end" << std::endl;
 #endif
+	return (cur_dir);
 }

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/14 13:19:35 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/19 14:55:10 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,13 +168,13 @@ int		main(int argc, char **argv, char **envp)
 				ft_handle_epoll_action(&vars, vars.events[i].data.fd);
 			if (vars.events[i].events & EPOLLOUT)
 			{
-				std::cout << "EPOLLOUT: Need handle" << std::endl;
+				std::cout << "EPOLLOUT: Need handle" << vars.events[i].data.fd << std::endl;
+				if (epoll_ctl(vars.epoll_fd, EPOLL_CTL_DEL, vars.events[i].data.fd, &vars.ev) == -1)
+				{
+					std::cerr << "ERROR in ft_handle_epoll_action: Epoll_ctl del error" << std::endl;
+					ft_exit(&vars);
+				}
 				close(vars.events[i].data.fd);
-				// if (epoll_ctl(vars.epoll_fd, EPOLL_CTL_DEL, vars.events[i].data.fd, &vars.ev) == -1)
-				// {
-				// 	std::cerr << "ERROR in ft_handle_epoll_action: Epoll_ctl del error" << std::endl;
-				// 	ft_exit(&vars);
-				// }
 			}
 		}
 	}

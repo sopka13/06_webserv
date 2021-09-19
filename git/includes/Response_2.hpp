@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:55:00 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/17 22:41:24 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/19 10:09:41 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ class Response_2
 	std::string				_variables;
 	Response_2();
 	int				haveCGI(std::string &result_path);
-	void			handleCGI(std::string &result_path);
+	std::string		handleCGI(std::string &result_path);
 	
 public:
 	class	Exeption : public std::runtime_error {
