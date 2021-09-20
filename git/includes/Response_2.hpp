@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:55:00 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/19 10:09:41 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/20 08:17:33 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ class Response_2
 	char					_buff[BUF_FOR_RESP];	// buffer for read from client
 	bool					_close_flag;			// if have close header
 	std::deque<std::string>	_requests;				// all requests
-	std::string				_variables;
+	std::string				_variables;				// vars from request
 	Response_2();
 	int				haveCGI(std::string &result_path);
 	std::string		handleCGI(std::string &result_path);

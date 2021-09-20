@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/19 11:29:02 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/19 23:09:59 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,20 +97,20 @@ typedef struct		s_vars
 	int							argc;
 	char						**argv;
 	char						**envp;
-	std::ofstream				*log_file;			// logfile
-	std::string					config_file_name;	// configuration file name
-	std::string					max_body_size;		// client max body size
-	int							ret;				// return value
-	std::deque<Server>			*servers;			// all supported servers
-	std::vector<Socket>			*sockets;			// all listen sockets
-	std::vector<std::thread>	threads;			// threads for servers
-	sem_t						*sema;				// semaphores
-	std::mutex					print_in_log;		// mutex for write in log file
-	std::string					error_page;			// error page addr
-	int							epoll_fd;			// epoll fd
+	std::ofstream				*log_file;					// logfile
+	std::string					config_file_name;			// configuration file name
+	std::string					max_body_size;				// client max body size
+	int							ret;						// return value
+	std::deque<Server>			*servers;					// all supported servers
+	std::vector<Socket>			*sockets;					// all listen sockets
+	std::vector<std::thread>	threads;					// threads for servers
+	sem_t						*sema;						// semaphores
+	std::mutex					print_in_log;				// mutex for write in log file
+	std::string					error_page;					// error page addr
+	int							epoll_fd;					// epoll fd
 	struct epoll_event			ev;							// struct for add fd in queue epoll
 	struct epoll_event			events[EPOLL_QUEUE_LEN];	// output events from epoll
-	std::map<int, int>			*fd_identify_socket;	// container for identify socket by fd
+	std::map<int, int>			*fd_identify_socket;		// container for identify socket by fd
 }					t_vars;
 
 

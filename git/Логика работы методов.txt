@@ -1,0 +1,19 @@
+GET
+	info:	return the requested file
+	size:	2048
+
+GET (php)
+	size:	2048
+	vars:	in url (GET http://127.0.0.1:8080/index.php?A=1&B=2&C=3)
+
+PUT
+	take file to the specified directory
+
+POST
+	size:	inf
+
+POST (php)
+	size:	inf
+	vars:	in body (A=1&B=2&C=3)
+
+DELETE

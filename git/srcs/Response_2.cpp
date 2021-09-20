@@ -6,12 +6,11 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/19 16:47:52 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/20 08:17:31 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Response_2.hpp"
-#include <fstream>
 
 Response_2::Response_2(Server *server, int fd):
 	_server(server),
@@ -40,7 +39,9 @@ Response_2::~Response_2()
 #endif
 }
 
-std::string Response_2::setVariables(std::string &str){
+std::string		Response_2::setVariables(std::string &str)
+{
+	// Need handle getter vars from body. If have POST method with vars in body.
 	size_t i = str.find("?");
 	std::string var = "";
 	if (i != std::string::npos){
@@ -125,8 +126,8 @@ int				Response_2::sendResponse()
 		ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
 	}
 
-	if (ret > 0)
-		std::cout << "Respons " << ret << std::endl;
+	// if (ret > 0)
+	// 	std::cout << "Respons " << ret << std::endl;
 
 #ifdef DEBUG
 	std::cout	<< "Response_2::sendResponse end: fd = " << _fd << "; size container = " << _requests.size() << std::endl;
@@ -228,11 +229,8 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 		rezult_path = full_path;
 
 	// step x: If have cgi go handle
-	// std::cout << "RESULT = " << rezult_path << std::endl;
 	if (haveCGI(rezult_path))
 		rezult_path = handleCGI(rezult_path);
-
-	// std::cerr << "result returned = " << rezult_path << std::endl;
 
 	std::ifstream	fileIndex;
 	fileIndex.open(rezult_path);
@@ -242,11 +240,7 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 	}
 	std::string str;
 	while(std::getline(fileIndex, str))
-	{
-		// std::cout << "str = " << str << std::endl;
 		buff_1 += str;
-	}
-	// std::cout << buff_1 << std::endl;
 	ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
 
 	// step x: Remove temp file
