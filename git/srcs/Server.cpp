@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:57 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/17 22:27:05 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/20 08:28:39 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -768,3 +768,8 @@ const std::string	&Server::getCGI_handler()
 {
 	return (server_data.CGI_handler);
 }
+
+// const std::string	&Server::getFavicon()
+// {
+	
+// }

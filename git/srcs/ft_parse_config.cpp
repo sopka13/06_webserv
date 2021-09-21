@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:37:55 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/14 13:08:28 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/20 09:01:24 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@ int		ft_parse_config(t_vars *vars)
 	}
 
 	// step 1: Init data
-	std::ifstream	configFile(DEF_ADR_CONF_FILE);
+	std::ifstream	configFile((vars->config_file_name.size()) ?
+								vars->config_file_name : DEF_ADR_CONF_FILE);
 	std::string		str;
 
 	// step 2: Open config file
@@ -59,7 +60,6 @@ int		ft_parse_config(t_vars *vars)
 	{
 		ft_strtrim(str, " \t\r\n");
 		str_sum += str;
-		// std::cout << str_sum << std::endl;
 	}
 
 	// step 5: Reserve memory for vector and map elements
@@ -77,7 +77,6 @@ int		ft_parse_config(t_vars *vars)
 			break ;
 	}
 	vars->sockets->reserve(i);
-	// std::cout << "i = " << i << "capacity = " << vars->sockets->capacity() << std::endl;
 
 	// step 5: Get config name and execute handle functions
 	while (str_sum.length())

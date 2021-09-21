@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/20 08:17:31 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/21 08:42:08 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,8 +126,8 @@ int				Response_2::sendResponse()
 		ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
 	}
 
-	// if (ret > 0)
-	// 	std::cout << "Respons " << ret << std::endl;
+	if (ret > 0)
+		std::cout << "Respons " << ret << std::endl;
 
 #ifdef DEBUG
 	std::cout	<< "Response_2::sendResponse end: fd = " << _fd << "; size container = " << _requests.size() << std::endl;

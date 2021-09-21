@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/19 23:09:59 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/20 08:48:37 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ typedef struct		s_vars
 	char						**envp;
 	std::ofstream				*log_file;					// logfile
 	std::string					config_file_name;			// configuration file name
+	std::string					CGI_file_name;				// CGI file name received from args
 	std::string					max_body_size;				// client max body size
 	int							ret;						// return value
 	std::deque<Server>			*servers;					// all supported servers

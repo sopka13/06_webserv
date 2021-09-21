@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/19 08:31:52 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/24 08:42:20 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/20 09:10:06 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 ** of the line
 **	return (0) - Success
 **	return (1) - String is empty
-**	return (2) - Error
 */
 
 static int		ft_equal(char a, std::string chars)
@@ -37,24 +36,22 @@ static int		ft_equal(char a, std::string chars)
 int		ft_strtrim(std::string &str, std::string chars)
 {
 	if (str.empty())
-	{
-		// std::cout << "empty" << std::endl;
 		return (1);
-	}
 
 	std::string::iterator	start = str.begin();
 	std::string::iterator	end = str.end();
+
 	while (str.length() && ft_equal((*start), chars))
 	{
 		str.erase(start);
 		start = str.begin();
-		// std::cout << str << std::endl;
 	}
+
+	end--;
 	while (str.length() && ft_equal((*end), chars))
 	{
 		str.erase(end);
-		start = str.end();
-		// std::cout << str << std::endl;
+		end--;
 	}
 	return (0);
 }

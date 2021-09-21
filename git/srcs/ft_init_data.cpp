@@ -6,12 +6,15 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:02:30 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/14 13:08:26 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/20 12:34:47 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+/*
+**	This function init data for programm
+*/
+
 #include "../includes/headers.hpp"
-#include <fcntl.h>
 
 void		ft_init_data(t_vars *vars, int argc, char** argv, char** envp)
 {
@@ -44,11 +47,15 @@ void		ft_init_data(t_vars *vars, int argc, char** argv, char** envp)
 		ft_exit(vars);
 
 	// step 5: Create semaphores for listen sockets
-	sem_unlink(SEM_NAME_1);
+	if (sem_unlink(SEM_NAME_1))
+	{
+		std::cerr << "ERROR in ft_init_data: Semaphore create faill" << std::endl;
+		ft_exit(vars);
+	}
 	vars->sema = sem_open(SEM_NAME_1, 0100, 0666, vars->sockets->capacity());
 	if (vars->sema == SEM_FAILED)
 	{
-		std::cerr << "ERROR: Semaphore create faill" << std::endl;
+		std::cerr << "ERROR in ft_init_data: Semaphore create faill" << std::endl;
 		ft_exit(vars);
 	}
 

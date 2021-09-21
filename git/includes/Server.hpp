@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:47 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/17 22:25:46 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/20 08:28:25 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,4 +47,5 @@ public:
 	std::vector<std::string>*	getIndexName();								// Return iterator for indexfile vector
 	const std::string&			getCGI_format();							// Return CGI format
 	const std::string&			getCGI_handler();							// Return CGI handler
+	// const std::string&			getFavicon();								// Return favicon.ico adress
 };
