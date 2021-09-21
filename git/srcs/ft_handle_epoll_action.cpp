@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 17:13:43 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/15 12:08:48 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/21 10:49:20 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ void		ft_handle_epoll_action(t_vars *vars, int fd)
 	// step 1: Start handle function in thread
 	for (int i = 0; i < static_cast<int>(vars->sockets->size()); ++i)
 	{
+		// If it's socket
 		if (fd == vars->sockets->operator[](i).getTcp_sockfd())
 		{
 			// step 1.1: Get fd
@@ -32,23 +33,24 @@ void		ft_handle_epoll_action(t_vars *vars, int fd)
 			// step 1.2: Get request and send response
 			try
 			{
+				int ret = 0;
 				Response_2		resp(&(vars->servers->operator[](i)), vars->sockets->operator[](i).getFd());
 				resp.readRequest();
-				if (resp.sendResponse())
+				if ((ret = resp.sendResponse()))
 				{
-					// if == 2 -> close fd
-					std::cerr << "ERROR ERROR in ft_handle_epoll_action: no unhandled request !!!" << std::endl;
+					if (ret == 2)	// if close connection
+					{
+						close(vars->sockets->operator[](i).getFd());
+						return ;
+					}
+					std::cerr << "ERROR ERROR in ft_handle_epoll_action: no unhandled request (or empty request) !!!" << std::endl;
 					return ;
 				}
-				// std::cout << " FINE" << std::endl;
-				/* code */
 			}
-			catch(const std::exception& e)
-			{
+			catch(const std::exception& e) {
 				std::cerr << e.what() << '\n';
 			}
 			
-
 			// step 1.3: Add fd in epoll queue
 			vars->ev.events = EPOLLIN | EPOLLOUT;
 			vars->ev.data.fd = vars->sockets->operator[](i).getFd();

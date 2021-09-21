@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/21 08:42:08 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/21 15:27:41 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,8 @@ int				Response_2::sendResponse()
 	// step 3: Parse response
 	Response response(_requests.operator[](0));
 	_requests.pop_front();
+
+	// step x: If have close connection - return
 	_close_flag = response.getClose();
 	if (_close_flag)
 		return (2);
@@ -160,14 +162,14 @@ void			Response_2::readRequest()
 			throw Exeption(str);
 		}
 
-		// step 2.2: Accumelate received data
+		// step 2.2: Accumulate received data
 		data += _buff;
 
 		// step 2.3: Clear data for select
 		FD_ZERO(&rfd);
 		FD_SET(_fd, &rfd);
 
-		// step 2.4: Need to update the need for this item 
+		// step 2.4: Need to update the need for this item
 		ret = select(1, &rfd, 0, 0, &tv);
 		if (ret < 0)
 		{
@@ -197,8 +199,9 @@ void			Response_2::readRequest()
 	// }
 	// std::cout << "step 1 ok; data = " << _buff << std::endl;
 
-	// step 2: Add request in container
-	_requests.push_back(data);
+	// step 2: Add request in container if have any data from fd
+	if (data.size())
+		_requests.push_back(data);
 
 #ifdef DEBUG
 	std::cout	<< "Response_2::readRequest end: fd = "
@@ -357,6 +360,8 @@ std::string		Response_2::handleCGI(std::string &result_path)
 			start++;
 		}
 	}
+	else
+		envp = { NULL };
 
 	// step 6: Construct file_name for result CGI handler
 	std::string::iterator	end = cur_dir.end();
@@ -367,11 +372,11 @@ std::string		Response_2::handleCGI(std::string &result_path)
 	cur_dir += ".temp";
 
 	// step 7: Create file and clean it
-	std::ofstream	temp_file;
-	temp_file.open(cur_dir, std::ofstream::trunc);
-	if (!temp_file.is_open())
-		throw Exeption("ERROR in response_2: create temp_file error!");
-	temp_file.close();
+	// std::ofstream	temp_file;
+	// temp_file.open(cur_dir, std::ofstream::trunc);
+	// if (!temp_file.is_open())
+	// 	throw Exeption("ERROR in response_2: create temp_file error!");
+	// temp_file.close();
 
 	
 	// step 8: execute handler
@@ -382,9 +387,29 @@ std::string		Response_2::handleCGI(std::string &result_path)
 	else if (id == 0)
 	{
 		int ret = 0;
-		freopen(cur_dir.c_str(), "w", stdout);
-		if ((ret = execve((_server->getCGI_handler()).c_str(), &(*argv.begin()), &(*envp.begin()))) == -1)
-			std::cerr << "ERROR CGI: execute CGI handler error" << std::endl;
+		FILE	*rek;
+		rek = freopen(cur_dir.c_str(), "w+", stdout);
+
+		if (!rek)
+			std::cout << "HAHHAHAHHAHAH" << std::endl;
+
+		// std::cout	<< "first = " << (_server->getCGI_handler()).c_str() << "; "
+		// 			<< "second = " << *argv.begin() << "; "
+		// 			<< "third = " << *(argv.begin() + 1) << "; "
+		// 			<< std::endl;
+
+		const char *bin = (_server->getCGI_handler()).c_str();
+
+		// restart:
+		if ((ret = execve(bin, &(*argv.begin()), &(*envp.begin()))) == -1)
+		{
+			std::cerr	<< "ERROR CGI: execute CGI handler error: " << strerror(errno)
+						<< "first = " << bin << "; "
+						<< "second = " << *argv.begin() << "; "
+						<< "third = " << *(argv.begin() + 1) << "; "
+						<< std::endl;
+			// goto restart;
+		}
 		fclose(stdout);
 		exit(0);
 	}

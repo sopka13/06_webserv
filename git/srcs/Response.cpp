@@ -1,5 +1,4 @@
 #include "../includes/Response.hpp"
-#include <string>
 
 static int			setMetod(std::string &sock_buff)
 {
@@ -47,7 +46,7 @@ static std::string	setPath(std::string &str){
 	return (path);
 }
 
-std::string Response::setBody(std::string str){
+std::string			Response::setBody(std::string str){
 	std::string::iterator it = str.begin();
 	size_t body_pos = str.find("\n\n");
 	if (body_pos == std::string::npos)
@@ -65,7 +64,8 @@ std::string Response::setBody(std::string str){
 	}
 	return (body);
 }
-void Response::setBodySize(){
+
+void				Response::setBodySize(){
 	_body_size = _body.length();
 }
 
@@ -85,7 +85,7 @@ Response::Response(std::string &str):
 	this->_metod = setMetod(str);
 	if (_metod == 0)
 	{
-		std::string str_1("ERROR in response: method not supported");
+		std::string str_1("ERROR in response: method not supported"); // 21.09.21 need engine for response errors page
 		std::cout << "fff " << str << std::endl;
 		throw Exeption(str_1);
 	}
@@ -127,7 +127,7 @@ Response::Response(std::string &str):
 		std::cout << "CON =" << con_l << "R" << std::endl;
 	}
 	
-	// step 6: Get body of recvest
+	// step 6: Get body of reqvest
 	_body = setBody(str);
 	std::cout << "body =  " << _body << std::endl;
 
@@ -152,15 +152,17 @@ bool				Response::getClose(){
 	return (_flag_connect);
 }
 
-std::string Response::getBody(){
+std::string			Response::getBody(){
 	std::cout << "BODY " << _body << std::endl;
 	return (_body);
 }
-size_t Response::getBodySize(){
+
+size_t				Response::getBodySize(){
 	std::cout << "SIZE " << _body_size << std::endl;
 	return (_body_size);
 }
-size_t Response::getConLen(){
+
+size_t				Response::getConLen(){
 	std::cout << "CON_LEN " << _con_len << std::endl;
 	return (_con_len);
 }

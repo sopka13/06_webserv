@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:02:30 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/20 12:34:47 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/21 14:35:00 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,17 +41,15 @@ void		ft_init_data(t_vars *vars, int argc, char** argv, char** envp)
 	vars->servers = new std::deque<Server>;
 	vars->sockets = new std::vector<Socket>;
 	vars->fd_identify_socket = new std::map<int, int>;
+	vars->CGI = new std::map<std::string, std::string>;
 
 	// step 4: Parse config file
 	if (ft_parse_config(vars))
 		ft_exit(vars);
 
 	// step 5: Create semaphores for listen sockets
-	if (sem_unlink(SEM_NAME_1))
-	{
-		std::cerr << "ERROR in ft_init_data: Semaphore create faill" << std::endl;
-		ft_exit(vars);
-	}
+	sem_unlink(SEM_NAME_1);
+	
 	vars->sema = sem_open(SEM_NAME_1, 0100, 0666, vars->sockets->capacity());
 	if (vars->sema == SEM_FAILED)
 	{

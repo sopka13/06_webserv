@@ -26,11 +26,11 @@ public:
 	
 private:
 	Response();
-	int				_metod;
-	std::string		_http;
-	std::string		_path;
-	bool			_flag_connect;
-	std::string		_body;
+	int				_metod;				// request method
+	std::string		_http;				// http version
+	std::string		_path;				// path from request
+	bool			_flag_connect;		// close connection
+	std::string		_body;				// 
 	size_t			_body_size;
 	size_t			_con_len;
 

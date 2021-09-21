@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 09:09:14 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/14 13:03:31 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/21 10:53:55 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,9 @@ void	ft_exit(t_vars *vars)
 	}
 	if (vars->fd_identify_socket) {
 		delete vars->fd_identify_socket;
+	}
+	if (vars->CGI) {
+		delete vars->CGI;
 	}
 	exit(0);
 }

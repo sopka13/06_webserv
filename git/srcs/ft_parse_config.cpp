@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:37:55 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/20 09:01:24 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/21 13:44:23 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,93 @@
 
 #include "../includes/headers.hpp"
 
-int		ft_parse_config(t_vars *vars)
+static void			ft_CGI_from_args(t_vars *vars, std::string &format)
+{
+#ifdef DEBUG
+	std::cout	<< "ft_CGI_from_args start; format = " << format << std::endl;
+#endif
+	// step 1: Init data
+	int					ret = 0;
+	std::vector<char*>	argv;
+	std::vector<char*>	envp = { NULL };
+
+	// step 2: Add "-f" flag for php scripts in argv
+	char temp[] = "-f";
+	if (format == ".php")
+		argv.push_back(temp);
+
+	// step 3: Add file_name in argv
+	char		dir[100];
+	getcwd(dir, 100);
+	std::string cur_dir(dir);
+	cur_dir += '/';
+	if (vars->CGI_file_name.operator[](0) == '.')
+		vars->CGI_file_name.erase(0, 2);
+	cur_dir += vars->CGI_file_name;
+	char *str = new char[cur_dir.size() + 1];
+	std::copy(cur_dir.begin(), cur_dir.end(), str);
+	str[cur_dir.size()] = '\0';
+	argv.push_back(str);
+	std::cout << "argv 0 = " << argv.operator[](0) << "; argv 1 = " << argv.operator[](1) << std::endl;
+
+	// step x: Execute file
+	if ((ret = execve((vars->CGI->operator[](format)).c_str(), &(*argv.begin()), &(*envp.begin()))) == -1)
+	{
+		std::cout << strerror(errno) << " format = " << vars->CGI->operator[](format) << std::endl;
+		std::cerr << "ERROR CGI: execute CGI handler error" << std::endl;
+	}
+	delete[] str;
+
+#ifdef DEBUG
+	std::cout	<< "ft_CGI_from_args end" << std::endl;
+#endif
+	return ;
+}
+
+static std::string	ft_get_format(std::string &file_name)
+{
+#ifdef DEBUG
+	std::cout	<< "ft_get_format start" << std::endl;
+#endif
+	// step 1: Init data;
+	std::string::iterator	start = file_name.begin();
+	std::string::iterator	end = file_name.end();
+	std::string				ret;
+
+	// step 2: Check error
+	if (file_name.find('.', 0) == std::string::npos)
+		return ("");
+
+	// step 3: Get format
+	end--;
+	while (end != start && *end != '.')
+	{
+		std::string temp("");
+		temp += *end;
+		temp += ret;
+		ret = temp;
+		end--;
+	}
+	if (*end == '.')
+	{
+		std::string temp("");
+		temp += '.';
+		temp += ret;
+		ret = temp;
+		end--;
+	}
+
+	// step 4: Check error
+	if (end == start)
+		return ("");
+
+#ifdef DEBUG
+	std::cout	<< "ft_get_format end; ret = " << ret << std::endl;
+#endif
+	return (ret);
+}
+
+int					ft_parse_config(t_vars *vars)
 {
 #ifdef DEBUG
 	std::cout	<< "ft_parse_config start" << std::endl;
@@ -52,7 +138,8 @@ int		ft_parse_config(t_vars *vars)
 	std::map<std::string, int (*)(t_vars*, std::string&)> functions = {
 		{"http", ft_http_handle},
 		{"log_file", ft_log_file_handle},
-		{"error_page", ft_error_page}
+		{"error_page", ft_error_page},
+		{"CGI", ft_CGI_handler}
 	};
 
 	// step 4: Read config file in str_sum
@@ -104,6 +191,34 @@ int		ft_parse_config(t_vars *vars)
 	{
 		std::cerr	<< "ERROR: Config file contains more than one default server" << std::endl;
 		return (1);
+	}
+
+	// step 8: Check CGI file_name for valid
+	if (vars->CGI_file_name.size())
+	{
+		// step 8.1: Get file extension
+		std::string		format_file;
+		format_file = ft_get_format(vars->CGI_file_name);
+
+		// step 8.2: Check error
+		if (!format_file.size())
+		{
+			std::cerr	<< "ERROR: This file \"" << vars->CGI_file_name << "\" not supported" << std::endl;
+			return (1);
+		}
+
+		// step 8.3: Search format file among the supported
+		std::map<std::string, std::string>::iterator it = vars->CGI->find(format_file);
+		if (it != vars->CGI->end())
+		{
+			ft_CGI_from_args(vars, format_file);
+			return (1);
+		}
+		else
+		{
+			std::cerr	<< "ERROR: This file \"" << vars->CGI_file_name << "\" not supported" << std::endl;
+			return (1);
+		}
 	}
 
 #ifdef DEBUG

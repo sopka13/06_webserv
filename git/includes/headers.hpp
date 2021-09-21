@@ -6,13 +6,13 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/20 08:48:37 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/21 10:53:21 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-//#define DEBUG 1
+#define DEBUG 1
 
 #define BUF_FOR_RESP 2048							// buff for response to client
 #define DEF_ADR_CONF_FILE "./conf/webserv.conf"		// default config file
@@ -100,6 +100,7 @@ typedef struct		s_vars
 	std::ofstream				*log_file;					// logfile
 	std::string					config_file_name;			// configuration file name
 	std::string					CGI_file_name;				// CGI file name received from args
+	std::map<std::string, std::string>	*CGI;				// supported CGI formats and handlers adresses
 	std::string					max_body_size;				// client max body size
 	int							ret;						// return value
 	std::deque<Server>			*servers;					// all supported servers
@@ -122,6 +123,7 @@ typedef struct		s_vars
 
 
 void		ft_bzero(void *s, size_t n);
+int			ft_CGI_handler(t_vars* vars, std::string &str);
 int			ft_check_args_files(t_vars *vars);
 int			ft_client_max_body_size_handle(t_vars* vars, std::string &str);
 int			ft_error_page(t_vars* vars, std::string &str);
