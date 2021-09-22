@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:47 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/20 08:28:25 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/22 09:50:39 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,12 @@ class Server
 {
 	t_server							server_data;
 	std::map<std::string, t_location>	locations;			// locations
-	t_vars								*_vars;
 	// Server();
 	// Server(const Server &other);
 	// Server&	operator= (const Server &other);
 
 public:
+	t_vars								*_vars;
 	class		Error : public std::exception {
 		const char* what() const throw(){
 			return ("ERROR in config file (server): Struct error");

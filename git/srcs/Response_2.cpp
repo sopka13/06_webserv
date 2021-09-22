@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/21 15:27:41 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/22 09:55:27 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -315,11 +315,7 @@ std::string		Response_2::handleCGI(std::string &result_path)
 
 	// step 2: Create argv
 	std::vector<char *> argv;
-
-	// step 3: Add "-f" flag for php scripts
-	char temp[] = "-f";
-	if (_server->getCGI_format() == ".php")
-		argv.push_back(temp);
+	std::vector<char *> envp;
 
 	// step 4: Add adress script_file in argv
 	char		dir[100];
@@ -330,10 +326,21 @@ std::string		Response_2::handleCGI(std::string &result_path)
 	char *str = new char[cur_dir.size() + 1];
 	std::copy(cur_dir.begin(), cur_dir.end(), str);
 	str[cur_dir.size()] = '\0';
-	argv.push_back(str);
+	// argv.push_back(str);
+
+	// step 3: Add "-f" flag for php scripts
+	char temp[] = "-f";
+	if (_server->getCGI_format() == ".php")
+	{
+		// argv.push_back(temp);
+		argv = { temp, str, NULL };
+	}
+	else
+	{
+		argv = { str, NULL };
+	}
 
 	// step 5: Create envp and add env vars
-	std::vector<char *> envp;
 	if (_variables.size())
 	{
 		std::string				temp;
@@ -359,6 +366,7 @@ std::string		Response_2::handleCGI(std::string &result_path)
 			temp += *start;
 			start++;
 		}
+		envp.push_back(NULL);
 	}
 	else
 		envp = { NULL };
@@ -386,30 +394,23 @@ std::string		Response_2::handleCGI(std::string &result_path)
 		throw Exeption("ERROR in response_2: create process for CGI handlerr error");
 	else if (id == 0)
 	{
+		// step x: Init data
 		int ret = 0;
 		FILE	*rek;
+
+		// step x: Redirect stdout in file
 		rek = freopen(cur_dir.c_str(), "w+", stdout);
-
 		if (!rek)
-			std::cout << "HAHHAHAHHAHAH" << std::endl;
-
-		// std::cout	<< "first = " << (_server->getCGI_handler()).c_str() << "; "
-		// 			<< "second = " << *argv.begin() << "; "
-		// 			<< "third = " << *(argv.begin() + 1) << "; "
-		// 			<< std::endl;
-
-		const char *bin = (_server->getCGI_handler()).c_str();
-
-		// restart:
-		if ((ret = execve(bin, &(*argv.begin()), &(*envp.begin()))) == -1)
 		{
-			std::cerr	<< "ERROR CGI: execute CGI handler error: " << strerror(errno)
-						<< "first = " << bin << "; "
-						<< "second = " << *argv.begin() << "; "
-						<< "third = " << *(argv.begin() + 1) << "; "
-						<< std::endl;
-			// goto restart;
+			std::cerr	<< "ERROR CGI: Redirection stdout faill" << std::endl;
+			exit(0);
 		}
+
+		// step x: Execute script
+		if ((ret = execve((_server->getCGI_handler()).c_str(), &(*argv.begin()), &(*envp.begin()))) == -1)
+			std::cerr	<< "ERROR CGI: execute CGI handler error" << std::endl;
+
+		// step x: If hane errors close and exit
 		fclose(stdout);
 		exit(0);
 	}

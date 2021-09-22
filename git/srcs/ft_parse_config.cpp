@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:37:55 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/21 13:44:23 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/22 09:35:29 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,15 +25,10 @@ static void			ft_CGI_from_args(t_vars *vars, std::string &format)
 #endif
 	// step 1: Init data
 	int					ret = 0;
-	std::vector<char*>	argv;
+	std::vector<char*>	argv;// = { NULL };
 	std::vector<char*>	envp = { NULL };
 
-	// step 2: Add "-f" flag for php scripts in argv
-	char temp[] = "-f";
-	if (format == ".php")
-		argv.push_back(temp);
-
-	// step 3: Add file_name in argv
+	// step 2: Add file_name in argv
 	char		dir[100];
 	getcwd(dir, 100);
 	std::string cur_dir(dir);
@@ -44,8 +39,20 @@ static void			ft_CGI_from_args(t_vars *vars, std::string &format)
 	char *str = new char[cur_dir.size() + 1];
 	std::copy(cur_dir.begin(), cur_dir.end(), str);
 	str[cur_dir.size()] = '\0';
-	argv.push_back(str);
-	std::cout << "argv 0 = " << argv.operator[](0) << "; argv 1 = " << argv.operator[](1) << std::endl;
+	// argv.push_back(str);
+	// std::cout << "argv 0 = " << argv.operator[](0) << "; argv 1 = " << argv.operator[](1) << std::endl;
+
+	// step 3: Add "-f" flag for php scripts in argv
+	char temp[] = "-f";
+	if (format == ".php")
+	{
+		// argv.push_back(temp);
+		argv = { temp, str, NULL };
+	}
+	else
+	{
+		argv = { str, NULL };
+	}
 
 	// step x: Execute file
 	if ((ret = execve((vars->CGI->operator[](format)).c_str(), &(*argv.begin()), &(*envp.begin()))) == -1)
@@ -53,7 +60,7 @@ static void			ft_CGI_from_args(t_vars *vars, std::string &format)
 		std::cout << strerror(errno) << " format = " << vars->CGI->operator[](format) << std::endl;
 		std::cerr << "ERROR CGI: execute CGI handler error" << std::endl;
 	}
-	delete[] str;
+	// delete[] str;
 
 #ifdef DEBUG
 	std::cout	<< "ft_CGI_from_args end" << std::endl;
