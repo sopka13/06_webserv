@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 17:13:43 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/21 10:49:20 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/22 14:27:04 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void		ft_handle_epoll_action(t_vars *vars, int fd)
 		// If it's socket
 		if (fd == vars->sockets->operator[](i).getTcp_sockfd())
 		{
-			// step 1.1: Get fd
+			// step 1.1: Set fd
 			vars->sockets->operator[](i).setFd();
 
 			// step 1.2: Get request and send response
@@ -80,7 +80,6 @@ void		ft_handle_epoll_action(t_vars *vars, int fd)
 			std::cerr << "ERROR ERROR in ft_handle_epoll_action: no unhandled request !!!" << std::endl;
 			return ;
 		}
-		/* code */
 	}
 	catch(const std::exception& e)
 	{

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/22 09:55:27 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/22 14:25:12 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,16 +235,28 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 	if (haveCGI(rezult_path))
 		rezult_path = handleCGI(rezult_path);
 
+	// step x: Open the requested file and read in buffer
 	std::ifstream	fileIndex;
 	fileIndex.open(rezult_path);
 	if (!fileIndex.is_open()){
 		std::cerr	<< "ERROR: Config file open error" << std::endl;
 		return (-1);
 	}
+
+	// step x: Send headers
+	ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
+
+	// step x: Send body
 	std::string str;
 	while(std::getline(fileIndex, str))
-		buff_1 += str;
-	ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
+	{
+		// buff_1 += str;
+		ret = send(_fd, str.c_str(), str.length(), 0);
+	}
+	
+
+	// step x: Send buffer
+	// ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
 
 	// step x: Remove temp file
 	if (rezult_path.size() && rezult_path.find(".temp", 0) == (rezult_path.size() - 5))
