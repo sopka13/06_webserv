@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/22 14:25:12 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/23 16:19:14 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,10 +126,11 @@ int				Response_2::sendResponse()
 		file << response.getBody();
 		file.close();
 		ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
+		std::cout << "\n RESPONS PUT: " << buff_1 << std::endl;
 	}
 
 	if (ret > 0)
-		std::cout << "Respons " << ret << std::endl;
+		std::cout << "Respons " << ret  << std::endl;
 
 #ifdef DEBUG
 	std::cout	<< "Response_2::sendResponse end: fd = " << _fd << "; size container = " << _requests.size() << std::endl;
@@ -139,7 +140,6 @@ int				Response_2::sendResponse()
 
 void			Response_2::readRequest()
 {
-	// Need checker errors: 1)if no data in fd
 #ifdef DEBUG
 	std::cout	<< "Response_2::readRequest start: fd = " << _fd << "; size container = " << _requests.size() << std::endl;
 #endif
@@ -158,8 +158,15 @@ void			Response_2::readRequest()
 		ret = recv(_fd, _buff, sizeof(_buff), 0);
 		if (ret < 0)
 		{
+			Headliners resp(std::string("HTTP/1.1"), std::string("403"));
+			resp.sendHeadliners(_fd);
 			std::string str("ERROR in get response: read fail");
 			throw Exeption(str);
+		}
+		else if (ret == 0) // if no data in fd
+		{
+			Headliners resp(std::string("HTTP/1.1"), std::string("100"));
+			resp.sendHeadliners(_fd);
 		}
 
 		// step 2.2: Accumulate received data
@@ -173,8 +180,10 @@ void			Response_2::readRequest()
 		ret = select(1, &rfd, 0, 0, &tv);
 		if (ret < 0)
 		{
-			std::cerr << "ERROR in ft_handle_epoll_fd: select fall" << std::endl;
-			return ;
+			Headliners resp(std::string("HTTP/1.1"), std::string("500"));
+			resp.sendHeadliners(_fd);
+			std::string str("ERROR in ft_handle_epoll_fd: select fall");
+			throw Exeption(str);
 		}
 		else if (ret == 0)
 			break ;
@@ -202,6 +211,7 @@ void			Response_2::readRequest()
 	// step 2: Add request in container if have any data from fd
 	if (data.size())
 		_requests.push_back(data);
+	std::cout << "\n" << data << "\n" << std::endl;
 
 #ifdef DEBUG
 	std::cout	<< "Response_2::readRequest end: fd = "
@@ -239,12 +249,24 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 	std::ifstream	fileIndex;
 	fileIndex.open(rezult_path);
 	if (!fileIndex.is_open()){
+		// step x: Create Headliners and send
+		Headliners resp(std::string("HTTP/1.1"), std::string("404"));
+		resp.sendHeadliners(_fd);
+
+		// step x: Send error page 404
+		std::ifstream err_404(_server->getErrPage());
+		std::string str;
+		while(std::getline(err_404, str))
+			send(_fd, str.c_str(), str.size(), 0);
+
+		// step x: Message for stderr
 		std::cerr	<< "ERROR: Config file open error" << std::endl;
 		return (-1);
 	}
 
 	// step x: Send headers
 	ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
+	// std::cout << "\n RESPONS PUT: " << buff_1 << std::endl;
 
 	// step x: Send body
 	std::string str;
@@ -252,6 +274,7 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 	{
 		// buff_1 += str;
 		ret = send(_fd, str.c_str(), str.length(), 0);
+		// std::cout << str << std::endl;
 	}
 	
 
@@ -342,7 +365,7 @@ std::string		Response_2::handleCGI(std::string &result_path)
 
 	// step 3: Add "-f" flag for php scripts
 	char temp[] = "-f";
-	if (_server->getCGI_format() == ".php")
+	if (_server->getCGI_format() == ".php" || _server->getCGI_format() == ".py")
 	{
 		// argv.push_back(temp);
 		argv = { temp, str, NULL };

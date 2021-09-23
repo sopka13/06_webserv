@@ -6,13 +6,13 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/23 09:00:15 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/23 09:44:46 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/23 13:11:22 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Headliners.hpp"
 
-Headliners::Headliners(std::string& http_version, std::string& return_code):
+Headliners::Headliners(std::string http_version, std::string return_code):
 	_headliners(http_version),
 	_end_headliners("\n\n")
 {
@@ -24,7 +24,10 @@ Headliners::Headliners(std::string& http_version, std::string& return_code):
 	std::map<std::string, std::string>	status_code = {
 		{"100", " Continue"},
 		{"200", " OK"},
-		{"404", " Not Found"}
+		{"403", " Forbidden"},
+		{"404", " Not Found"},
+		{"408", " Request Timeout"},
+		{"500", " Internal Server Error"}
 	};
 	_headliners += ' ';
 	_headliners += return_code;
@@ -56,5 +59,12 @@ void			Headliners::setCloseConnection(bool status)
 		_headliners += "\n Connection: keep_alive";
 	else
 		_headliners += "\n Connection: close";
+	return ;
+}
+
+void			Headliners::sendHeadliners(int fd)
+{
+	std::string temp = getHeadliners();
+	send(fd, temp.c_str(), temp.size(), 0);
 	return ;
 }

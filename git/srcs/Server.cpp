@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:57 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/21 09:51:50 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/23 16:48:29 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -524,49 +524,52 @@ static int		setCGI_format(t_server *server_data, std::string &str, std::map<std:
 	return (0);
 }
 
-static int		setCGI_handler(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
-{
-#ifdef DEBUG
-	std::cout << "setCGI_handler start; str = |" << str << "|" << std::endl;
-#endif
-	// step 1: Init data
-	if (locations == NULL)
-		std::cout << "Bad args in setCGI_handler" << std::endl;
+// static int		setCGI_handler(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
+// {
+// #ifdef DEBUG
+// 	std::cout << "setCGI_handler start; str = |" << str << "|" << std::endl;
+// #endif
 
-	// step 1: Init data
-	std::string::iterator	start = str.begin();
-	std::string				temp_value;
+// 	// server_data->CGI_handler = _vars->
 
-	// step 2: Get value
-	while (str.length() && *start != ' ' && *start != '\t' && *start != ';')
-	{
-		temp_value += *start;
-		str.erase(start);
-		start = str.begin();
-	}
-	// std::cout << temp_value << std::endl;
+// 	// step 1: Init data
+// 	if (locations == NULL)
+// 		std::cout << "Bad args in setCGI_handler" << std::endl;
 
-	// step 3: Trim spaces and tabs
-	while (str.length() && (*start == ' ' || *start == '\t'))
-	{
-		str.erase(start);
-		start = str.begin();
-	}
-	// std::cout << str << std::endl;
+// 	// step 1: Init data
+// 	std::string::iterator	start = str.begin();
+// 	std::string				temp_value;
 
-	// step 4: Check errors and write data
-	if (*start == ';')
-	{
-		str.erase(start);
-		server_data->CGI_handler = temp_value;
-	}
-	else
-		return (1);
-#ifdef DEBUG
-	std::cout << "setCGI_handler end; str = |" << str << "|" << std::endl;
-#endif
-	return (0);
-}
+// 	// step 2: Get value
+// 	while (str.length() && *start != ' ' && *start != '\t' && *start != ';')
+// 	{
+// 		temp_value += *start;
+// 		str.erase(start);
+// 		start = str.begin();
+// 	}
+// 	// std::cout << temp_value << std::endl;
+
+// 	// step 3: Trim spaces and tabs
+// 	while (str.length() && (*start == ' ' || *start == '\t'))
+// 	{
+// 		str.erase(start);
+// 		start = str.begin();
+// 	}
+// 	// std::cout << str << std::endl;
+
+// 	// step 4: Check errors and write data
+// 	if (*start == ';')
+// 	{
+// 		str.erase(start);
+// 		server_data->CGI_handler = temp_value;
+// 	}
+// 	else
+// 		return (1);
+// #ifdef DEBUG
+// 	std::cout << "setCGI_handler end; str = |" << str << "|" << std::endl;
+// #endif
+// 	return (0);
+// }
 
 Server::Server(std::string &str, t_vars *vars):
 	_vars(vars)
@@ -582,8 +585,8 @@ Server::Server(std::string &str, t_vars *vars):
 		{"server_name", setName},
 		{"location", setLocation},
 		{"index", setIndex},
-		{"CGI_format", setCGI_format},
-		{"CGI_handler", setCGI_handler}
+		{"CGI_format", setCGI_format}//,
+		// {"CGI_handler", setCGI_handler}
 	};
 	std::string::iterator	start = str.begin();
 	std::string				temp;
@@ -623,6 +626,7 @@ Server::Server(std::string &str, t_vars *vars):
 	// step 3: start handle all settings from server section
 	while (temp.length())
 	{
+			// std::cout << temp << std::endl;
 		if (temp[0] == ' ' || temp[0] == '\t')
 		{
 			temp.erase(0);
@@ -650,6 +654,17 @@ Server::Server(std::string &str, t_vars *vars):
 	// step 5: Check errors
 	if (server_data.sock_data.serv_addr.sin_addr.s_addr == INADDR_NONE)
 		throw Error();
+
+	// step 6: Init CGI handler
+	if (server_data.CGI_format.size())
+	{
+		server_data.CGI_handler = _vars->CGI->operator[](server_data.CGI_format);
+		if (!(server_data.CGI_handler.size()))
+		{
+			throw Error();
+		}
+	}
+
 #ifdef DEBUG
 	std::cout << "Server ctor end" << std::endl;
 #endif

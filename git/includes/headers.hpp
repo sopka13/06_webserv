@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/23 10:25:29 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/23 11:41:20 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,7 @@ typedef struct		s_vars
 #include "../includes/Server.hpp"
 #include "../includes/Response.hpp"
 #include "../includes/Response_2.hpp"
+#include "../includes/Headliners.hpp"
 
 
 void		ft_bzero(void *s, size_t n);

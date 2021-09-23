@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/23 10:27:57 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/23 16:56:05 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,13 +126,8 @@
 //		потом на них отвечать
 //	15. добавить возможность держать несколько серверов на одной паре хост:порт
 //	16. добавить механизм отправки нужного кода ошибки							- and here
-//			1 add new method in response
-//			2 rewrite ft_handle_epoll_action with exeptions or return value ?? do we need
-//	17. добавить реализацию пайтон
-//			1 + correct config_file
-//			2 check handler CGI scripts
-//			3 + add execute file passed in args
-//			4 add execute file in request from client
+//			1 + add new class
+//			2 rewrite handler fd with new class
 //	+ 2. геттер в сервере на фавикон
 //	+ 3. файл для фавикона
 //	+ 4. обработать все краши на функциях
@@ -147,6 +142,11 @@
 //		3 + execute CGI file
 //		4 + exit server
 //		5 - correct execute engine for websockets (работает и так)
+//	+ 17. добавить реализацию пайтон
+//			1 + correct config_file
+//			2 + check handler CGI scripts
+//			3 + add execute file passed in args
+//			4 + add execute file in request from client
 
 #include "../includes/headers.hpp"
 
@@ -203,6 +203,9 @@ int		main(int argc, char **argv, char **envp)
 				ft_handle_epoll_action(&vars, vars.events[i].data.fd);
 			if (vars.events[i].events & EPOLLOUT)
 			{
+				// Headliners resp(std::string("HTTP/1.1"), std::string("408"));
+				// resp.setCloseConnection(false);
+				// resp.sendHeadliners(vars.events[i].data.fd);
 				std::cout << "EPOLLOUT: Need handle. fd = " << vars.events[i].data.fd << std::endl;
 				if (epoll_ctl(vars.epoll_fd, EPOLL_CTL_DEL, vars.events[i].data.fd, &vars.ev) == -1)
 				{

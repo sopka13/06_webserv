@@ -124,16 +124,16 @@ Response::Response(std::string &str):
 			++it;
 		}
 		_con_len = std::stoi(con_l);
-		std::cout << "CON =" << con_l << "R" << std::endl;
+		// std::cout << "CON =" << con_l << "R" << std::endl;
 	}
 	
 	// step 6: Get body of reqvest
 	_body = setBody(str);
-	std::cout << "body =  " << _body << std::endl;
+	// std::cout << "body =  " << _body << std::endl;
 
 	// step 7: Get body size
 	setBodySize();
-	std::cout << "body_size =  " << _body_size << std::endl;
+	// std::cout << "body_size =  " << _body_size << std::endl;
 }
 
 int					Response::getMetod(){
@@ -153,16 +153,16 @@ bool				Response::getClose(){
 }
 
 std::string			Response::getBody(){
-	std::cout << "BODY " << _body << std::endl;
+	// std::cout << "BODY " << _body << std::endl;
 	return (_body);
 }
 
 size_t				Response::getBodySize(){
-	std::cout << "SIZE " << _body_size << std::endl;
+	// std::cout << "SIZE " << _body_size << std::endl;
 	return (_body_size);
 }
 
 size_t				Response::getConLen(){
-	std::cout << "CON_LEN " << _con_len << std::endl;
+	// std::cout << "CON_LEN " << _con_len << std::endl;
 	return (_con_len);
 }

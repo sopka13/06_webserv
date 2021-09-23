@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/21 09:26:58 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/23 10:13:52 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/23 16:35:28 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,16 @@ int			ft_CGI_handler(t_vars* vars, std::string &str)
 			std::cerr << "ERROR in ft_CGI_handler: Error in config_file" << std::endl;
 			return (1);
 		}
+	}
+
+	// step 4: Check error
+	struct stat	temp_s;
+	bzero(&temp_s, sizeof(temp_s));
+	stat(handler_addr.c_str(), &temp_s);
+	if (!temp_s.st_size)
+	{
+		std::cerr << "ERROR in ft_CGI_handler: Error in config_file: CGI handler not found" << std::endl;
+		return (1);
 	}
 
 	vars->CGI->insert({temp_key, handler_addr});
