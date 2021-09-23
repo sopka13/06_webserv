@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:55:00 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/21 08:42:07 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/23 22:18:45 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ public:
 
 	void			readRequest();
 	int				sendResponse();
-	int 			sendingResponseGet(std::string full_path, struct stat is_a_dir, Response &response);
+	int 			sendingResponseGet(std::string full_path, struct stat is_a_dir);//, Response &response);
 	std::string		getIndexFileName(std::string path);
 	bool			getCloseFlag();
 	std::string 	setVariables(std::string &str);

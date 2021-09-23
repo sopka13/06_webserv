@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/23 09:00:15 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/23 13:11:22 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/23 22:12:45 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,8 @@ void			Headliners::setCloseConnection(bool status)
 void			Headliners::sendHeadliners(int fd)
 {
 	std::string temp = getHeadliners();
-	send(fd, temp.c_str(), temp.size(), 0);
+	int	ret = 0;
+	if ((ret = send(fd, temp.c_str(), temp.size(), 0)) == -1)
+		throw "ERROR in headliners: send error";
 	return ;
 }

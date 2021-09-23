@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/23 16:19:14 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/23 22:51:59 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ int				Response_2::sendResponse()
 		_server->getMethods(path, m))
 	{
 		std::string full_path = _server->getLocations(path) + tile;
-		ret = sendingResponseGet(full_path, is_a_dir, response);
+		ret = sendingResponseGet(full_path, is_a_dir);//, response);
 	}
 
 	m = "PUT";
@@ -223,68 +223,75 @@ void			Response_2::readRequest()
 	return ;
 }
 
-int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_dir, Response &response){
+int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_dir)//, Response &response)
+{
 #ifdef DEBUG
 	std::cout	<< "Response_2::sendingResponseGet start: fd = " << _fd << std::endl;
 #endif
+	// step 1: Init data
 	int ret;
+
+	// step 2: Check it's file or dir
 	lstat(full_path.c_str(), &is_a_dir);
-	std::string	buff_1 = response.getHttp() + " 200 OK\n\n";//  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
 	std::string rezult_path;
-	if(S_ISDIR(is_a_dir.st_mode)){
+	if (S_ISDIR(is_a_dir.st_mode))
+	{
 		std::string index_name = getIndexFileName(full_path);
 		if (index_name == "")
-			rezult_path = _server->getErrPage();
+		{
+			if (!_server->getAutoindex(full_path))
+			{
+				std::cerr << "this; " << full_path << "|" << std::endl;
+				Headliners resp(std::string("HTTP/1.1"), std::string("403"));
+				resp.sendHeadliners(_fd);
+				return (-1);
+			}
+			else
+			{
+				// handler for create dirrect_list
+			}
+		}
+
 		else
 			rezult_path = full_path + index_name;
 	}
 	else
 		rezult_path = full_path;
 
-	// step x: If have cgi go handle
+	// step 3: If have cgi go handle
 	if (haveCGI(rezult_path))
 		rezult_path = handleCGI(rezult_path);
 
-	// step x: Open the requested file and read in buffer
+	// step 4: Open the requested file and read in buffer
 	std::ifstream	fileIndex;
 	fileIndex.open(rezult_path);
 	if (!fileIndex.is_open()){
-		// step x: Create Headliners and send
 		Headliners resp(std::string("HTTP/1.1"), std::string("404"));
 		resp.sendHeadliners(_fd);
 
-		// step x: Send error page 404
 		std::ifstream err_404(_server->getErrPage());
 		std::string str;
 		while(std::getline(err_404, str))
 			send(_fd, str.c_str(), str.size(), 0);
 
-		// step x: Message for stderr
-		std::cerr	<< "ERROR: Config file open error" << std::endl;
+		std::cerr	<< "ERROR in sendingResponseGet: Target file open error" << std::endl;
 		return (-1);
 	}
 
-	// step x: Send headers
-	ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
-	// std::cout << "\n RESPONS PUT: " << buff_1 << std::endl;
+	// step 5: Send headers "200 OK"
+	Headliners resp(std::string("HTTP/1.1"), std::string("200"));
+	resp.sendHeadliners(_fd);
 
-	// step x: Send body
+	// step 6: Send body
 	std::string str;
 	while(std::getline(fileIndex, str))
-	{
-		// buff_1 += str;
 		ret = send(_fd, str.c_str(), str.length(), 0);
-		// std::cout << str << std::endl;
-	}
 	
-
-	// step x: Send buffer
-	// ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
-
-	// step x: Remove temp file
+	// step 7: Remove temp file
 	if (rezult_path.size() && rezult_path.find(".temp", 0) == (rezult_path.size() - 5))
 		remove(rezult_path.c_str());
 
+	// step 8: Close target file
 	fileIndex.close();
 
 #ifdef DEBUG
@@ -426,7 +433,11 @@ std::string		Response_2::handleCGI(std::string &result_path)
 	int		id = 0;
 	id = fork();
 	if (id == -1)
+	{
+		Headliners resp(std::string("HTTP/1.1"), std::string("500"));
+		resp.sendHeadliners(_fd);
 		throw Exeption("ERROR in response_2: create process for CGI handlerr error");
+	}
 	else if (id == 0)
 	{
 		// step x: Init data
@@ -437,13 +448,20 @@ std::string		Response_2::handleCGI(std::string &result_path)
 		rek = freopen(cur_dir.c_str(), "w+", stdout);
 		if (!rek)
 		{
+			Headliners resp(std::string("HTTP/1.1"), std::string("500"));
+			resp.sendHeadliners(_fd);
 			std::cerr	<< "ERROR CGI: Redirection stdout faill" << std::endl;
 			exit(0);
 		}
 
 		// step x: Execute script
 		if ((ret = execve((_server->getCGI_handler()).c_str(), &(*argv.begin()), &(*envp.begin()))) == -1)
+		{
+			Headliners resp(std::string("HTTP/1.1"), std::string("500"));
+			resp.sendHeadliners(_fd);
+
 			std::cerr	<< "ERROR CGI: execute CGI handler error" << std::endl;
+		}
 
 		// step x: If hane errors close and exit
 		fclose(stdout);
