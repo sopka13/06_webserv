@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/22 14:58:16 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/23 10:27:57 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,8 +129,10 @@
 //			1 add new method in response
 //			2 rewrite ft_handle_epoll_action with exeptions or return value ?? do we need
 //	17. добавить реализацию пайтон
-//			1 correct config_file
+//			1 + correct config_file
 //			2 check handler CGI scripts
+//			3 + add execute file passed in args
+//			4 add execute file in request from client
 //	+ 2. геттер в сервере на фавикон
 //	+ 3. файл для фавикона
 //	+ 4. обработать все краши на функциях

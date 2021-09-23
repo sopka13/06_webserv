@@ -6,13 +6,13 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/21 10:53:21 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/23 10:25:29 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#define DEBUG 1
+// #define DEBUG 1
 
 #define BUF_FOR_RESP 2048							// buff for response to client
 #define DEF_ADR_CONF_FILE "./conf/webserv.conf"		// default config file
@@ -64,31 +64,31 @@ typedef struct		s_request
 
 typedef struct		s_socket
 {
-	int						tcp_sockfd;				// socket fd
-	struct sockaddr_in		serv_addr;				// name for ipv4
-	socklen_t				sock_len;				// length of serv_addr
+	int							tcp_sockfd;					// socket fd
+	struct sockaddr_in			serv_addr;					// name for ipv4
+	socklen_t					sock_len;					// length of serv_addr
 }					t_socket;
 
 typedef struct		s_location
 {
-	std::string							location_addr;		// local addr
-	bool								autoindex;			// autoindex
-	bool								redirect;			// redirect (on / off)
-	std::string							redirect_adress;	// adress for redirect
-	std::vector<std::string>			allowed_methods;	// methods
+	std::string					location_addr;				// local addr
+	bool						autoindex;					// autoindex
+	bool						redirect;					// redirect (on / off)
+	std::string					redirect_adress;			// adress for redirect
+	std::vector<std::string>	allowed_methods;			// methods
 }					t_location;
 
 
 typedef struct 		s_server
 {
-	std::string							ip;					// ip adress
-	int									port;				// 1 : 65535
-	std::vector<std::string>			server_name;		// server name
-	std::vector<std::string>			index;				// name index files
-	bool								default_server;		// default flag
-	t_socket							sock_data;			// data for socket
-	std::string							CGI_format;			// supported CGI format
-	std::string							CGI_handler;		// handler for CGI scripts
+	std::string					ip;							// ip adress
+	int							port;						// 1 : 65535
+	std::vector<std::string>	server_name;				// server name
+	std::vector<std::string>	index;						// name index files
+	bool						default_server;				// default flag
+	t_socket					sock_data;					// data for socket
+	std::string					CGI_format;					// supported CGI format
+	std::string					CGI_handler;				// handler for CGI scripts
 }					t_server;
 
 

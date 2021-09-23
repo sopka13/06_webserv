@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:37:55 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/22 13:02:16 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/23 10:25:19 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,9 @@
 static void			ft_CGI_from_args(t_vars *vars, std::string &format)
 {
 #ifdef DEBUG
-	std::cout	<< "ft_CGI_from_args start; format = " << format << std::endl;
+	std::cout	<< "ft_CGI_from_args start; format = " << format
+				<< "; file name = " << vars->CGI_file_name
+				<< std::endl;
 #endif
 	// step 1: Init data
 	int					ret = 0;
@@ -40,11 +42,11 @@ static void			ft_CGI_from_args(t_vars *vars, std::string &format)
 	std::copy(cur_dir.begin(), cur_dir.end(), str);
 	str[cur_dir.size()] = '\0';
 	// argv.push_back(str);
-	// std::cout << "argv 0 = " << argv.operator[](0) << "; argv 1 = " << argv.operator[](1) << std::endl;
+	// std::cout << "str = " << str << std::endl;
 
 	// step 3: Add "-f" flag for php scripts in argv
 	char temp[] = "-f";
-	if (format == ".php")
+	if (format == ".py" || format == ".php")
 	{
 		// argv.push_back(temp);
 		argv = { temp, str, NULL };
@@ -54,13 +56,15 @@ static void			ft_CGI_from_args(t_vars *vars, std::string &format)
 		argv = { str, NULL };
 	}
 
+	// std::cerr << argv.operator[](0) << std::endl;
+
 	// step x: Execute file
 	if ((ret = execve((vars->CGI->operator[](format)).c_str(), &(*argv.begin()), &(*envp.begin()))) == -1)
 	{
-		std::cout << strerror(errno) << " format = " << vars->CGI->operator[](format) << std::endl;
+		// std::cout << strerror(errno) << " format = " << vars->CGI->operator[](format) << std::endl;
 		std::cerr << "ERROR CGI: execute CGI handler error" << std::endl;
 	}
-	// delete[] str;
+	delete[] str;
 
 #ifdef DEBUG
 	std::cout	<< "ft_CGI_from_args end" << std::endl;
@@ -180,6 +184,7 @@ int					ft_parse_config(t_vars *vars)
 			str_sum.erase(0);
 			continue ;
 		}
+		// need handle errors
 		if ((*functions[ft_get_name_conf(str_sum)])(vars, str_sum))
 			return (1);
 	}

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/21 09:26:58 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/21 10:54:29 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/23 10:13:52 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,10 @@ static int	CGI_handler(std::string &str, std::string &handler_addr)
 	if (*start == ';')
 		str.erase(start);
 	else
+	{
+		std::cerr << "ERROR in CGI_handler: Error in config_file: ';' missed" << std::endl;
 		return (1);
+	}
 
 #ifdef DEBUG
 	std::cout << "CGI_handler end: handler_addr = " << handler_addr << std::endl;
@@ -89,7 +92,10 @@ int			ft_CGI_handler(t_vars* vars, std::string &str)
 		start = str.begin();
 	}
 	else
+	{
+		std::cerr << "ERROR in CGI_handler: Error in config_file: empty block" << std::endl;
 		return (1);
+	}
 
 	// step 4: Start write CGI section and trim '{' and '}' characters from the str_sum
 	while (i > 0 && str.length())
@@ -103,7 +109,10 @@ int			ft_CGI_handler(t_vars* vars, std::string &str)
 		start = str.begin();
 	}
 	if (i)
+	{
+		std::cerr << "ERROR in CGI_handler: Error in config_file: '{' or '}' missed" << std::endl;
 		return (1);
+	}
 	else
 	{
 		std::string::iterator	end = temp.end();
@@ -126,7 +135,10 @@ int			ft_CGI_handler(t_vars* vars, std::string &str)
 				return (1);
 		}
 		else
+		{
+			std::cerr << "ERROR in ft_CGI_handler: Error in config_file" << std::endl;
 			return (1);
+		}
 	}
 
 	vars->CGI->insert({temp_key, handler_addr});

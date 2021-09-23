@@ -32,7 +32,7 @@ private:
 	bool			_flag_connect;		// close connection
 	std::string		_body;				// 
 	size_t			_body_size;
-	size_t			_con_len;
+	size_t			_con_len;			// leigth of body
 
 };
 #endif
