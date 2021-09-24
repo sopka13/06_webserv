@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:57 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/23 16:48:29 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/24 10:25:09 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ static int		setAutoindex(std::string &str, t_location *location)
 	if (*start == ';' && (temp_value == "on" || temp_value == "off"))
 	{
 		str.erase(start);
-		if (temp_value == "yes")
+		if (temp_value == "on")
 			location->autoindex = true;
 	}
 	else
@@ -720,6 +720,7 @@ bool				Server::getAutoindex(std::string &str)
 	std::map<std::string, t_location>::iterator it = locations.find(str);
 	if (it == locations.end())
 		return (false);
+	std::cout << (locations[str]).autoindex << " = autoindex; str = " << str << std::endl;
 	return ((locations[str]).autoindex);
 }
 

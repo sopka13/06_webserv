@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/23 11:41:20 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/24 10:03:07 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@
 #include <sys/select.h>		//select
 #include <sys/wait.h>		//waitpid
 #include <ctime>			//clock
+#include <dirent.h>			//opendir
 
 class Socket;
 class Server;

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/23 22:51:59 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/24 11:10:55 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ int				Response_2::sendResponse()
 		_server->getMethods(path, m))
 	{
 		std::string full_path = _server->getLocations(path) + tile;
-		ret = sendingResponseGet(full_path, is_a_dir);//, response);
+		ret = sendingResponseGet(full_path, is_a_dir, path);//, response);
 	}
 
 	m = "PUT";
@@ -223,7 +223,73 @@ void			Response_2::readRequest()
 	return ;
 }
 
-int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_dir)//, Response &response)
+std::string		Response_2::ft_get_dir_list(std::string& full_path)
+{
+#ifdef DEBUG
+	std::cout	<< "Response_2::ft_get_dir_list start" << std::endl;
+#endif
+	DIR*			dirp;
+	struct dirent*	dp;
+	std::string		dir_content("<html>\n\t<body>\n");
+
+	// std::cout << "full_path = " << full_path << std::endl;
+
+	dirp = opendir(full_path.c_str());
+	while ((dp = readdir(dirp)) != NULL)
+	{
+		// std::cout	<< "xxx = " << dp->d_name
+		// 			<< "; " << dp->d_ino
+		// 			<< "; " << dp->d_off
+		// 			<< "; " << dp->d_reclen
+		// 			<< "; " << static_cast<int>(dp->d_type)
+		// 			<< std::endl;
+		// step x: If hidden file or dir
+		if (dp->d_name[0] == '.')
+			continue ;
+		// step x: If dir
+		else if (static_cast<int>(dp->d_type) == 4)
+		{
+			dir_content += "\t\t<p>";
+			dir_content += dp->d_name;
+			dir_content += '/';
+			dir_content += "</p>\n";
+		}
+		else
+		{
+			dir_content += "\t\t<p>";
+			dir_content += dp->d_name;
+			dir_content += "</p>\n";
+		}
+	}
+	(void)closedir(dirp);
+
+	dir_content += "\t</body>\n</html>\n";
+
+	// step 7: Create file and clean it
+	std::ofstream	temp_file;
+	std::string		cur_dir(full_path);
+	cur_dir += "dir_content.temp";
+	temp_file.open(cur_dir, std::ofstream::trunc);
+	if (!temp_file.is_open())
+		throw Exeption("ERROR in response_2: create temp_file error!");
+	temp_file << dir_content;
+	temp_file.close();
+
+		// if (dp->d_reclen == len && !strcmp(dp->d_name, full_path.c_str())) {
+		// 		(void)closedir(dirp);
+		// 		return FOUND;
+		// }
+
+
+#ifdef DEBUG
+	std::cout	<< "Response_2::ft_get_dir_list end; cur_dir = " << cur_dir
+				<< "; ret data = " << dir_content
+				<< std::endl;
+#endif
+	return (cur_dir);
+}
+
+int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_dir, std::string path)//, Response &response)
 {
 #ifdef DEBUG
 	std::cout	<< "Response_2::sendingResponseGet start: fd = " << _fd << std::endl;
@@ -236,18 +302,24 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 	std::string rezult_path;
 	if (S_ISDIR(is_a_dir.st_mode))
 	{
+		// step 2.1: Get index file
 		std::string index_name = getIndexFileName(full_path);
+
+		// step 2.2: If index file is not specified
 		if (index_name == "")
 		{
-			if (!_server->getAutoindex(full_path))
+			// step 2.2.1: Check autoindex
+			if (!_server->getAutoindex(path))
 			{
-				std::cerr << "this; " << full_path << "|" << std::endl;
+				std::cerr << "this; " << path << "|" << std::endl;
 				Headliners resp(std::string("HTTP/1.1"), std::string("403"));
 				resp.sendHeadliners(_fd);
 				return (-1);
 			}
+			// step 2.2.2: If autoindex on - get directory list
 			else
 			{
+				rezult_path = ft_get_dir_list(full_path);
 				// handler for create dirrect_list
 			}
 		}
