@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/23 09:00:15 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/23 22:12:45 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/24 23:03:26 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,15 @@ void			Headliners::setCloseConnection(bool status)
 		_headliners += "\n Connection: keep_alive";
 	else
 		_headliners += "\n Connection: close";
+	return ;
+}
+
+void			Headliners::setContentLeigth(int lenght)
+{
+	char	str[20];
+	sprintf(str, "%d", lenght);
+	_headliners += "\n Content-length: ";
+	_headliners += str;
 	return ;
 }
 

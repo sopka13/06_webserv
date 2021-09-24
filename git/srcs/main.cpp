@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/24 11:11:18 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/24 23:04:01 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,7 @@
 //			3 + add execute file passed in args
 //			4 + add execute file in request from client
 //	+ 18. реализовать автоиндекс
+//	+ 20. реализовать отправку заголовка content-leigth
 
 #include "../includes/headers.hpp"
 

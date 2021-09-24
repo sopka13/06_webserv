@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/24 11:10:55 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/24 22:11:46 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,8 +176,9 @@ void			Response_2::readRequest()
 		FD_ZERO(&rfd);
 		FD_SET(_fd, &rfd);
 
-		// step 2.4: Need to update the need for this item
+		// step 2.4: Check action on client fd
 		ret = select(1, &rfd, 0, 0, &tv);
+		//		if error
 		if (ret < 0)
 		{
 			Headliners resp(std::string("HTTP/1.1"), std::string("500"));
@@ -185,8 +186,10 @@ void			Response_2::readRequest()
 			std::string str("ERROR in ft_handle_epoll_fd: select fall");
 			throw Exeption(str);
 		}
+		//		if no actions
 		else if (ret == 0)
 			break ;
+		//		if have actions
 		else
 		{
 			if (FD_ISSET(_fd, &rfd))
@@ -208,10 +211,10 @@ void			Response_2::readRequest()
 	// }
 	// std::cout << "step 1 ok; data = " << _buff << std::endl;
 
-	// step 2: Add request in container if have any data from fd
+	// step 3: Add request in container if have any data from fd
 	if (data.size())
 		_requests.push_back(data);
-	std::cout << "\n" << data << "\n" << std::endl;
+	// std::cout << "\n" << data << "\n" << std::endl;
 
 #ifdef DEBUG
 	std::cout	<< "Response_2::readRequest end: fd = "

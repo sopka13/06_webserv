@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/23 08:53:42 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/23 11:48:38 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/24 22:32:56 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,5 +25,6 @@ public:
 
 	std::string		getHeadliners();			// return result headliners
 	void			setCloseConnection(bool);	// set Connection headliner true: keep-alive, false: close
+	void			setContentLeigth(int);		// set Content-Leigth headliner
 	void			sendHeadliners(int);		// send headliners in passed fd
 };
