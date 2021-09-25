@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../includes/Response_2.hpp"
+#include <fstream>
 
 Response_2::Response_2(Server *server, int fd):
 	_server(server),
@@ -120,11 +121,21 @@ int				Response_2::sendResponse()
 	{
 		std::string full_path = _server->getLocations(path) + tile;
 		lstat(full_path.c_str(), &is_a_dir);
-		std::string	buff_1 = response.getHttp() + " 200 OK\n\n";//  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
 		std::ofstream file;
-		file.open("../put_rezalt.txt");
+		file.open(full_path);
+		if (!file.is_open()){
+			//вернуть 500-ю
+			return (-1);
+		}
 		file << response.getBody();
 		file.close();
+		std::string	buff_1 = response.getHttp(); 
+		if (response.getBody() == "")
+			buff_1 += " 204 OK\n\n";//  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
+		else if (is_a_dir.st_size <= 0)
+			buff_1 += " 201 OK\n\n";
+		else
+			buff_1 += " 200 OK\n\n";
 		ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
 		std::cout << "\n RESPONS PUT: " << buff_1 << std::endl;
 	}
