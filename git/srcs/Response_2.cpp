@@ -131,9 +131,9 @@ int				Response_2::sendResponse()
 		file.close();
 		std::string	buff_1 = response.getHttp(); 
 		if (response.getBody() == "")
-			buff_1 += " 204 OK\n\n";//  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
+			buff_1 += " 204 No content\n\n";//  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
 		else if (is_a_dir.st_size <= 0)
-			buff_1 += " 201 OK\n\n";
+			buff_1 += " 201 Created\n\n";
 		else
 			buff_1 += " 200 OK\n\n";
 		ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
