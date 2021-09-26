@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/24 10:03:07 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/26 23:08:36 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 #include <fstream>			//ifstream
 #include <sys/types.h>
 #include <sys/socket.h>		//socket
+#include <sys/sendfile.h>	//sendfile
 #include <netdb.h>			//gethostbyname
 #include <stdlib.h>			//exit		FORBIDDEN
 #include <arpa/inet.h>		//inet_addr
@@ -48,6 +49,7 @@
 #include <sys/wait.h>		//waitpid
 #include <ctime>			//clock
 #include <dirent.h>			//opendir
+#include <fcntl.h>			//open
 
 class Socket;
 class Server;

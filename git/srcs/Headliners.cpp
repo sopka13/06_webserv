@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/23 09:00:15 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/24 23:03:26 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/26 23:22:16 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,18 +56,73 @@ std::string		Headliners::getHeadliners()
 void			Headliners::setCloseConnection(bool status)
 {
 	if (status)
-		_headliners += "\n Connection: keep_alive";
+		_headliners += "\nConnection: close";
 	else
-		_headliners += "\n Connection: close";
+		_headliners += "\nConnection: keep_alive";
 	return ;
 }
 
-void			Headliners::setContentLeigth(int lenght)
+void			Headliners::setContentLeigth(int length)
 {
-	char	str[20];
-	sprintf(str, "%d", lenght);
-	_headliners += "\n Content-length: ";
-	_headliners += str;
+// #ifdef DEBUG
+	std::cout	<< "Headliners setContentLeigth start; length = " << length << std::endl;
+// #endif
+	// step 1: Init data
+	char			str[32];
+	std::string		temp("\nContent-length: ");
+	std::string		size_size;
+	int				size;
+	int				correct = 4;
+
+	// step 2: Get size constant part
+	size = length;				// size of body
+	size += _headliners.size();	// size other headliners
+	size += temp.size();		// size of this headliner
+	size += 2;					// "\n\n" between healiners and body
+	size += correct; 			// correct transfer
+	std::cout << "step 2: size = " << size << std::endl;
+	
+	// step 3: Get size number
+	bzero(str, sizeof(str));
+	sprintf(str, "%d", size);
+	int i;
+	for (i = 0; str[i] != '\0'; ++i)
+		size_size += str[i];
+	size += size_size.size();
+	std::cout << "step 3: size = " << size << std::endl;
+
+	// step 4: Get full size
+	bzero(str, sizeof(str));
+	size_size.clear();
+	sprintf(str, "%d", size);
+	for (i = 0; str[i] != '\0'; ++i)
+		size_size += str[i];
+	while (size != (static_cast<int>(size_size.size()) +
+			2 + correct + static_cast<int>(temp.size()) + length +
+			static_cast<int>(_headliners.size())))
+	{
+		if (size < (static_cast<int>(size_size.size()) +
+					2 + static_cast<int>(temp.size()) + length +
+			static_cast<int>(_headliners.size())))
+			size++;
+		else
+			size--;
+	}
+	std::cout << "step 4: size = " << size << std::endl;
+
+	// step 5: Create headliner
+	bzero(str, sizeof(str));
+	size_size.clear();
+	sprintf(str, "%d", size);
+	for (i = 0; str[i] != '\0'; ++i)
+		size_size += str[i];
+	temp += size_size;
+	std::cout << "step 5: size_size = " << size_size << std::endl;
+
+	// step 6: Add headliner
+	_headliners += temp;
+	std::cout << "step 6: size of headliners = " << _headliners.size() + 2 << std::endl;
+
 	return ;
 }
 
@@ -77,5 +132,9 @@ void			Headliners::sendHeadliners(int fd)
 	int	ret = 0;
 	if ((ret = send(fd, temp.c_str(), temp.size(), 0)) == -1)
 		throw "ERROR in headliners: send error";
+
+	std::cout << "send:" << ret << std::endl;
+	std::cout << "Headliners:\n" << getHeadliners();
+
 	return ;
 }

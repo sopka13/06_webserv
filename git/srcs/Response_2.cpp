@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/26 10:38:47 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/26 23:29:13 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -335,6 +335,10 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 	// step 3: If have cgi go handle
 	if (haveCGI(rezult_path))
 		rezult_path = handleCGI(rezult_path);
+	
+	// step x: Get info about target file
+	struct stat	info;
+	stat(rezult_path.c_str(), &info);
 
 	// step 4: Open the requested file and read in buffer
 	std::ifstream	fileIndex;
@@ -354,12 +358,21 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 
 	// step 5: Send headers "200 OK"
 	Headliners resp(std::string("HTTP/1.1"), std::string("200"));
+	resp.setCloseConnection(false);
+	// resp.setContentLeigth(info.st_size);
 	resp.sendHeadliners(_fd);
 
 	// step 6: Send body
-	std::string str;
-	while(std::getline(fileIndex, str))
-		ret = send(_fd, str.c_str(), str.length(), 0);
+	fileIndex.close();
+	int		fd_from;
+	fd_from = open(rezult_path.c_str(), O_RDONLY);
+	ret = sendfile(_fd, fd_from, NULL, info.st_size);
+	// std::string str;
+	// while(std::getline(fileIndex, str))
+	// {
+	// 	ret = send(_fd, str.c_str(), str.length(), 0);
+	// 	std::cout << "send:" << ret << std::endl;
+	// }
 	
 	// step 7: Remove temp file
 	if (rezult_path.size() && rezult_path.find(".temp", 0) == (rezult_path.size() - 5))
