@@ -120,24 +120,33 @@ int				Response_2::sendResponse()
 		_server->getMethods(path, m))
 	{
 		std::string full_path = _server->getLocations(path) + tile;
-		lstat(full_path.c_str(), &is_a_dir);
+		int i = lstat(full_path.c_str(), &is_a_dir);
 		std::ofstream file;
 		file.open(full_path);
 		if (!file.is_open()){
-			//вернуть 500-ю
+			Headliners resp(std::string("HTTP/1.1"), std::string("500"));
+			resp.sendHeadliners(_fd);
 			return (-1);
 		}
 		file << response.getBody();
 		file.close();
 		std::string	buff_1 = response.getHttp(); 
-		if (response.getBody() == "")
-			buff_1 += " 204 No content\n\n";//  Content-Type: text/html; charset=UTF-8\n Content-Length: 88\n\n";
-		else if (is_a_dir.st_size <= 0)
-			buff_1 += " 201 Created\n\n";
-		else
-			buff_1 += " 200 OK\n\n";
-		ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
-		std::cout << "\n RESPONS PUT: " << buff_1 << std::endl;
+		if (response.getBody() == ""){
+			Headliners resp(std::string("HTTP/1.1"), std::string("204"));
+			resp.sendHeadliners(_fd);
+		}
+			
+		else if (i < 0){
+			Headliners resp(std::string("HTTP/1.1"), std::string("201"));
+			resp.sendHeadliners(_fd);
+		}
+		else{
+			Headliners resp(std::string("HTTP/1.1"), std::string("200"));
+			resp.sendHeadliners(_fd);
+
+		}
+		// ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
+		// std::cout << "\n RESPONS PUT: " << buff_1 << std::endl;
 	}
 
 	if (ret > 0)
