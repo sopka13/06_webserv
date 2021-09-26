@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/24 22:11:46 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/26 10:38:47 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,12 +78,12 @@ int				Response_2::sendResponse()
 	Response response(_requests.operator[](0));
 	_requests.pop_front();
 
-	// step x: If have close connection - return
+	// step 4: If have close connection - return
 	_close_flag = response.getClose();
 	if (_close_flag)
 		return (2);
 
-	// step 4: Write data for client
+	// step 5: Write data for client
 	path = response.getPath();
 	_variables = setVariables(path);
 	// std::cout	<< "Response_2::_variables =R" << _variables << "R" << std::endl;
@@ -180,8 +180,9 @@ void			Response_2::readRequest()
 			resp.sendHeadliners(_fd);
 		}
 
-		// step 2.2: Accumulate received data
+		// step 2.2: Accumulate received data and clean _buff
 		data += _buff;
+		ft_bzero(&_buff, sizeof(_buff));
 
 		// step 2.3: Clear data for select
 		FD_ZERO(&rfd);
@@ -208,19 +209,6 @@ void			Response_2::readRequest()
 			break ;
 		}
 	}
-
-	// step 1: Read data from client
-	// while ((ret = recv(_fd, _buff, sizeof(_buff), 0)))
-	// {
-	// 	if (ret < 0)
-	// 	{
-	// 		std::string str("ERROR in get response: read fail");
-	// 		throw Exeption(str);
-	// 	}
-	// 	data += _buff;
-	// 	ft_bzero(&_buff, sizeof(_buff));
-	// }
-	// std::cout << "step 1 ok; data = " << _buff << std::endl;
 
 	// step 3: Add request in container if have any data from fd
 	if (data.size())
