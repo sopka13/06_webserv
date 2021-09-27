@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/23 09:00:15 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/26 23:22:16 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/27 09:18:26 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,13 @@ Headliners::Headliners(std::string http_version, std::string return_code):
 	std::map<std::string, std::string>	status_code = {
 		{"100", " Continue"},
 		{"200", " OK"},
+		{"400", " Bad Request"},
 		{"403", " Forbidden"},
 		{"404", " Not Found"},
+		{"405", " Method Not Allowed"},
 		{"408", " Request Timeout"},
-		{"500", " Internal Server Error"}
+		{"500", " Internal Server Error"},
+		{"505", " HTTP Version Not Supported"}
 	};
 	_headliners += ' ';
 	_headliners += return_code;
@@ -64,9 +67,9 @@ void			Headliners::setCloseConnection(bool status)
 
 void			Headliners::setContentLeigth(int length)
 {
-// #ifdef DEBUG
+#ifdef DEBUG
 	std::cout	<< "Headliners setContentLeigth start; length = " << length << std::endl;
-// #endif
+#endif
 	// step 1: Init data
 	char			str[32];
 	std::string		temp("\nContent-length: ");
@@ -123,6 +126,9 @@ void			Headliners::setContentLeigth(int length)
 	_headliners += temp;
 	std::cout << "step 6: size of headliners = " << _headliners.size() + 2 << std::endl;
 
+#ifdef DEBUG
+	std::cout	<< "Headliners setContentLeigth end; _headliners size = " << size_size << std::endl;
+#endif
 	return ;
 }
 
@@ -133,8 +139,8 @@ void			Headliners::sendHeadliners(int fd)
 	if ((ret = send(fd, temp.c_str(), temp.size(), 0)) == -1)
 		throw "ERROR in headliners: send error";
 
-	std::cout << "send:" << ret << std::endl;
-	std::cout << "Headliners:\n" << getHeadliners();
+	// std::cout << "send:" << ret << std::endl;
+	// std::cout << "Headliners:\n" << getHeadliners();
 
 	return ;
 }

@@ -77,7 +77,8 @@ Response::~Response(){}
 
 //Response& Response::operator= (const Response& resp){}
 
-Response::Response(std::string &str):
+Response::Response(std::string &str, int fd):
+	_fd(fd),
 	_metod(0),
 	_flag_connect(false)
 {
@@ -85,8 +86,11 @@ Response::Response(std::string &str):
 	this->_metod = setMetod(str);
 	if (_metod == 0)
 	{
-		std::string str_1("ERROR in response: method not supported"); // 21.09.21 need engine for response errors page
-		std::cout << "fff " << str << std::endl;
+		Headliners resp(std::string("HTTP/1.1"), std::string("405"));
+		resp.setCloseConnection(false);
+		resp.sendHeadliners(_fd);
+
+		std::string str_1("ERROR in response: method not supported");
 		throw Exeption(str_1);
 	}
 	str = erase_back(str);
@@ -95,6 +99,10 @@ Response::Response(std::string &str):
 	this->_path = setPath(str);
 	if (!_path.size())
 	{
+		Headliners resp(std::string("HTTP/1.1"), std::string("400"));
+		resp.setCloseConnection(false);
+		resp.sendHeadliners(_fd);
+
 		std::string str_1("ERROR in response: path missed");
 		throw Exeption(str_1);
 	}
@@ -102,8 +110,12 @@ Response::Response(std::string &str):
 
 	// step 3: Get http
 	_http = setPath(str);
-	if (!_path.size())
+	if (!_http.size() || _http != "HTTP/1.1")//(_http != "HTTP/0.9" && _http != "HTTP/1.0" && _http != "HTTP/1.1"))
 	{
+		Headliners resp(std::string("HTTP/1.1"), std::string("505"));
+		resp.setCloseConnection(false);
+		resp.sendHeadliners(_fd);
+
 		std::string str_1("ERROR in response: http version missed");
 		throw Exeption(str_1);
 	}

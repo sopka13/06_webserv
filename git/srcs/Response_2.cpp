@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/26 23:29:13 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/27 09:45:26 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ int				Response_2::sendResponse()
 	// // step 1: Cycle of send response ??? do we need
 
 	// step 3: Parse response
-	Response response(_requests.operator[](0));
+	Response response(_requests.operator[](0), _fd);
 	_requests.pop_front();
 
 	// step 4: If have close connection - return
@@ -147,6 +147,16 @@ int				Response_2::sendResponse()
 		}
 		// ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
 		// std::cout << "\n RESPONS PUT: " << buff_1 << std::endl;
+	}
+
+	m = "POST";
+	if (response.getMetod() == 2 &&
+		(_server->getLocations(path) != "") &&
+		_server->getMethods(path, m))
+	{
+		std::cerr << "ERROR: Unhandled method POST! Need add handler" << std::endl;
+		// add:
+		//	1. if terget_file is a CGI - add get vars from body
 	}
 
 	if (ret > 0)

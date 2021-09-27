@@ -10,7 +10,7 @@ public:
 		public:
 			Exeption(const std::string& message) : std::runtime_error(message) {}
 	};
-	Response(std::string &str);
+	Response(std::string &str, int fd);
 	~Response();
 	//Response(const Response& resp);
 	//Response& operator= (const Response& resp);
@@ -26,6 +26,7 @@ public:
 	
 private:
 	Response();
+	int				_fd;				// client fd
 	int				_metod;				// request method
 	std::string		_http;				// http version
 	std::string		_path;				// path from request
