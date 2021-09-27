@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/27 09:45:26 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/27 10:31:22 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,18 @@ int				Response_2::sendResponse()
 	{
 		std::cerr << "ERROR: Unhandled method POST! Need add handler" << std::endl;
 		// add:
-		//	1. if terget_file is a CGI - add get vars from body
+		//	1. if target_file is a CGI:
+		//		a. get vars from body
+		//		b. execute CGI with received vars
+		//		c. send response 204 - if no content, 200 - if have content, or error if impossible
+		//	2. if target_file is not CGI but exist
+		//		a. If it's a directory
+		//			- create new file from body
+		//			- send response 201 - created, or error if creation impossible
+		//		b. If it's a file
+		//			- return 400 - Bad request
+		//	3. if target_file not doesn't exist
+		//		- create file and return 201 - created? or error if creation impossible
 	}
 
 	if (ret > 0)
