@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/23 09:00:15 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/27 09:18:26 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/29 00:30:49 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ Headliners::Headliners(std::string http_version, std::string return_code):
 	std::map<std::string, std::string>	status_code = {
 		{"100", " Continue"},
 		{"200", " OK"},
+		{"201", " Created"},
+		{"204", " No Content"},
 		{"400", " Bad Request"},
 		{"403", " Forbidden"},
 		{"404", " Not Found"},

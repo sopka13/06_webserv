@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:55:00 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/24 22:08:52 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/28 22:22:11 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ class Response_2
 	Response_2();
 	int				haveCGI(std::string &result_path);
 	std::string		handleCGI(std::string &result_path);
+	void			postHandle(Response *response);					// handle POST method
+	void			sendFile(std::string full_path);				// send file
 	
 public:
 	class	Exeption : public std::runtime_error {
@@ -35,7 +37,9 @@ public:
 
 	void			readRequest();
 	int				sendResponse();
-	int 			sendingResponseGet(std::string full_path, struct stat is_a_dir, std::string path);//, Response &response);
+	int 			sendingResponseGet(std::string full_path,
+										struct stat is_a_dir,
+										std::string path);
 	std::string		getIndexFileName(std::string path);
 	bool			getCloseFlag();
 	std::string 	setVariables(std::string &str);

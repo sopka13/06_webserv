@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:57 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/27 09:37:28 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/28 22:29:42 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -751,7 +751,10 @@ bool				Server::getMethods(std::string &key, std::string &method)
 {
 	std::map<std::string, t_location>::iterator it = locations.find(key);
 	if (it == locations.end())
+	{
+		std::cerr << "1" << std::endl;
 		return (false);
+	}
 
 	std::vector<std::string>::iterator it_2 = (locations[key]).allowed_methods.begin();
 	std::vector<std::string>::iterator it_3 = (locations[key]).allowed_methods.end();
@@ -759,7 +762,10 @@ bool				Server::getMethods(std::string &key, std::string &method)
 	while (it_2 != it_3)
 	{
 		if (*it_2 == method)
+		{
+			std::cerr << "2" << std::endl;
 			return (true);
+		}
 		it_2++;
 	}
 	return (false);

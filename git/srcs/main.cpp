@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/27 10:10:54 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/09/29 01:24:21 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,6 +128,7 @@
 //			2 rewrite handler fd with new class
 //	20. избавиться от состояния EPOLLOUT
 //	21. add post method															- I'm here
+//		- fix bag in sendfile after POST + CGI									- and here
 //	22. add check http:// path for valid
 //	+ 2. геттер в сервере на фавикон
 //	+ 3. файл для фавикона
