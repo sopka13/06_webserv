@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../includes/Response_2.hpp"
+#include <cstdio>
 #include <fstream>
 
 Response_2::Response_2(Server *server, int fd):
@@ -365,7 +366,23 @@ int				Response_2::sendResponse()
 		// ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
 		// std::cout << "\n RESPONS PUT: " << buff_1 << std::endl;
 	}
-
+	m = "DELETE";
+	if (response.getMetod() == 4 &&
+		(_server->getLocations(path) != "") &&
+		_server->getMethods(path, m))
+	{
+		std::string full_path = _server->getLocations(path) + tile;
+		int rez = remove(full_path.c_str());
+		if (rez >= 0){
+			Headliners resp(std::string("HTTP/1.1"), std::string("200"));
+			resp.sendHeadliners(_fd);
+		}
+		else {
+			std::cout << "rez " << rez << std::endl;
+			Headliners resp(std::string("HTTP/1.1"), std::string("500"));
+			resp.sendHeadliners(_fd);
+		}
+	}
 
 	if (ret > 0)
 		std::cout << "Respons " << ret  << std::endl;
