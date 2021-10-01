@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/29 01:23:24 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/01 10:41:28 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -406,6 +406,12 @@ void			Response_2::readRequest()
 			Headliners resp(std::string("HTTP/1.1"), std::string("100"));
 			resp.sendHeadliners(_fd);
 		}
+		// std::cerr << "data = ";
+		// std::ofstream	file("from_nginx.txt");
+		// for (int i = 0; i < 2048; ++i)
+		// {
+		// 	file << static_cast<char>(_buff[i]);
+		// }
 
 		// step 2.2: Accumulate received data and clean _buff
 		data += _buff;
@@ -440,7 +446,6 @@ void			Response_2::readRequest()
 	// step 3: Add request in container if have any data from fd
 	if (data.size())
 		_requests.push_back(data);
-	// std::cout << "\n" << data << "\n" << std::endl;
 
 #ifdef DEBUG
 	std::cout	<< "Response_2::readRequest end: fd = "
@@ -520,9 +525,9 @@ std::string		Response_2::ft_get_dir_list(std::string& full_path)
 
 int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_dir, std::string path)
 {
-#ifdef DEBUG
+// #ifdef DEBUG
 	std::cout	<< "Response_2::sendingResponseGet start: fd = " << _fd << std::endl;
-#endif
+// #endif
 	// step 1: Init data
 	int ret;
 
@@ -602,15 +607,15 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 	// }
 	
 	// step 7: Remove temp file
-	if (rezult_path.size() && rezult_path.find(".temp", 0) == (rezult_path.size() - 5))
-		remove(rezult_path.c_str());
+	// if (rezult_path.size() && rezult_path.find(".temp", 0) == (rezult_path.size() - 5))
+	// 	remove(rezult_path.c_str());
 
 	// step 8: Close target file
 	fileIndex.close();
 
-#ifdef DEBUG
-	std::cout	<< "Response_2::sendingResponseGet end: fd = " << _fd << std::endl;
-#endif
+// #ifdef DEBUG
+	std::cout	<< "Response_2::sendingResponseGet end: rezult_path = " << rezult_path << std::endl;
+// #endif
 	return (ret);
 }
 
@@ -686,14 +691,16 @@ std::string		Response_2::handleCGI(std::string &result_path)
 
 	// step 3: Add "-f" flag for php scripts
 	char temp[] = "-f";
+	// char temp1[] = "--";
+	// char temp2[] = "123";
 	if (_server->getCGI_format() == ".php" || _server->getCGI_format() == ".py")
 	{
 		// argv.push_back(temp);
-		argv = { temp, str, NULL };
+		argv = { temp, str, /*&temp1, temp2,*/ NULL };
 	}
 	else
 	{
-		argv = { str, NULL };
+		argv = { str, /*temp1, temp2,*/ NULL };
 	}
 
 	// step 5: Create envp and add env vars
@@ -733,7 +740,7 @@ std::string		Response_2::handleCGI(std::string &result_path)
 	while (cur_dir.size() && *end != '.')
 		cur_dir.erase(end--);
 	cur_dir.erase(end);
-	cur_dir += ".html";
+	cur_dir += "3.html";
 
 	// step 7: Create file and clean it
 	// std::ofstream	temp_file;

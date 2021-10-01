@@ -1,14 +1,14 @@
 <?php
-     echo "<html>
-	<head>
-		<title>good site</title>
-	</head>
-	<body>
-		<p>Hello friends!</p>
-	</body>
+echo "<html>
+	<body>";
+echo "var1 = $argv[0] <br>";
+echo "var2 = $argv[1] <br>";
+echo "var2 = $argv[2] <br>";
+echo "var2 = $argv[3] <br>";
+//		<p>Hello friends!</p>
+echo "</body>
 </html>";
 
-echo "Это тест <br>";
-echo "$_REQUEST[var1] <br>";
-echo "$_POST[var2] <br>";
+
 ?>
+
