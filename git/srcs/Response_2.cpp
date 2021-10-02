@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/01 10:41:28 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/02 23:11:04 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ Response_2::~Response_2()
 #ifdef DEBUG
 	std::cout	<< "Response_2::~Response_2 start: fd = " << _fd << std::endl;
 #endif
-
+	// std::cerr << "dctor" << std::endl;
 #ifdef DEBUG
 	std::cout	<< "Response_2::~Response_2 end: fd = " << _fd << std::endl;
 #endif
@@ -172,7 +172,7 @@ void			Response_2::postHandle(Response *response)
 	// step 4: Check error - if method no supported
 	if (!_server->getMethods(path, method))
 	{
-		Headliners resp(std::string("HTTP/1.1"), std::string("403"));
+		Headliners resp(std::string("HTTP/1.1"), std::string("405"));
 		resp.setCloseConnection(false);
 		resp.sendHeadliners(_fd);
 
@@ -286,103 +286,117 @@ int				Response_2::sendResponse()
 	// // step 1: Cycle of send response ??? do we need
 
 	// step 3: Parse response
-	Response response(_requests.operator[](0), _fd);
-	_requests.pop_front();
-
-	// step 4: If have close connection - return
-	_close_flag = response.getClose();
-	if (_close_flag)
-		return (2);
-
-	// step x: Handle POST method
-	if (response.getMetod() == 2)
+	int		flag = 0;
+	try
 	{
-		postHandle(&response);
-		return (0);
-	}
+		Response response(_requests.operator[](0), _fd);
+		flag = 1;
+		_requests.pop_front();
 
-	// step 5: Write data for client
-	path = response.getPath();
-	_variables = setVariables(path);
-	// std::cout	<< "Response_2::_variables =R" << _variables << "R" << std::endl;
-	// std::cout	<< "Response_2::path =R" << path << "R" << std::endl;
-	tile = "";
-	slesh = path.end() - 1;
-	while (_server->getLocations(path) == "" && path.length() > 1){
-		while (*slesh != '/' && slesh != path.begin()){
-			tile += *slesh;
-			path.erase(slesh, path.end());
-			--slesh;
+		// step 4: If have close connection - return
+		_close_flag = response.getClose();
+		if (_close_flag)
+			return (2);
+
+		// step x: Handle POST method
+		if (response.getMetod() == 2)
+		{
+			postHandle(&response);
+			return (0);
 		}
-		if (path.length() > 1){
-			tile += *slesh;
-			path.erase(slesh, path.end());
-			--slesh;
+
+		// step 5: Write data for client
+		path = response.getPath();
+		_variables = setVariables(path);
+		// std::cout	<< "Response_2::_variables =R" << _variables << "R" << std::endl;
+		// std::cout	<< "Response_2::path =R" << path << "R" << std::endl;
+		tile = "";
+		slesh = path.end() - 1;
+		while (_server->getLocations(path) == "" && path.length() > 1){
+			while (*slesh != '/' && slesh != path.begin()){
+				tile += *slesh;
+				path.erase(slesh, path.end());
+				--slesh;
+			}
+			if (path.length() > 1){
+				tile += *slesh;
+				path.erase(slesh, path.end());
+				--slesh;
+			}
 		}
+		
+		std::reverse(tile.begin(), tile.end());
+		std::string m = "GET";
+		struct stat is_a_dir;
+		if (response.getMetod() == 1 &&
+			(_server->getLocations(path) != "") &&
+			_server->getMethods(path, m))
+		{
+			std::string full_path = _server->getLocations(path) + tile;
+			ret = sendingResponseGet(full_path, is_a_dir, path);
+		}
+
+		m = "PUT";
+		if (response.getMetod() == 3 &&
+			(_server->getLocations(path) != "") &&
+			_server->getMethods(path, m))
+		{
+			std::string full_path = _server->getLocations(path) + tile;
+			int i = lstat(full_path.c_str(), &is_a_dir);
+			std::ofstream file;
+			file.open(full_path);
+			if (!file.is_open()){
+				Headliners resp(std::string("HTTP/1.1"), std::string("500"));
+				resp.sendHeadliners(_fd);
+				return (-1);
+			}
+			file << response.getBody();
+			file.close();
+			std::string	buff_1 = response.getHttp(); 
+			if (response.getBody() == ""){
+				Headliners resp(std::string("HTTP/1.1"), std::string("204"));
+				resp.sendHeadliners(_fd);
+			}
+				
+			else if (i < 0){
+				Headliners resp(std::string("HTTP/1.1"), std::string("201"));
+				resp.sendHeadliners(_fd);
+			}
+			else{
+				Headliners resp(std::string("HTTP/1.1"), std::string("200"));
+				resp.sendHeadliners(_fd);
+
+			}
+			// ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
+			// std::cout << "\n RESPONS PUT: " << buff_1 << std::endl;
+		}
+		m = "DELETE";
+		if (response.getMetod() == 4 &&
+			(_server->getLocations(path) != "") &&
+			_server->getMethods(path, m))
+		{
+			std::string full_path = _server->getLocations(path) + tile;
+			int rez = remove(full_path.c_str());
+			if (rez >= 0){
+				Headliners resp(std::string("HTTP/1.1"), std::string("200"));
+				resp.sendHeadliners(_fd);
+			}
+			else {
+				std::cout << "rez " << rez << std::endl;
+				Headliners resp(std::string("HTTP/1.1"), std::string("500"));
+				resp.sendHeadliners(_fd);
+			}
+		}
+	}
+	catch(const std::exception& e)
+	{
+		if (_requests.size() && flag == 0)
+		{
+			_requests.pop_front();
+		}
+		std::cerr << e.what() << '\n';
 	}
 	
-	std::reverse(tile.begin(), tile.end());
-	std::string m = "GET";
-	struct stat is_a_dir;
-	if (response.getMetod() == 1 &&
-		(_server->getLocations(path) != "") &&
-		_server->getMethods(path, m))
-	{
-		std::string full_path = _server->getLocations(path) + tile;
-		ret = sendingResponseGet(full_path, is_a_dir, path);
-	}
-
-	m = "PUT";
-	if (response.getMetod() == 3 &&
-		(_server->getLocations(path) != "") &&
-		_server->getMethods(path, m))
-	{
-		std::string full_path = _server->getLocations(path) + tile;
-		int i = lstat(full_path.c_str(), &is_a_dir);
-		std::ofstream file;
-		file.open(full_path);
-		if (!file.is_open()){
-			Headliners resp(std::string("HTTP/1.1"), std::string("500"));
-			resp.sendHeadliners(_fd);
-			return (-1);
-		}
-		file << response.getBody();
-		file.close();
-		std::string	buff_1 = response.getHttp(); 
-		if (response.getBody() == ""){
-			Headliners resp(std::string("HTTP/1.1"), std::string("204"));
-			resp.sendHeadliners(_fd);
-		}
-			
-		else if (i < 0){
-			Headliners resp(std::string("HTTP/1.1"), std::string("201"));
-			resp.sendHeadliners(_fd);
-		}
-		else{
-			Headliners resp(std::string("HTTP/1.1"), std::string("200"));
-			resp.sendHeadliners(_fd);
-
-		}
-		// ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
-		// std::cout << "\n RESPONS PUT: " << buff_1 << std::endl;
-	}
-	m = "DELETE";
-	if (response.getMetod() == 4 &&
-		(_server->getLocations(path) != "") &&
-		_server->getMethods(path, m))
-	{
-		std::string full_path = _server->getLocations(path) + tile;
-		int rez = remove(full_path.c_str());
-		if (rez >= 0){
-			Headliners resp(std::string("HTTP/1.1"), std::string("200"));
-			resp.sendHeadliners(_fd);
-		}
-		else {
-			std::cout << "rez " << rez << std::endl;
-			Headliners resp(std::string("HTTP/1.1"), std::string("500"));
-			resp.sendHeadliners(_fd);
-		}
-	}
 
 	if (ret > 0)
 		std::cout << "Respons " << ret  << std::endl;
@@ -401,6 +415,7 @@ void			Response_2::readRequest()
 	// step 1: Init data
 	int				ret = 0;
 	fd_set			rfd;
+	// fd_set			wfd;
 	std::string		data;
 	struct timeval	tv;
 	tv.tv_sec = 0;
@@ -423,11 +438,12 @@ void			Response_2::readRequest()
 			Headliners resp(std::string("HTTP/1.1"), std::string("100"));
 			resp.sendHeadliners(_fd);
 		}
-		// std::cerr << "data = ";
+		// std::cerr << "ret = " << ret << std::endl;
 		// std::ofstream	file("from_nginx.txt");
 		// for (int i = 0; i < 2048; ++i)
 		// {
-		// 	file << static_cast<char>(_buff[i]);
+			// std::cerr << static_cast<char>(_buff[i]);
+			// file << static_cast<char>(_buff[i]);
 		// }
 
 		// step 2.2: Accumulate received data and clean _buff
@@ -436,7 +452,10 @@ void			Response_2::readRequest()
 
 		// step 2.3: Clear data for select
 		FD_ZERO(&rfd);
+		// FD_ZERO(&wfd);
 		FD_SET(_fd, &rfd);
+		// FD_SET(_fd, &wfd);
+
 
 		// step 2.4: Check action on client fd
 		ret = select(1, &rfd, 0, 0, &tv);
@@ -450,12 +469,14 @@ void			Response_2::readRequest()
 		}
 		//		if no actions
 		else if (ret == 0)
+			// continue ;
 			break ;
 		//		if have actions
 		else
 		{
 			if (FD_ISSET(_fd, &rfd))
 				continue ;
+			// if (FD_ISSET(_fd, &wfd))
 			break ;
 		}
 	}
@@ -463,6 +484,7 @@ void			Response_2::readRequest()
 	// step 3: Add request in container if have any data from fd
 	if (data.size())
 		_requests.push_back(data);
+	std::cerr << "--\n" << data << "\n--" << std::endl;
 
 #ifdef DEBUG
 	std::cout	<< "Response_2::readRequest end: fd = "

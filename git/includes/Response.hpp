@@ -11,6 +11,7 @@ public:
 			Exeption(const std::string& message) : std::runtime_error(message) {}
 	};
 	Response(std::string &str, int fd);
+	Response();
 	~Response();
 	//Response(const Response& resp);
 	//Response& operator= (const Response& resp);
@@ -25,7 +26,6 @@ public:
 	size_t 			getConLen();
 	
 private:
-	Response();
 	int				_fd;				// client fd
 	int				_metod;				// request method
 	std::string		_http;				// http version

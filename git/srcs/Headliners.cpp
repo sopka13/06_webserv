@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/23 09:00:15 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/29 00:30:49 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/02 23:11:04 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,7 +142,7 @@ void			Headliners::sendHeadliners(int fd)
 		throw "ERROR in headliners: send error";
 
 	// std::cout << "send:" << ret << std::endl;
-	// std::cout << "Headliners:\n" << getHeadliners();
+	std::cout << "Headliners:\n" << getHeadliners();
 
 	return ;
 }
