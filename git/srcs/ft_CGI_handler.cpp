@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/21 09:26:58 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/23 16:35:28 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/05 10:29:26 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,8 @@ int			ft_CGI_handler(t_vars* vars, std::string &str)
 #ifdef DEBUG
 	std::cout << "ft_CGI_handler start: str = |" << str << "|" << std::endl;
 #endif
-	std::map<std::string, int (*)(std::string&, std::string&)> functions = {
-		{"CGI_handler", CGI_handler}
-	};
+	std::map<std::string, int (*)(std::string&, std::string&)> functions;
+	functions.insert(std::pair<std::string, int (*)(std::string&, std::string&)>("CGI_handler", CGI_handler));
 	t_location				location_flags;
 	location_flags.autoindex = false;
 	location_flags.redirect = false;
@@ -151,7 +150,7 @@ int			ft_CGI_handler(t_vars* vars, std::string &str)
 		return (1);
 	}
 
-	vars->CGI->insert({temp_key, handler_addr});
+	vars->CGI->insert(std::pair<std::string, std::string>(temp_key, handler_addr));
 
 #ifdef DEBUG
 	std::cout << "ft_CGI_handler end: str = |" << str << "|" << std::endl;

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/19 10:57:36 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/23 16:52:44 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/05 10:37:24 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int			ft_server_handle(t_vars* vars, std::string &str)
 #endif
 	try
 	{
-		vars->servers->emplace_back(Server(str, vars));
+		vars->servers->push_back(Server(str, vars));
 	}
 	catch(const std::exception& e)
 	{

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/02 23:11:04 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/05 10:44:52 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,7 +186,7 @@ void			Response_2::postHandle(Response *response)
 	{
 		// step 1: Create new file and write body
 		std::ofstream	new_file;
-		new_file.open(full_path);
+		new_file.open(full_path.c_str());
 		new_file << response->getBody();
 		new_file.close();
 
@@ -239,7 +239,7 @@ void			Response_2::postHandle(Response *response)
 			{
 				// step 1: Create new file and write body
 				std::ofstream	new_file;
-				new_file.open(full_path);
+				new_file.open(full_path.c_str());
 				new_file << response->getBody();
 				new_file.close();
 				
@@ -344,7 +344,7 @@ int				Response_2::sendResponse()
 			std::string full_path = _server->getLocations(path) + tile;
 			int i = lstat(full_path.c_str(), &is_a_dir);
 			std::ofstream file;
-			file.open(full_path);
+			file.open(full_path.c_str());
 			if (!file.is_open()){
 				Headliners resp(std::string("HTTP/1.1"), std::string("500"));
 				resp.sendHeadliners(_fd);
@@ -542,7 +542,7 @@ std::string		Response_2::ft_get_dir_list(std::string& full_path)
 	std::ofstream	temp_file;
 	std::string		cur_dir(full_path);
 	cur_dir += "dir_content.temp";
-	temp_file.open(cur_dir, std::ofstream::trunc);
+	temp_file.open(cur_dir.c_str(), std::ofstream::trunc);
 	if (!temp_file.is_open())
 		throw Exeption("ERROR in response_2: create temp_file error!");
 	temp_file << dir_content;
@@ -613,12 +613,12 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 
 	// step 4: Open the requested file and read in buffer
 	std::ifstream	fileIndex;
-	fileIndex.open(rezult_path);
+	fileIndex.open(rezult_path.c_str());
 	if (!fileIndex.is_open()){
 		Headliners resp(std::string("HTTP/1.1"), std::string("404"));
 		resp.sendHeadliners(_fd);
 
-		std::ifstream err_404(_server->getErrPage());
+		std::ifstream err_404((_server->getErrPage()).c_str());
 		std::string str;
 		while(std::getline(err_404, str))
 			send(_fd, str.c_str(), str.size(), 0);
@@ -667,7 +667,7 @@ std::string		Response_2::getIndexFileName(std::string path){
 	std::vector<std::string>::iterator n = ind.begin();
 	while (n != ind.end()){
 		name = *n;
-		std::ifstream	file(path + name);
+		std::ifstream	file((path + name).c_str());
 		if (file.is_open()){
 			file.close();
 			return (name);
@@ -730,16 +730,17 @@ std::string		Response_2::handleCGI(std::string &result_path)
 
 	// step 3: Add "-f" flag for php scripts
 	char temp[] = "-f";
-	// char temp1[] = "--";
-	// char temp2[] = "123";
 	if (_server->getCGI_format() == ".php" || _server->getCGI_format() == ".py")
 	{
 		// argv.push_back(temp);
-		argv = { temp, str, /*&temp1, temp2,*/ NULL };
+		argv.push_back(temp);
+		argv.push_back(str);
+		argv.push_back(NULL);
 	}
 	else
 	{
-		argv = { str, /*temp1, temp2,*/ NULL };
+		argv.push_back(str);
+		argv.push_back(NULL);
 	}
 
 	// step 5: Create envp and add env vars
@@ -771,7 +772,7 @@ std::string		Response_2::handleCGI(std::string &result_path)
 		envp.push_back(NULL);
 	}
 	else
-		envp = { NULL };
+		envp.push_back(NULL);
 
 	// step 6: Construct file_name for result CGI handler
 	std::string::iterator	end = cur_dir.end();

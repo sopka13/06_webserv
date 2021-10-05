@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/05 08:49:28 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/05 11:10:28 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,31 +25,31 @@
 
 #include <iostream>
 #include <fstream>			//ifstream
-#include <sys/types.h>		//				FORBIDDEN
-#include <sys/socket.h>		//socket		FORBIDDEN
-#include <sys/sendfile.h>	//sendfile		FORBIDDEN
-#include <netdb.h>			//gethostbyname	FORBIDDEN
-#include <stdlib.h>			//exit			FORBIDDEN
-#include <arpa/inet.h>		//inet_addr		FORBIDDEN
-#include <unistd.h>			//write			FORBIDDEN
-#include <errno.h>			//errno			FORBIDDEN
+#include <sys/types.h>
+#include <sys/socket.h>		//socket
+#include <sys/sendfile.h>	//sendfile
+#include <netdb.h>			//gethostbyname
+#include <stdlib.h>			//exit
+#include <arpa/inet.h>		//inet_addr
+#include <unistd.h>			//write
+#include <errno.h>			//errno
 #include <cstring>			//strerror
 #include <map>				//map
 #include <iterator>			//iterator
 #include <deque>			//deque
 #include <vector>			//vector
 #include <string>
-#include <thread>
-#include <semaphore.h>		//				FORBIDDEN
-#include <mutex>
-#include <csignal>
 #include <algorithm>
-#include <sys/epoll.h>		//epool			FORBIDDEN
-#include <sys/select.h>		//select		FORBIDDEN
-#include <sys/wait.h>		//waitpid		FORBIDDEN
+#include <sys/epoll.h>		//epool
+#include <sys/select.h>		//select
+#include <sys/wait.h>		//waitpid
 #include <ctime>			//clock
-#include <dirent.h>			//opendir		FORBIDDEN
-#include <fcntl.h>			//open			FORBIDDEN
+#include <dirent.h>			//opendir
+#include <fcntl.h>			//open
+// #include <semaphore.h>		//sem_open
+// #include <csignal>
+// #include <thread>
+// #include <mutex>
 
 class Socket;
 class Server;
@@ -108,9 +108,9 @@ typedef struct		s_vars
 	int							ret;						// return value
 	std::deque<Server>			*servers;					// all supported servers
 	std::vector<Socket>			*sockets;					// all listen sockets
-	std::vector<std::thread>	threads;					// threads for servers
-	sem_t						*sema;						// semaphores
-	std::mutex					print_in_log;				// mutex for write in log file
+	// std::vector<std::thread>	threads;					// threads for servers
+	// sem_t						*sema;						// semaphores
+	// std::mutex					print_in_log;				// mutex for write in log file
 	std::string					error_page;					// error page addr
 	int							epoll_fd;					// epoll fd
 	struct epoll_event			ev;							// struct for add fd in queue epoll

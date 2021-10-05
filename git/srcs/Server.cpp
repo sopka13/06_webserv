@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:57 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/02 23:11:07 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/05 10:36:57 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -384,12 +384,11 @@ static int		setLocation(t_server *server_data, std::string &str, std::map<std::s
 	if (server_data == NULL)
 		std::cout << "Bad args in setLocation" << std::endl;
 
-	std::map<std::string, int (*)(std::string&, t_location*)> functions = {
-		{"root", setRoot},
-		{"autoindex", setAutoindex},
-		{"redirect", setRedirect},
-		{"methods", setMethods}
-	};
+	std::map<std::string, int (*)(std::string&, t_location*)> functions;
+	functions.insert(std::pair<std::string, int (*)(std::string&, t_location*)>("root", setRoot));
+	functions.insert(std::pair<std::string, int (*)(std::string&, t_location*)>("autoindex", setAutoindex));
+	functions.insert(std::pair<std::string, int (*)(std::string&, t_location*)>("redirect", setRedirect));
+	functions.insert(std::pair<std::string, int (*)(std::string&, t_location*)>("methods", setMethods));
 	t_location				location_flags;
 	location_flags.autoindex = false;
 	location_flags.redirect = false;
@@ -470,7 +469,7 @@ static int		setLocation(t_server *server_data, std::string &str, std::map<std::s
 		
 	}
 
-	locations->insert({temp_key, location_flags});
+	locations->insert(std::pair<std::string, t_location>(temp_key, location_flags));
 
 #ifdef DEBUG
 	std::cout	<< "setLocation end; Location size = " << locations->size()
@@ -580,14 +579,13 @@ Server::Server(std::string &str, t_vars *vars):
 	// step 0: Init data
 	ft_bzero(&server_data, sizeof(t_server));
 	// server_data.locations = new std::map<std::string, std::string>;
-	std::map<std::string, int (*)(t_server*, std::string &, std::map<std::string, t_location>*)> functions = {
-		{"listen", setListen},
-		{"server_name", setName},
-		{"location", setLocation},
-		{"index", setIndex},
-		{"CGI_format", setCGI_format}//,
-		// {"CGI_handler", setCGI_handler}
-	};
+	std::map<std::string, int (*)(t_server*, std::string &, std::map<std::string, t_location>*)> functions;
+	functions.insert(std::pair<std::string, int (*)(t_server*, std::string &, std::map<std::string, t_location>*)>("listen", setListen));
+	functions.insert(std::pair<std::string, int (*)(t_server*, std::string &, std::map<std::string, t_location>*)>("server_name", setName));
+	functions.insert(std::pair<std::string, int (*)(t_server*, std::string &, std::map<std::string, t_location>*)>("location", setLocation));
+	functions.insert(std::pair<std::string, int (*)(t_server*, std::string &, std::map<std::string, t_location>*)>("index", setIndex));
+	functions.insert(std::pair<std::string, int (*)(t_server*, std::string &, std::map<std::string, t_location>*)>("CGI_format", setCGI_format));
+		//functions.insert(std::pair<std::string, int (*)(t_server*, std::string &, std::map<std::string, t_location>*)>("CGI_handler", setCGI_handler));
 	std::string::iterator	start = str.begin();
 	std::string				temp;
 	int						i = 0;

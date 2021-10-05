@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:02:30 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/22 13:02:18 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/05 11:06:36 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,14 +48,14 @@ void		ft_init_data(t_vars *vars, int argc, char** argv, char** envp)
 		ft_exit(vars);
 
 	// step 5: Create semaphores for listen sockets
-	sem_unlink(SEM_NAME_1);
+	// sem_unlink(SEM_NAME_1);
 	
-	vars->sema = sem_open(SEM_NAME_1, 0100, 0666, vars->sockets->capacity());
-	if (vars->sema == SEM_FAILED)
-	{
-		std::cerr << "ERROR in ft_init_data: Semaphore create faill" << std::endl;
-		ft_exit(vars);
-	}
+	// vars->sema = sem_open(SEM_NAME_1, 0100, 0666, vars->sockets->capacity());
+	// if (vars->sema == SEM_FAILED)
+	// {
+	// 	std::cerr << "ERROR in ft_init_data: Semaphore create faill" << std::endl;
+	// 	ft_exit(vars);
+	// }
 
 #ifdef DEBUG
 	std::cout << "ft_init_data end" << std::endl;

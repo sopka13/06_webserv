@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/23 09:00:15 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/02 23:11:04 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/05 10:31:39 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,19 +21,18 @@ Headliners::Headliners(std::string http_version, std::string return_code):
 				<< "| return_code = |" << return_code << "|"
 				<< std::endl;
 #endif
-	std::map<std::string, std::string>	status_code = {
-		{"100", " Continue"},
-		{"200", " OK"},
-		{"201", " Created"},
-		{"204", " No Content"},
-		{"400", " Bad Request"},
-		{"403", " Forbidden"},
-		{"404", " Not Found"},
-		{"405", " Method Not Allowed"},
-		{"408", " Request Timeout"},
-		{"500", " Internal Server Error"},
-		{"505", " HTTP Version Not Supported"}
-	};
+	std::map<std::string, std::string>	status_code;
+	status_code.insert(std::pair<std::string, std::string>("100", " Continue"));
+	status_code.insert(std::pair<std::string, std::string>("200", " OK"));
+	status_code.insert(std::pair<std::string, std::string>("201", " Created"));
+	status_code.insert(std::pair<std::string, std::string>("204", " No Content"));
+	status_code.insert(std::pair<std::string, std::string>("400", " Bad Request"));
+	status_code.insert(std::pair<std::string, std::string>("403", " Forbidden"));
+	status_code.insert(std::pair<std::string, std::string>("404", " Not Found"));
+	status_code.insert(std::pair<std::string, std::string>("405", " Method Not Allowed"));
+	status_code.insert(std::pair<std::string, std::string>("408", " Request Timeout"));
+	status_code.insert(std::pair<std::string, std::string>("500", " Internal Server Error"));
+	status_code.insert(std::pair<std::string, std::string>("505", " HTTP Version Not Supported"));
 	_headliners += ' ';
 	_headliners += return_code;
 

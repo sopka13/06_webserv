@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:37:55 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/23 10:25:19 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/05 10:54:46 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@ static void			ft_CGI_from_args(t_vars *vars, std::string &format)
 	// step 1: Init data
 	int					ret = 0;
 	std::vector<char*>	argv;// = { NULL };
-	std::vector<char*>	envp = { NULL };
+	std::vector<char*>	envp;
+	envp.push_back(NULL);
 
 	// step 2: Add file_name in argv
 	char		dir[100];
@@ -48,12 +49,14 @@ static void			ft_CGI_from_args(t_vars *vars, std::string &format)
 	char temp[] = "-f";
 	if (format == ".py" || format == ".php")
 	{
-		// argv.push_back(temp);
-		argv = { temp, str, NULL };
+		argv.push_back(temp);
+		argv.push_back(str);
+		argv.push_back(NULL);
 	}
 	else
 	{
-		argv = { str, NULL };
+		argv.push_back(str);
+		argv.push_back(NULL);
 	}
 
 	// std::cerr << argv.operator[](0) << std::endl;
@@ -134,7 +137,7 @@ int					ft_parse_config(t_vars *vars)
 
 	// step 1: Init data
 	std::ifstream	configFile((vars->config_file_name.size()) ?
-								vars->config_file_name : DEF_ADR_CONF_FILE);
+								(vars->config_file_name).c_str() : DEF_ADR_CONF_FILE);
 	std::string		str;
 
 	// step 2: Open config file
@@ -146,12 +149,11 @@ int					ft_parse_config(t_vars *vars)
 
 	// step 3: Init data for read config file
 	std::string		str_sum;
-	std::map<std::string, int (*)(t_vars*, std::string&)> functions = {
-		{"http", ft_http_handle},
-		{"log_file", ft_log_file_handle},
-		{"error_page", ft_error_page},
-		{"CGI", ft_CGI_handler}
-	};
+	std::map<std::string, int (*)(t_vars*, std::string&)> functions;
+	functions.insert(std::pair<std::string, int (*)(t_vars*, std::string&)>("http", ft_http_handle));
+	functions.insert(std::pair<std::string, int (*)(t_vars*, std::string&)>("log_file", ft_log_file_handle));
+	functions.insert(std::pair<std::string, int (*)(t_vars*, std::string&)>("error_page", ft_error_page));
+	functions.insert(std::pair<std::string, int (*)(t_vars*, std::string&)>("CGI", ft_CGI_handler));
 
 	// step 4: Read config file in str_sum
 	while(std::getline(configFile, str))

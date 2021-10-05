@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/26 22:12:46 by eyohn             #+#    #+#             */
-/*   Updated: 2021/08/26 22:27:26 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/05 10:13:06 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ void		ft_write_in_log_file(t_vars *vars, const char *str)
 	std::string		date(ctime(&now));
 	date.erase(date.end() - 1);
 
-	vars->print_in_log.lock();
+	// vars->print_in_log.lock();
 	*(vars->log_file) << date << ": " << str << std::endl;
-	vars->print_in_log.unlock();
+	// vars->print_in_log.unlock();
 	return ;
 }

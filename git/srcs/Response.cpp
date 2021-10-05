@@ -135,7 +135,7 @@ Response::Response(std::string &str, int fd):
 			con_l += *it;
 			++it;
 		}
-		_con_len = std::stoi(con_l);
+		_con_len = std::atoi(con_l.c_str());
 		// std::cout << "CON =" << con_l << "R" << std::endl;
 	}
 	

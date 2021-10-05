@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 17:13:43 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/02 23:11:03 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/05 10:55:36 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void		ft_handle_epoll_action(t_vars *vars, int fd)
 			}
 
 			// step 1.4: Add socket number for fd for next handle
-			vars->fd_identify_socket->insert({vars->sockets->operator[](i).getFd(), i});
+			vars->fd_identify_socket->insert(std::pair<int, int>(vars->sockets->operator[](i).getFd(), i));
 
 			#ifdef DEBUG
 				std::cout	<< "ft_handle_epoll_action end: fd = " << fd << std::endl;

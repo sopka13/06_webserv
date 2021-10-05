@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/05 09:27:48 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/05 11:11:49 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,11 @@
 **
 ** • You can use every macro and define like FD_SET, FD_CLR, FD_ISSET, FD_ZERO				+
 ** (understanding what they do and how they do it is very useful.)
-** • You must write an HTTP server in C++ 98.												-
+** • You must write an HTTP server in C++ 98.												+
 ** • If you need more C functions, you can use them but always prefer C++.					+
-** • The C++ standard must be C++ 98. Your project must compile with it.					-
+** • The C++ standard must be C++ 98. Your project must compile with it.					+
 ** • No external library, no Boost, etc...													+
-** • Try to always use the most "C++" code possible (for example use <cstring> over			-
+** • Try to always use the most "C++" code possible (for example use <cstring> over			+
 ** <string.h>).
 ** • Your server must be compatible with the web browser of your choice.					+
 ** // Ваш сервер должен быть совместим с выбранным вами веб-браузером.
@@ -185,7 +185,7 @@ int		main(int argc, char **argv, char **envp)
 	// step 4: Create socket and add in epoll queue
 	for (unsigned long int i = 0; i < vars.servers->size(); ++i)
 	{
-		vars.sockets->emplace_back(Socket(&vars.servers->operator[](i)));
+		vars.sockets->push_back(Socket(&vars.servers->operator[](i)));
 
 		vars.ev.events = EPOLLIN | EPOLLOUT;
 		vars.ev.data.fd = vars.sockets->operator[](i).getTcp_sockfd();
