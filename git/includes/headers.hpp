@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/26 23:08:36 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/05 08:49:28 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,31 +25,31 @@
 
 #include <iostream>
 #include <fstream>			//ifstream
-#include <sys/types.h>
-#include <sys/socket.h>		//socket
-#include <sys/sendfile.h>	//sendfile
-#include <netdb.h>			//gethostbyname
-#include <stdlib.h>			//exit		FORBIDDEN
-#include <arpa/inet.h>		//inet_addr
-#include <unistd.h>			//write		FORBIDDEN
-#include <errno.h>			//errno		FORBIDDEN
-#include <string.h>			//strerror	FORBIDDEN
+#include <sys/types.h>		//				FORBIDDEN
+#include <sys/socket.h>		//socket		FORBIDDEN
+#include <sys/sendfile.h>	//sendfile		FORBIDDEN
+#include <netdb.h>			//gethostbyname	FORBIDDEN
+#include <stdlib.h>			//exit			FORBIDDEN
+#include <arpa/inet.h>		//inet_addr		FORBIDDEN
+#include <unistd.h>			//write			FORBIDDEN
+#include <errno.h>			//errno			FORBIDDEN
+#include <cstring>			//strerror
 #include <map>				//map
 #include <iterator>			//iterator
 #include <deque>			//deque
 #include <vector>			//vector
 #include <string>
 #include <thread>
-#include <semaphore.h>
+#include <semaphore.h>		//				FORBIDDEN
 #include <mutex>
 #include <csignal>
 #include <algorithm>
-#include <sys/epoll.h>		//epool
-#include <sys/select.h>		//select
-#include <sys/wait.h>		//waitpid
+#include <sys/epoll.h>		//epool			FORBIDDEN
+#include <sys/select.h>		//select		FORBIDDEN
+#include <sys/wait.h>		//waitpid		FORBIDDEN
 #include <ctime>			//clock
-#include <dirent.h>			//opendir
-#include <fcntl.h>			//open
+#include <dirent.h>			//opendir		FORBIDDEN
+#include <fcntl.h>			//open			FORBIDDEN
 
 class Socket;
 class Server;
