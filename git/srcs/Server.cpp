@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:57 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/05 10:36:57 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/10 15:22:27 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -779,6 +779,11 @@ const std::string	&Server::getErrPage()
 	return (_vars->error_page);
 }
 
+const std::string	&Server::getWelcomePage()
+{
+	return (_vars->welcome_page);
+}
+
 const std::string	&Server::getCGI_format()
 {
 	return (server_data.CGI_format);
@@ -787,4 +792,29 @@ const std::string	&Server::getCGI_format()
 const std::string	&Server::getCGI_handler()
 {
 	return (server_data.CGI_handler);
+}
+
+int					Server::getSockFd()
+{
+	return (server_data.sock_data.tcp_sockfd);
+}
+
+int					Server::getEpollFd()
+{
+	return (_vars->epoll_fd);
+}
+
+struct epoll_event*	Server::getEpollEvent()
+{
+	return (&_vars->ev);
+}
+
+void				Server::setSockFd(int fd)
+{
+	server_data.sock_data.tcp_sockfd = fd;
+}
+
+std::map<int, Response_2*>*	Server::getRequestContainerPointer()
+{
+	return (_vars->request_container);
 }

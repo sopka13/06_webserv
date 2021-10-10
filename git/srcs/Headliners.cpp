@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/23 09:00:15 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/05 10:31:39 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/08 13:32:41 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,60 +72,63 @@ void			Headliners::setContentLeigth(int length)
 	std::cout	<< "Headliners setContentLeigth start; length = " << length << std::endl;
 #endif
 	// step 1: Init data
-	char			str[32];
+	// char			str[32];
 	std::string		temp("\nContent-length: ");
-	std::string		size_size;
-	int				size;
-	int				correct = 4;
+	char			size_size[32];
 
-	// step 2: Get size constant part
-	size = length;				// size of body
-	size += _headliners.size();	// size other headliners
-	size += temp.size();		// size of this headliner
-	size += 2;					// "\n\n" between healiners and body
-	size += correct; 			// correct transfer
-	std::cout << "step 2: size = " << size << std::endl;
+	sprintf(size_size, "%d", length);
+
+	// int				size;
+	// int				correct = 4;
+
+	// // step 2: Get size constant part
+	// size = length;				// size of body
+	// size += _headliners.size();	// size other headliners
+	// size += temp.size();		// size of this headliner
+	// size += 2;					// "\n\n" between healiners and body
+	// size += correct; 			// correct transfer
+	// // std::cout << "step 2: size = " << size << std::endl;
 	
-	// step 3: Get size number
-	bzero(str, sizeof(str));
-	sprintf(str, "%d", size);
-	int i;
-	for (i = 0; str[i] != '\0'; ++i)
-		size_size += str[i];
-	size += size_size.size();
-	std::cout << "step 3: size = " << size << std::endl;
+	// // step 3: Get size number
+	// bzero(str, sizeof(str));
+	// sprintf(str, "%d", size);
+	// int i;
+	// for (i = 0; str[i] != '\0'; ++i)
+	// 	size_size += str[i];
+	// size += size_size.size();
+	// // std::cout << "step 3: size = " << size << std::endl;
 
-	// step 4: Get full size
-	bzero(str, sizeof(str));
-	size_size.clear();
-	sprintf(str, "%d", size);
-	for (i = 0; str[i] != '\0'; ++i)
-		size_size += str[i];
-	while (size != (static_cast<int>(size_size.size()) +
-			2 + correct + static_cast<int>(temp.size()) + length +
-			static_cast<int>(_headliners.size())))
-	{
-		if (size < (static_cast<int>(size_size.size()) +
-					2 + static_cast<int>(temp.size()) + length +
-			static_cast<int>(_headliners.size())))
-			size++;
-		else
-			size--;
-	}
-	std::cout << "step 4: size = " << size << std::endl;
+	// // step 4: Get full size
+	// bzero(str, sizeof(str));
+	// size_size.clear();
+	// sprintf(str, "%d", size);
+	// for (i = 0; str[i] != '\0'; ++i)
+	// 	size_size += str[i];
+	// while (size != (static_cast<int>(size_size.size()) +
+	// 		2 + correct + static_cast<int>(temp.size()) + length +
+	// 		static_cast<int>(_headliners.size())))
+	// {
+	// 	if (size < (static_cast<int>(size_size.size()) +
+	// 				2 + static_cast<int>(temp.size()) + length +
+	// 		static_cast<int>(_headliners.size())))
+	// 		size++;
+	// 	else
+	// 		size--;
+	// }
+	// // std::cout << "step 4: size = " << size << std::endl;
 
-	// step 5: Create headliner
-	bzero(str, sizeof(str));
-	size_size.clear();
-	sprintf(str, "%d", size);
-	for (i = 0; str[i] != '\0'; ++i)
-		size_size += str[i];
+	// // step 5: Create headliner
+	// bzero(str, sizeof(str));
+	// size_size.clear();
+	// sprintf(str, "%d", size);
+	// for (i = 0; str[i] != '\0'; ++i)
+	// 	size_size += str[i];
 	temp += size_size;
-	std::cout << "step 5: size_size = " << size_size << std::endl;
+	// // std::cout << "step 5: size_size = " << size_size << std::endl;
 
 	// step 6: Add headliner
 	_headliners += temp;
-	std::cout << "step 6: size of headliners = " << _headliners.size() + 2 << std::endl;
+	// std::cout << "step 6: size of headliners = " << _headliners.size() + 2 << std::endl;
 
 #ifdef DEBUG
 	std::cout	<< "Headliners setContentLeigth end; _headliners size = " << size_size << std::endl;

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:47 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/23 16:38:13 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/10 15:21:55 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,15 @@ public:
 	sockaddr_in*				getServAddr();								// Return serv addr
 	bool						getDefault();								// Return default or not
 	const std::string&			getErrPage();								// Return err page address
+	const std::string&			getWelcomePage();							// Return welcome page address
 	bool						getMethods(std::string &, std::string &);	// Return allowed or not passed method for passed location key
 	std::vector<std::string>*	getIndexName();								// Return iterator for indexfile vector
 	const std::string&			getCGI_format();							// Return CGI format
 	const std::string&			getCGI_handler();							// Return CGI handler
+	int							getSockFd();								// Return socket fd
+	int							getEpollFd();								// Return epoll fd
+	struct epoll_event*			getEpollEvent();							// Return epoll event struct
+	void						setSockFd(int);								// Set socket fd
+	std::map<int, Response_2*>*	getRequestContainerPointer();				// Return pointer for request_container
 	// const std::string&			getFavicon();								// Return favicon.ico adress
 };

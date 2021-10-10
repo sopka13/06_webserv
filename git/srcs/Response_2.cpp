@@ -6,13 +6,11 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/05 10:44:52 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/10 17:06:40 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Response_2.hpp"
-#include <cstdio>
-#include <fstream>
 
 Response_2::Response_2(Server *server, int fd):
 	_server(server),
@@ -62,7 +60,7 @@ void			Response_2::sendFile(std::string full_path)
 {
 	// This function send file
 #ifdef DEBUG
-	std::cout	<< "Response_2::sendFile start" << std::endl;
+	std::cout	<< "Response_2::sendFile start; path = " << full_path << std::endl;
 #endif
 	// step 1: Init data
 	int		ret = 0;
@@ -229,8 +227,8 @@ void			Response_2::postHandle(Response *response)
 			sendFile(target_file);
 
 			// step 5: Remove temp file
-			// if (target_file.size() && target_file.find(".temp", 0) == (target_file.size() - 5))
-			// 	remove(target_file.c_str());
+			if (target_file.size() && target_file.find(".temp", 0) == (target_file.size() - 5))
+				remove(target_file.c_str());
 			return ;
 		}
 		else								//target_file is not CGI
@@ -270,20 +268,48 @@ void			Response_2::postHandle(Response *response)
 
 int				Response_2::sendResponse()
 {
-#ifdef DEBUG
+// #ifdef DEBUG
 	std::cout	<< "Response_2::sendResponse start: fd = " << _fd << "; size container = " << _requests.size() << std::endl;
-#endif
+// #endif
 	// step 1: Init data
 	int						ret = 0;
 	std::string				path;
 	std::string				tile;
 	std::string::iterator	slesh;
 
-	// step 2: Check errors - if no unhandled request
+	// step 2: If no unhandled request
 	if (!_requests.size())
-		return (1);
+	{
+		// send(_fd, "\0\0", 2, 0);
+		// std::cerr << "end" << std::endl;
+		// Headliners resp(std::string("HTTP/1.1"), std::string("200"));
+		// resp.setCloseConnection(false);
+		// resp.sendHeadliners(_fd);
+		// sendFile(_server->getWelcomePage());
 
-	// // step 1: Cycle of send response ??? do we need
+		// have data monitoring only
+		// (_server->getEpollEvent())->events = EPOLLIN;
+		// (_server->getEpollEvent())->data.fd = _fd;
+		// ret = epoll_ctl(_server->getEpollFd(), EPOLL_CTL_MOD, _fd, _server->getEpollEvent());
+		// std::cerr << "ret = " << ret << " err = " << errno << " fd = " << _fd << std::endl;
+
+		if (epoll_ctl(_server->getEpollFd(), EPOLL_CTL_DEL, _fd, _server->getEpollEvent()) == -1)
+		{
+			throw Exeption("ERROR in Response_2::sendResponse: Epoll_ctl del error");
+		}
+		if ((ret = close(_fd)) == -1)
+			std::cerr << "FAIL!!!" << std::endl;
+
+		// delete element from request container
+		((_server->getRequestContainerPointer())->operator[](_fd))->~Response_2();
+		(_server->getRequestContainerPointer())->erase(_fd);
+		// if (ret == -1) // error handle
+
+		return (0);
+	}
+		// return (1); 
+
+	// step 1: Cycle of send response ??? do we need
 
 	// step 3: Parse response
 	int		flag = 0;
@@ -414,76 +440,110 @@ void			Response_2::readRequest()
 #endif
 	// step 1: Init data
 	int				ret = 0;
-	fd_set			rfd;
+	// fd_set			rfd;
 	// fd_set			wfd;
 	std::string		data;
-	struct timeval	tv;
-	tv.tv_sec = 0;
-	tv.tv_usec = 0;
+	// struct timeval	tv;
+	// tv.tv_sec = 0;
+	// tv.tv_usec = 150;
+
+	fcntl(_fd, F_SETFL, O_NONBLOCK);
 
 	// step 2: Cycle for read data from fd in _buff
 	while (1)
 	{
+		usleep(150);
 		// step 2.1: Read
+		// ret = read(_fd, _buff, sizeof(_buff));
 		ret = recv(_fd, _buff, sizeof(_buff), 0);
-		if (ret < 0)
-		{
-			Headliners resp(std::string("HTTP/1.1"), std::string("403"));
-			resp.sendHeadliners(_fd);
-			std::string str("ERROR in get response: read fail");
-			throw Exeption(str);
-		}
-		else if (ret == 0) // if no data in fd
-		{
-			Headliners resp(std::string("HTTP/1.1"), std::string("100"));
-			resp.sendHeadliners(_fd);
-		}
-		// std::cerr << "ret = " << ret << std::endl;
-		// std::ofstream	file("from_nginx.txt");
-		// for (int i = 0; i < 2048; ++i)
+		std::cerr << "ret = " << ret << "; fd = " << _fd << std::endl;
+		// if (ret < 0)
 		// {
-			// std::cerr << static_cast<char>(_buff[i]);
-			// file << static_cast<char>(_buff[i]);
+		// 	Headliners resp(std::string("HTTP/1.1"), std::string("403"));
+		// 	resp.sendHeadliners(_fd);
+		// 	std::string str("ERROR in get response: read fail");
+		// 	throw Exeption(str);
 		// }
 
+		// If first cycle and ret == 0
+		if (ret <= 0 && data.size() == 0)
+		{
+			std::cerr << "EPOLLERR: fd = " << _fd << std::endl;
+			if ((_server->getRequestContainerPointer())->size() &&
+				(_server->getRequestContainerPointer())->find(_fd) != (_server->getRequestContainerPointer())->end())
+			{
+				if (epoll_ctl(_server->getEpollFd(), EPOLL_CTL_DEL, _fd, _server->getEpollEvent()) == -1)
+				{
+					// std::cerr << "strerror = " << strerror(errno) << "; errno = " << errno << std::endl;
+					throw Exeption("ERROR in Response_2::readRequest: Epoll_ctl del error");
+				}
+				if ((ret = close(_fd)) == -1)
+					std::cerr << "FAIL!!!" << std::endl;
+				((_server->getRequestContainerPointer())->operator[](_fd))->~Response_2();
+				(_server->getRequestContainerPointer())->erase(_fd);
+			}
+
+			// delete element from request container
+			// std::cerr << "Close fine (Response_2)" << std::endl;
+		}
+
+
+		if (ret <= 0) // if no data in fd
+		{
+			break ;
+			// Headliners resp(std::string("HTTP/1.1"), std::string("100"));
+			// resp.sendHeadliners(_fd);
+		}
+
+
+
 		// step 2.2: Accumulate received data and clean _buff
-		data += _buff;
-		ft_bzero(&_buff, sizeof(_buff));
+		// else
+		// {
+			data += _buff;
+			ft_bzero(&_buff, sizeof(_buff));
+		// 	continue ;
+		// }
 
-		// step 2.3: Clear data for select
-		FD_ZERO(&rfd);
-		// FD_ZERO(&wfd);
-		FD_SET(_fd, &rfd);
-		// FD_SET(_fd, &wfd);
+		// // step 2.3: Clear data for select
+		// FD_ZERO(&rfd);
+		// // FD_ZERO(&wfd);
+		// FD_SET(_fd, &rfd);
+		// // FD_SET(_fd, &wfd);
 
 
-		// step 2.4: Check action on client fd
-		ret = select(1, &rfd, 0, 0, &tv);
-		//		if error
-		if (ret < 0)
-		{
-			Headliners resp(std::string("HTTP/1.1"), std::string("500"));
-			resp.sendHeadliners(_fd);
-			std::string str("ERROR in ft_handle_epoll_fd: select fall");
-			throw Exeption(str);
-		}
-		//		if no actions
-		else if (ret == 0)
-			// continue ;
-			break ;
-		//		if have actions
-		else
-		{
-			if (FD_ISSET(_fd, &rfd))
-				continue ;
-			// if (FD_ISSET(_fd, &wfd))
-			break ;
-		}
+		// // step 2.4: Check action on client fd
+		// ret = select(_fd + 1, &rfd, 0, 0, &tv);
+		// //		if error
+		// if (ret < 0)
+		// {
+		// 	Headliners resp(std::string("HTTP/1.1"), std::string("500"));
+		// 	resp.sendHeadliners(_fd);
+		// 	std::string str("ERROR in ft_handle_epoll_fd: select fall");
+		// 	throw Exeption(str);
+		// }
+		// //		if no actions
+		// else if (ret == 0)
+		// 	break ;
+		// //		if have actions
+		// else
+		// {
+		// 	if (FD_ISSET(_fd, &rfd))
+		// 		continue ;
+		// 	// if (FD_ISSET(_fd, &wfd))
+		// 	break ;
+		// }
 	}
 
 	// step 3: Add request in container if have any data from fd
 	if (data.size())
+	{
 		_requests.push_back(data);
+
+		(_server->getEpollEvent())->events = EPOLLIN | EPOLLOUT;
+		(_server->getEpollEvent())->data.fd = _fd;
+		ret = epoll_ctl(_server->getEpollFd(), EPOLL_CTL_MOD, _fd, _server->getEpollEvent());
+	}
 	std::cerr << "--\n" << data << "\n--" << std::endl;
 
 #ifdef DEBUG
@@ -564,9 +624,9 @@ std::string		Response_2::ft_get_dir_list(std::string& full_path)
 
 int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_dir, std::string path)
 {
-// #ifdef DEBUG
+#ifdef DEBUG
 	std::cout	<< "Response_2::sendingResponseGet start: fd = " << _fd << std::endl;
-// #endif
+#endif
 	// step 1: Init data
 	int ret;
 
@@ -584,7 +644,7 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 			// step 2.2.1: Check autoindex
 			if (!_server->getAutoindex(path))
 			{
-				std::cerr << "this; " << path << "|" << std::endl;
+				// std::cerr << "this; " << path << "|" << std::endl;
 				Headliners resp(std::string("HTTP/1.1"), std::string("403"));
 				resp.sendHeadliners(_fd);
 				return (-1);
@@ -604,7 +664,7 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 		rezult_path = full_path;
 
 	// step 3: If have cgi go handle
-	if (haveCGI(rezult_path))
+	if (haveCGI(rezult_path) && !TEST)
 		rezult_path = handleCGI(rezult_path);
 	
 	// step x: Get info about target file
@@ -630,7 +690,7 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 	// step 5: Send headers "200 OK"
 	Headliners resp(std::string("HTTP/1.1"), std::string("200"));
 	resp.setCloseConnection(false);
-	// resp.setContentLeigth(info.st_size);
+	resp.setContentLeigth(info.st_size);
 	resp.sendHeadliners(_fd);
 
 	// step 6: Send body
@@ -646,8 +706,8 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 	// }
 	
 	// step 7: Remove temp file
-	// if (rezult_path.size() && rezult_path.find(".temp", 0) == (rezult_path.size() - 5))
-	// 	remove(rezult_path.c_str());
+	if (rezult_path.size() && rezult_path.find(".temp", 0) == (rezult_path.size() - 5))
+		remove(rezult_path.c_str());
 
 	// step 8: Close target file
 	fileIndex.close();
@@ -688,9 +748,9 @@ bool			Response_2::getCloseFlag()
 
 int				Response_2::haveCGI(std::string &result_path)
 {
-// #ifdef DEBUG
+#ifdef DEBUG
 	std::cout	<< "Response_2::haveCGI start; path = " << result_path << std::endl;
-// #endif
+#endif
 	// step 1: If CGI format not defined
 	if (_server->getCGI_format() == "")
 		return (0);
@@ -708,9 +768,9 @@ int				Response_2::haveCGI(std::string &result_path)
 
 std::string		Response_2::handleCGI(std::string &result_path)
 {
-#ifdef DEBUG
-	std::cout	<< "Response_2::handleCGI start" << std::endl;
-#endif
+// #ifdef DEBUG
+	std::cout	<< "Response_2::handleCGI start; path = " << result_path << std::endl;
+// #endif
 	// step 1: Init data
 
 	// step 2: Create argv
@@ -780,7 +840,7 @@ std::string		Response_2::handleCGI(std::string &result_path)
 	while (cur_dir.size() && *end != '.')
 		cur_dir.erase(end--);
 	cur_dir.erase(end);
-	cur_dir += "3.html";
+	cur_dir += ".temp";
 
 	// step 7: Create file and clean it
 	// std::ofstream	temp_file;

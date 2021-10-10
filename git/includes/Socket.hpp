@@ -1,17 +1,27 @@
-#ifndef SOCKET_HPP
-# define SOCKET_HPP
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Socket.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/10/05 14:48:19 by eyohn             #+#    #+#             */
+/*   Updated: 2021/10/05 14:48:55 by eyohn            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#pragma once
 
 #include "../includes/headers.hpp"
-#include <sys/types.h>
-#include <sys/stat.h>
+
 class Socket{
 public:
 	// Socket();
-	Socket(Server *server);
-	//Socket(t_vars *vars);
-	~Socket();
+	// Socket(t_vars *vars);
 	// Socket(const Socket& soc);
 	// Socket& operator= (const Socket& soc);
+	Socket(Server *server);
+	~Socket();
 	int ft_handle_request();
 	int getFd();
 	void setFd();
@@ -23,4 +33,3 @@ private:
 	int						_fd;						// fd received after the acept call
 	Server					*_server;					// data for server
 };
-#endif

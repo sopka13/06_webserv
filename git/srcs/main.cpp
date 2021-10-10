@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/05 11:11:49 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/10 17:21:10 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,18 +37,18 @@
 ** // для сравнения заголовков и поведения ответов.
 ** • In the subject and the scale we will mention poll but you can use equivalent like		+
 ** select, kqueue, epoll.
-** • It must be non-blocking and use only 1 poll (or equivalent) for all the IO between		-
+** • It must be non-blocking and use only 1 poll (or equivalent) for all the IO between		+
 ** the client and the server (listens includes).
 ** // В теме и шкале мы будем упоминать опрос, но вы можете использовать его эквиваленты,
 ** // такие как select, kqueue, epoll.
 ** // Он должен быть неблокирующим и использовать только 1 опрос (или эквивалент) для всех
-** // операций ввода-вывода между клиентом и сервером (включая прослушивание). 
+** // операций ввода-вывода между клиентом и сервером (включая прослушивание).
 ** • poll (or equivalent) should check read and write at the same time.						+
 ** // Пулл или эквивалент следует проверять чтение и запись одновременно
 ** • Your server should never block and the client should be bounce properly if necessary.	+
 ** // Ваш сервер никогда не должен блокироваться и клиент при необходимости должен правильно
 ** // отказать
-** • You should never do a read operation or a write operation without going through		-
+** • You should never do a read operation or a write operation without going through		+
 ** poll (or equivalent).
 ** // Ты не должен делать операцию чтения или записи без получения правильного пула
 ** • Checking the value of errno is strictly forbidden after a read or a write operation.	+
@@ -71,7 +71,7 @@
 ** // Тебе не нужно использовать пул до чтения конфигурации
 ** • You should be able to serve a fully static website.									+
 ** // Ты должен уметь обслужить полностью статичный вебсайт
-** • Client should be able to upload files.													-
+** • Client should be able to upload files.													+
 ** // Клиент должен уметь загружать файлы
 ** • Your HTTP response status codes must be accurate.										+
 ** // Коды состояния ответа НТТР должны быть точными
@@ -97,11 +97,11 @@
 ** // Так как ты используешь еблокирующий ФД, ты можешь использовать
 ** // райт/сенд функции без пулов и твой сервер не будет заблокирован
 ** // Но мы этого не хотим.
-** // Использование рид/рес или райт/сенд в любых ФД без прохождения пула
+** // Использование рид/рес или райт/сенд в любых ФД без прохождения пула					+
 ** // приведет к оценке 0 и завершению оценки.
 **
-** !!! You can only use fcntl as follow: fcntl(fd, F_SETFL, O_NONBLOCK);					-
-** Any other flags are forbidden
+** !!! You can only use fcntl as follow: fcntl(fd, F_SETFL, O_NONBLOCK);					+
+** Any other flags are forbiddens
 ** // Ты можешь использовать фснтл только так ...
 ** // любые другие флаги запрещены.
 **
@@ -123,6 +123,8 @@
 //	23. add check http:// path for valid
 //	24. проверить все пункты сабжа
 //	25. check body size with POST request
+//	26. add use nameserver
+//	27. add use body_size
 //	+ 2. геттер в сервере на фавикон
 //	+ 3. файл для фавикона
 //	+ 4. обработать все краши на функциях
@@ -163,6 +165,16 @@
 
 bool	exit_flag;
 
+static int		ft_check_socket(t_vars* vars, int fd)
+{
+	for (int i = 0; i < static_cast<int>(vars->sockets->size()); ++i)
+	{
+		if (fd == vars->sockets->operator[](i).getTcp_sockfd())
+			return (1);
+	}
+	return (0);
+}
+
 int		main(int argc, char **argv, char **envp)
 {
 #ifdef DEBUG
@@ -171,6 +183,7 @@ int		main(int argc, char **argv, char **envp)
 	// step 1: Inicialise data
 	t_vars		vars;
 	int			nfds;
+	int			ret;
 
 	// step 2: Parse config file
 	ft_init_data(&vars, argc, argv, envp);
@@ -186,6 +199,9 @@ int		main(int argc, char **argv, char **envp)
 	for (unsigned long int i = 0; i < vars.servers->size(); ++i)
 	{
 		vars.sockets->push_back(Socket(&vars.servers->operator[](i)));
+
+		// init sock_fd in server
+		vars.servers->operator[](i).setSockFd(vars.sockets->operator[](i).getTcp_sockfd());
 
 		vars.ev.events = EPOLLIN | EPOLLOUT;
 		vars.ev.data.fd = vars.sockets->operator[](i).getTcp_sockfd();
@@ -210,21 +226,29 @@ int		main(int argc, char **argv, char **envp)
 		}
 		for (int i = 0; i < nfds; ++i)
 		{
-			if (vars.events[i].events & EPOLLIN)
-				ft_handle_epoll_action(&vars, vars.events[i].data.fd);
-			if (vars.events[i].events & EPOLLOUT)
+			if (vars.events[i].events & EPOLLIN || vars.events[i].events & EPOLLOUT)
+				ft_handle_epoll_action(&vars, vars.events[i].data.fd, vars.events[i].events);
+			else if (vars.events[i].events & EPOLLERR && !ft_check_socket(&vars, vars.events[i].data.fd))
 			{
 				// Headliners resp(std::string("HTTP/1.1"), std::string("408"));
 				// resp.setCloseConnection(false);
 				// resp.sendHeadliners(vars.events[i].data.fd);
-				std::cout << "EPOLLOUT: Need handle. fd = " << vars.events[i].data.fd << std::endl;
+				std::cerr << "EPOLLERR: fd = " << vars.events[i].data.fd << std::endl;
 				if (epoll_ctl(vars.epoll_fd, EPOLL_CTL_DEL, vars.events[i].data.fd, &vars.ev) == -1)
 				{
-					std::cerr << "ERROR in ft_handle_epoll_action: Epoll_ctl del error" << std::endl;
+					std::cerr << "ERROR in main: Epoll_ctl del error" << std::endl;
 					ft_exit(&vars);
 				}
-				close(vars.events[i].data.fd);
+				if ((ret = close(vars.events[i].data.fd)) == -1)
+					std::cerr << "ERROR in main: close fd error" << std::endl;
+				// delete element from request container
+				(vars.request_container->operator[](vars.events[i].data.fd))->~Response_2();
+				// delete vars.request_container->operator[](vars.events[i].data.fd);
+				vars.request_container->erase(vars.events[i].data.fd);
+				// std::cerr << "Close fine (main)" << std::endl;
 			}
+			else
+				std::cerr << "ERROR: UNHANDLED ACTION" << std::endl;
 		}
 	}
 
@@ -252,3 +276,131 @@ int		main(int argc, char **argv, char **envp)
 	ft_exit(&vars);
 	return (0);
 }
+
+
+
+// static void set_nonblocking(int fd) {
+// 	int flags = fcntl(fd, F_GETFL, 0);
+// 	if (flags == -1) {
+// 		perror("fcntl()");
+// 		return;
+// 	}
+// 	if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1) {
+// 		perror("fcntl()");
+// 	}
+// }
+
+// int main(int argc, char **argv) {
+// 	// create the server socket
+// 	int sock = socket(AF_INET, SOCK_STREAM, 0);
+// 	if (sock == -1) {
+// 		perror("socket()");
+// 		return 1;
+// 	}
+// 	int enable = 1;
+// 	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) ==
+// 		-1) {
+// 		perror("setsockopt()");
+// 		return 1;
+// 	}
+
+//   // bind
+//   struct sockaddr_in addr;
+//   memset(&addr, 0, sizeof(addr));
+//   addr.sin_family = AF_INET;
+//   addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+//   addr.sin_port = htons(PORT);
+//   if (bind(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+// 	perror("bind()");
+// 	return 1;
+//   }
+
+//   // make it nonblocking, and then listen
+//   set_nonblocking(sock);
+//   if (listen(sock, SOMAXCONN) < 0) {
+// 	perror("listen()");
+// 	return 1;
+//   }
+
+//   // create the epoll socket
+//   int epoll_fd = epoll_create1(0);
+//   if (epoll_fd == -1) {
+// 	perror("epoll_create1()");
+// 	return 1;
+//   }
+
+//   // mark the server socket for reading, and become edge-triggered
+//   struct epoll_event event;
+//   memset(&event, 0, sizeof(event));
+//   event.data.fd = sock;
+//   event.events = EPOLLIN | EPOLLET;
+//   if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, sock, &event) == -1) {
+// 	perror("epoll_ctl()");
+// 	return 1;
+//   }
+
+//   struct epoll_event *events = calloc(MAXEVENTS, sizeof(event));
+//   for (;;) {
+// 	int nevents = epoll_wait(epoll_fd, events, MAXEVENTS, -1);
+// 	if (nevents == -1) {
+// 	  perror("epoll_wait()");
+// 	  return 1;
+// 	}
+// 	for (int i = 0; i < nevents; i++) {
+// 	  if ((events[i].events & EPOLLERR) || (events[i].events & EPOLLHUP) ||
+// 		  (!(events[i].events & EPOLLIN))) {
+// 		// error case
+// 		fprintf(stderr, "epoll error\n");
+// 		close(events[i].data.fd);
+// 		continue;
+// 	  } else if (events[i].data.fd == sock) {
+// 		// server socket; call accept as many times as we can
+// 		for (;;) {
+// 		  struct sockaddr in_addr;
+// 		  socklen_t in_addr_len = sizeof(in_addr);
+// 		  int client = accept(sock, &in_addr, &in_addr_len);
+// 		  if (client == -1) {
+// 			if (errno == EAGAIN || errno == EWOULDBLOCK) {
+// 			  // we processed all of the connections
+// 			  break;
+// 			} else {
+// 			  perror("accept()");
+// 			  return 1;
+// 			}
+// 		  } else {
+// 			printf("accepted new connection on fd %d\n", client);
+// 			set_nonblocking(client);
+// 			event.data.fd = client;
+// 			event.events = EPOLLIN | EPOLLET;
+// 			if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client, &event) == -1) {
+// 			  perror("epoll_ctl()");
+// 			  return 1;
+// 			}
+// 		  }
+// 		}
+// 	  } else {
+// 		// client socket; read as much data as we can
+// 		char buf[1024];
+// 		for (;;) {
+// 		  ssize_t nbytes = read(events[i].data.fd, buf, sizeof(buf));
+// 		  if (nbytes == -1) {
+// 			if (errno == EAGAIN || errno == EWOULDBLOCK) {
+// 			  printf("finished reading data from client\n");
+// 			  break;
+// 			} else {
+// 			  perror("read()");
+// 			  return 1;
+// 			}
+// 		  } else if (nbytes == 0) {
+// 			printf("finished with %d\n", events[i].data.fd);
+// 			close(events[i].data.fd);
+// 			break;
+// 		  } else {
+// 			fwrite(buf, sizeof(char), nbytes, stdout);
+// 		  }
+// 		}
+// 	  }
+// 	}
+//   }
+//   return 0;
+// }

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:02:30 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/05 11:06:36 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/08 10:36:42 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,8 @@ void		ft_init_data(t_vars *vars, int argc, char** argv, char** envp)
 	// step 3: Allocate memory
 	vars->servers = new std::deque<Server>;
 	vars->sockets = new std::vector<Socket>;
-	vars->fd_identify_socket = new std::map<int, int>;
+	// vars->fd_identify_socket = new std::map<int, int>;
+	vars->request_container = new std::map<int, Response_2*>;
 	vars->CGI = new std::map<std::string, std::string>;
 
 	// step 4: Parse config file

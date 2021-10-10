@@ -1,26 +1,36 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Socket.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/10/05 14:48:29 by eyohn             #+#    #+#             */
+/*   Updated: 2021/10/08 18:49:25 by eyohn            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/Socket.hpp"
-#include <iostream>
-#include <iterator>
-#include <ostream>
-#include <sstream>
-#include <ctime>
-#include <string>
-#include "../includes/Response.hpp"
 
 //Socket::Socket(){};
+
 Socket::Socket(Server *server):
 	_server(server)
 {
+	int ret = 0;
+
 	// step 1: Create socket
 	_tcp_sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (_tcp_sockfd < 0)
 	{
 		std::cerr << "ERROR opening socket 1: " << strerror(errno) << std::endl;
-		return;
+		return ;
 	}
 
+	ret = fcntl(_tcp_sockfd, F_SETFL, O_NONBLOCK);
+
 	// step 2: Assigning a name to a socket
-	int ret = bind(_tcp_sockfd, (struct sockaddr *)(_server->getServAddr()), *_server->getSockLen());
+	ret = bind(_tcp_sockfd, (struct sockaddr *)(_server->getServAddr()), *_server->getSockLen());
 	// if (vars->ret < 0)
 	// {
 	// 	std::cerr << "ERROR Assigning name to a socket fail: " << strerror(errno) << std::endl;

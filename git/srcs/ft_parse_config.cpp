@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:37:55 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/05 10:54:46 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/08 09:37:00 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,6 +153,7 @@ int					ft_parse_config(t_vars *vars)
 	functions.insert(std::pair<std::string, int (*)(t_vars*, std::string&)>("http", ft_http_handle));
 	functions.insert(std::pair<std::string, int (*)(t_vars*, std::string&)>("log_file", ft_log_file_handle));
 	functions.insert(std::pair<std::string, int (*)(t_vars*, std::string&)>("error_page", ft_error_page));
+	functions.insert(std::pair<std::string, int (*)(t_vars*, std::string&)>("welcome_page", ft_welcome_page));
 	functions.insert(std::pair<std::string, int (*)(t_vars*, std::string&)>("CGI", ft_CGI_handler));
 
 	// step 4: Read config file in str_sum

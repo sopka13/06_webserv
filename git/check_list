@@ -28,13 +28,13 @@ Check the code and ask questions
 - Search for all read/recv/write/send on a socket and check that if an error		-	!!!
 	returned the client is removed
 	// Найдите все чтение / запись / запись / отправку в сокете и убедитесь,
-	// что в случае возврата ошибки клиент удален. 
+	// что в случае возврата ошибки клиент удален.
 - Search for all read/recv/write/send and check if the returned value is well		-	!!!
 	checked. (checking only -1 or 0 is not good you should check both)
 	// Найдите все чтение / получение / запись / отправку и проверьте,
 	// правильно ли проверено возвращаемое значение. (проверка только -1 или 0
 	// нехорошо, вы должны проверить оба) 
-- If a check of errno is done after read/recv/write/send. Please stop the			-
+- If a check of errno is done after read/recv/write/send. Please stop the			+
 	evaluation and put a mark to 0
 	// Если проверка errno выполняется после чтения / получения / записи /
 	// /отправки. Пожалуйста, остановите оценку и поставьте оценку 0 
