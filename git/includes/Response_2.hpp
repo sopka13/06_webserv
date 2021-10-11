@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:55:00 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/28 22:22:11 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/11 09:19:29 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,4 +44,5 @@ public:
 	bool			getCloseFlag();
 	std::string 	setVariables(std::string &str);
 	std::string		ft_get_dir_list(std::string& full_path);
+	int				getRequestContainerSize();					// Return size of unhandled requests container
 };

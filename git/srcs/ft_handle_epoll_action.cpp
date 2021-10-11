@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 17:13:43 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/10 14:27:11 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/11 09:20:48 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,16 +78,20 @@ void		ft_handle_epoll_action(t_vars *vars, int fd, uint32_t events)
 				}
 			}
 
-			//	c. add <fd, Resp_2> in container
-			vars->request_container->insert(std::pair<int, Response_2*>(vars->sockets->operator[](i).getFd(), resp));
-
-			//	d. add fd in queue
-			vars->ev.events = EPOLLIN | EPOLLOUT;
-			vars->ev.data.fd = vars->sockets->operator[](i).getFd();
-			if (epoll_ctl(vars->epoll_fd, EPOLL_CTL_ADD, vars->sockets->operator[](i).getFd(), &vars->ev) == -1)
+			// if have unhandled request
+			if (resp->getRequestContainerSize())
 			{
-				std::cerr << "ERROR in ft_handle_epoll_action: Epoll_ctl add error" << std::endl;
-				ft_exit(vars);
+				//	c. add <fd, Resp_2> in container
+				vars->request_container->insert(std::pair<int, Response_2*>(vars->sockets->operator[](i).getFd(), resp));
+
+				//	d. add fd in queue
+				vars->ev.events = EPOLLIN | EPOLLOUT;
+				vars->ev.data.fd = vars->sockets->operator[](i).getFd();
+				if (epoll_ctl(vars->epoll_fd, EPOLL_CTL_ADD, vars->sockets->operator[](i).getFd(), &vars->ev) == -1)
+				{
+					std::cerr << "ERROR in ft_handle_epoll_action: Epoll_ctl add error" << std::endl;
+					ft_exit(vars);
+				}
 			}
 			return ;
 		}

@@ -6,11 +6,27 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/10 17:06:40 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/11 15:01:17 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Response_2.hpp"
+
+static std::string	ft_remove_underscore(std::string path, std::string title)
+{
+#ifdef DEBUG
+	std::cout	<< "ft_remove_underscore start: path = " << path << "; title = " << title << std::endl;
+#endif
+	while (path.size() && *(path.end() - 1) == '/')
+		path.erase((path.end() - 1));
+	while (title.size() && *(title.begin()) == '/')
+		title.erase(title.begin());
+
+#ifdef DEBUG
+	std::cout	<< "ft_remove_underscore end: result = " << path + title << std::endl;
+#endif
+	return (path + '/' + title);
+}
 
 Response_2::Response_2(Server *server, int fd):
 	_server(server),
@@ -59,9 +75,9 @@ std::string		Response_2::setVariables(std::string &str)
 void			Response_2::sendFile(std::string full_path)
 {
 	// This function send file
-#ifdef DEBUG
+// #ifdef DEBUG
 	std::cout	<< "Response_2::sendFile start; path = " << full_path << std::endl;
-#endif
+// #endif
 	// step 1: Init data
 	int		ret = 0;
 	int		fd_from;
@@ -358,7 +374,7 @@ int				Response_2::sendResponse()
 			(_server->getLocations(path) != "") &&
 			_server->getMethods(path, m))
 		{
-			std::string full_path = _server->getLocations(path) + tile;
+			std::string full_path = ft_remove_underscore(_server->getLocations(path), tile);
 			ret = sendingResponseGet(full_path, is_a_dir, path);
 		}
 
@@ -367,7 +383,7 @@ int				Response_2::sendResponse()
 			(_server->getLocations(path) != "") &&
 			_server->getMethods(path, m))
 		{
-			std::string full_path = _server->getLocations(path) + tile;
+			std::string full_path = ft_remove_underscore(_server->getLocations(path), tile);
 			int i = lstat(full_path.c_str(), &is_a_dir);
 			std::ofstream file;
 			file.open(full_path.c_str());
@@ -401,7 +417,7 @@ int				Response_2::sendResponse()
 			(_server->getLocations(path) != "") &&
 			_server->getMethods(path, m))
 		{
-			std::string full_path = _server->getLocations(path) + tile;
+			std::string full_path = ft_remove_underscore(_server->getLocations(path), tile);
 			int rez = remove(full_path.c_str());
 			if (rez >= 0){
 				Headliners resp(std::string("HTTP/1.1"), std::string("200"));
@@ -452,7 +468,7 @@ void			Response_2::readRequest()
 	// step 2: Cycle for read data from fd in _buff
 	while (1)
 	{
-		usleep(150);
+		usleep(200);
 		// step 2.1: Read
 		// ret = read(_fd, _buff, sizeof(_buff));
 		ret = recv(_fd, _buff, sizeof(_buff), 0);
@@ -477,11 +493,11 @@ void			Response_2::readRequest()
 					// std::cerr << "strerror = " << strerror(errno) << "; errno = " << errno << std::endl;
 					throw Exeption("ERROR in Response_2::readRequest: Epoll_ctl del error");
 				}
-				if ((ret = close(_fd)) == -1)
-					std::cerr << "FAIL!!!" << std::endl;
 				((_server->getRequestContainerPointer())->operator[](_fd))->~Response_2();
 				(_server->getRequestContainerPointer())->erase(_fd);
 			}
+			if ((ret = close(_fd)) == -1)
+				std::cerr << "FAIL!!!" << std::endl;
 
 			// delete element from request container
 			// std::cerr << "Close fine (Response_2)" << std::endl;
@@ -601,7 +617,7 @@ std::string		Response_2::ft_get_dir_list(std::string& full_path)
 	// step 7: Create file and clean it
 	std::ofstream	temp_file;
 	std::string		cur_dir(full_path);
-	cur_dir += "dir_content.temp";
+	cur_dir += "/dir_content.temp";
 	temp_file.open(cur_dir.c_str(), std::ofstream::trunc);
 	if (!temp_file.is_open())
 		throw Exeption("ERROR in response_2: create temp_file error!");
@@ -624,9 +640,9 @@ std::string		Response_2::ft_get_dir_list(std::string& full_path)
 
 int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_dir, std::string path)
 {
-#ifdef DEBUG
-	std::cout	<< "Response_2::sendingResponseGet start: fd = " << _fd << std::endl;
-#endif
+// #ifdef DEBUG
+	std::cout	<< "Response_2::sendingResponseGet start: fd = " << _fd << "; full path = " << full_path << std::endl;
+// #endif
 	// step 1: Init data
 	int ret;
 
@@ -635,6 +651,10 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 	std::string rezult_path;
 	if (S_ISDIR(is_a_dir.st_mode))
 	{
+		// step x: Add '/' character to the end of the line
+		if (*(full_path.end() - 1) != '/')
+			full_path += '/';
+
 		// step 2.1: Get index file
 		std::string index_name = getIndexFileName(full_path);
 
@@ -645,23 +665,58 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 			if (!_server->getAutoindex(path))
 			{
 				// std::cerr << "this; " << path << "|" << std::endl;
-				Headliners resp(std::string("HTTP/1.1"), std::string("403"));
-				resp.sendHeadliners(_fd);
+				if (TEST)
+				{
+					Headliners resp(std::string("HTTP/1.1"), std::string("404")); 
+					resp.sendHeadliners(_fd);
+				}
+				else
+				{
+					Headliners resp(std::string("HTTP/1.1"), std::string("403")); 
+					resp.sendHeadliners(_fd);
+				}
 				return (-1);
 			}
 			// step 2.2.2: If autoindex on - get directory list
 			else
 			{
-				rezult_path = ft_get_dir_list(full_path);
+				// if (TEST)	// if start test
+				// {
+				// 	rezult_path = _server->getErrPage();
+				// 	Headliners resp(std::string("HTTP/1.1"), std::string("404"));
+				// 	resp.setCloseConnection(false);
+
+				// 	// step x: Get info about target file
+				// 	struct stat	info;
+				// 	stat(rezult_path.c_str(), &info);
+
+				// 	resp.setContentLeigth(info.st_size);
+				// 	resp.sendHeadliners(_fd);
+
+				// 	// step 6: Send body
+				// 	int		fd_from;
+				// 	fd_from = open(rezult_path.c_str(), O_RDONLY);
+				// 	ret = sendfile(_fd, fd_from, NULL, info.st_size);
+				// 	return (ret);
+				// }
+				// else		// else
+					rezult_path = ft_get_dir_list(full_path);
+					std::cerr << "; full path 1 = " << full_path << std::endl;
 				// handler for create dirrect_list
 			}
 		}
 
 		else
+		{
 			rezult_path = full_path + index_name;
+			std::cerr << "; full path 2 = " << full_path << std::endl;
+		}
 	}
 	else
+	{
 		rezult_path = full_path;
+		std::cerr << "; full path 3 = " << full_path << std::endl;
+	}
 
 	// step 3: If have cgi go handle
 	if (haveCGI(rezult_path) && !TEST)
@@ -673,6 +728,9 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 
 	// step 4: Open the requested file and read in buffer
 	std::ifstream	fileIndex;
+
+	std::cerr << "result path 4 = " << rezult_path << std::endl;
+
 	fileIndex.open(rezult_path.c_str());
 	if (!fileIndex.is_open()){
 		Headliners resp(std::string("HTTP/1.1"), std::string("404"));
@@ -697,6 +755,9 @@ int				Response_2::sendingResponseGet(std::string full_path, struct stat is_a_di
 	fileIndex.close();
 	int		fd_from;
 	fd_from = open(rezult_path.c_str(), O_RDONLY);
+
+	std::cerr << "rezult_path = " << rezult_path << std::endl;
+
 	ret = sendfile(_fd, fd_from, NULL, info.st_size);
 	// std::string str;
 	// while(std::getline(fileIndex, str))
@@ -783,6 +844,7 @@ std::string		Response_2::handleCGI(std::string &result_path)
 	std::string cur_dir(dir);
 	result_path.erase(0, 1);
 	cur_dir += result_path;
+	// cur_dir += '/';
 	char *str = new char[cur_dir.size() + 1];
 	std::copy(cur_dir.begin(), cur_dir.end(), str);
 	str[cur_dir.size()] = '\0';
@@ -902,4 +964,9 @@ std::string		Response_2::handleCGI(std::string &result_path)
 	std::cout	<< "Response_2::handleCGI end" << std::endl;
 #endif
 	return (cur_dir);
+}
+
+int				Response_2::getRequestContainerSize()
+{
+	return (_requests.size());
 }
