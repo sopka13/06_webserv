@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/12 10:57:52 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/12 22:13:25 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,9 +190,10 @@ void			Response_2::postHandle(Response *response)
 	}
 	else
 	{
-		temp = _server->getLocations(path) + full_path;
+		temp = ft_remove_underscore(_server->getLocations(path), full_path);
 		full_path = temp;
-		full_path = ft_remove_underscore(full_path, getIndexFileName(full_path));
+		full_path += getIndexFileName(full_path);
+		// std::cerr << "Full path = " << full_path << std::endl;
 	}
 
 	// step 4: Check error - if method no supported
@@ -209,13 +210,14 @@ void			Response_2::postHandle(Response *response)
 	// step 5: Check target file/dir for exist
 	struct stat	info;
 	ret = stat(full_path.c_str(), &info);
-	if (ret == -1)							//file/dir doesn't exist
+	if (ret == -1 || (haveCGI(full_path) && _server->getCGI_format() == ".bla"))							//file/dir doesn't exist
 	{
 		// step 1: Create new file and write body
 		std::ofstream	new_file;
 		new_file.open(full_path.c_str());
 		new_file << response->getBody();
 		new_file.close();
+		ret = stat(full_path.c_str(), &info);
 
 		// step 2: Send headliners
 		Headliners resp(std::string("HTTP/1.1"), std::string("201"));
@@ -484,7 +486,8 @@ void			Response_2::readRequest()
 	// step 2: Cycle for read data from fd in _buff
 	while (1)
 	{
-		usleep(200);
+		if (TEST)
+			usleep(200);
 		// step 2.1: Read
 		// ret = read(_fd, _buff, sizeof(_buff));
 		ret = recv(_fd, _buff, sizeof(_buff), 0);
