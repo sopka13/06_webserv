@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/23 09:00:15 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/08 13:32:41 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/12 09:50:14 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ Headliners::Headliners(std::string http_version, std::string return_code):
 	status_code.insert(std::pair<std::string, std::string>("404", " Not Found"));
 	status_code.insert(std::pair<std::string, std::string>("405", " Method Not Allowed"));
 	status_code.insert(std::pair<std::string, std::string>("408", " Request Timeout"));
+	status_code.insert(std::pair<std::string, std::string>("411", " Length Required"));
+	status_code.insert(std::pair<std::string, std::string>("413", " Payload Too Large"));
 	status_code.insert(std::pair<std::string, std::string>("500", " Internal Server Error"));
 	status_code.insert(std::pair<std::string, std::string>("505", " HTTP Version Not Supported"));
 	_headliners += ' ';

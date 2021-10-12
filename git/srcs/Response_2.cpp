@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/11 15:01:17 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/12 10:57:52 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static std::string	ft_remove_underscore(std::string path, std::string title)
 		title.erase(title.begin());
 
 #ifdef DEBUG
-	std::cout	<< "ft_remove_underscore end: result = " << path + title << std::endl;
+	std::cout	<< "ft_remove_underscore end: result = " << path + '/' + title << std::endl;
 #endif
 	return (path + '/' + title);
 }
@@ -127,6 +127,7 @@ void			Response_2::sendFile(std::string full_path)
 void			Response_2::postHandle(Response *response)
 {
 	// This function handle POST method and has the following logic:
+		// 0. if body size larger than the allowed one return error
 	// 	1. if target_file doesn't exist
 	// 		- create file and return 201 - created, or error if creation impossible
 	// 	2. else
@@ -143,6 +144,17 @@ void			Response_2::postHandle(Response *response)
 #ifdef DEBUG
 	std::cout	<< "Response_2::postHandle start" << std::endl;
 #endif
+	// // step 0: Check body size
+	// if (static_cast<int>(response->getBodySize()) > _server->getMaxBodySize())
+	// {
+	// 	Headliners resp(std::string("HTTP/1.1"), std::string("400"));
+	// 	resp.setCloseConnection(false);
+	// 	resp.sendHeadliners(_fd);
+
+	// 	std::string str("ERROR in ft_post_handle: Body size too long");
+	// 	throw Exeption(str);
+	// }
+
 	// step 1: Init data
 	std::string		path(response->getPath());		// original path from request
 	std::string		full_path;						// path with locations
@@ -180,11 +192,12 @@ void			Response_2::postHandle(Response *response)
 	{
 		temp = _server->getLocations(path) + full_path;
 		full_path = temp;
-		full_path += getIndexFileName(full_path);
+		full_path = ft_remove_underscore(full_path, getIndexFileName(full_path));
 	}
 
 	// step 4: Check error - if method no supported
-	if (!_server->getMethods(path, method))
+	std::string		temp_1(response->getPath());
+	if (!_server->getMethods(path, method) && !(haveCGI(temp_1) && _server->getCGI_format() == ".bla"))
 	{
 		Headliners resp(std::string("HTTP/1.1"), std::string("405"));
 		resp.setCloseConnection(false);
@@ -331,7 +344,7 @@ int				Response_2::sendResponse()
 	int		flag = 0;
 	try
 	{
-		Response response(_requests.operator[](0), _fd);
+		Response response(_requests.operator[](0), _fd, _server->getMaxBodySize());
 		flag = 1;
 		_requests.pop_front();
 
@@ -386,6 +399,9 @@ int				Response_2::sendResponse()
 			std::string full_path = ft_remove_underscore(_server->getLocations(path), tile);
 			int i = lstat(full_path.c_str(), &is_a_dir);
 			std::ofstream file;
+
+			std::cerr << "BAD FILE = " << full_path << std::endl;
+
 			file.open(full_path.c_str());
 			if (!file.is_open()){
 				Headliners resp(std::string("HTTP/1.1"), std::string("500"));
@@ -482,7 +498,8 @@ void			Response_2::readRequest()
 		// }
 
 		// If first cycle and ret == 0
-		if (ret <= 0 && data.size() == 0)
+		if (ret <= 0 && data.size() == 0)// ||
+			//(data.size() > (_server->getMaxBodySize() + sizeof(_buff)) && data.find("POST", 0) == 0))
 		{
 			std::cerr << "EPOLLERR: fd = " << _fd << std::endl;
 			if ((_server->getRequestContainerPointer())->size() &&
@@ -496,9 +513,26 @@ void			Response_2::readRequest()
 				((_server->getRequestContainerPointer())->operator[](_fd))->~Response_2();
 				(_server->getRequestContainerPointer())->erase(_fd);
 			}
+
+			// if (data.size() > (_server->getMaxBodySize() + sizeof(_buff)))
+			// {
+			// 	break ;
+			// 	Headliners resp(std::string("HTTP/1.1"), std::string("200"));
+			// 	resp.setCloseConnection(true);
+			// 	resp.sendHeadliners(_fd);
+
+			// 	if ((ret = close(_fd)) == -1)
+			// 		std::cerr << "FAIL!!!" << std::endl;
+
+			// 	std::cerr << "--\n" << data << "\n--" << std::endl;
+
+			// 	std::string str("ERROR in ft_post_handle: Body size too long");
+			// 	throw Exeption(str);
+			// }
+
 			if ((ret = close(_fd)) == -1)
 				std::cerr << "FAIL!!!" << std::endl;
-
+			break ;
 			// delete element from request container
 			// std::cerr << "Close fine (Response_2)" << std::endl;
 		}
@@ -575,15 +609,18 @@ void			Response_2::readRequest()
 std::string		Response_2::ft_get_dir_list(std::string& full_path)
 {
 #ifdef DEBUG
-	std::cout	<< "Response_2::ft_get_dir_list start" << std::endl;
+	std::cout	<< "Response_2::ft_get_dir_list start; full path = " << full_path << std::endl;
 #endif
+	// step 1: Init data
 	DIR*			dirp;
 	struct dirent*	dp;
 	std::string		dir_content("<html>\n\t<body>\n");
+	std::cerr << "step 1 ok" << std::endl;
 
-	// std::cout << "full_path = " << full_path << std::endl;
 
+	// step 2: Construct html
 	dirp = opendir(full_path.c_str());
+	std::cerr << "step 2 ok" << std::endl;
 	while ((dp = readdir(dirp)) != NULL)
 	{
 		// std::cout	<< "xxx = " << dp->d_name
@@ -611,10 +648,9 @@ std::string		Response_2::ft_get_dir_list(std::string& full_path)
 		}
 	}
 	(void)closedir(dirp);
-
 	dir_content += "\t</body>\n</html>\n";
 
-	// step 7: Create file and clean it
+	// step 3: Create file and write data
 	std::ofstream	temp_file;
 	std::string		cur_dir(full_path);
 	cur_dir += "/dir_content.temp";
@@ -623,6 +659,7 @@ std::string		Response_2::ft_get_dir_list(std::string& full_path)
 		throw Exeption("ERROR in response_2: create temp_file error!");
 	temp_file << dir_content;
 	temp_file.close();
+	std::cerr << "step 3 ok" << std::endl;
 
 		// if (dp->d_reclen == len && !strcmp(dp->d_name, full_path.c_str())) {
 		// 		(void)closedir(dirp);

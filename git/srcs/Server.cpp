@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:57 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/10 15:22:27 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/12 08:21:40 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -817,4 +817,9 @@ void				Server::setSockFd(int fd)
 std::map<int, Response_2*>*	Server::getRequestContainerPointer()
 {
 	return (_vars->request_container);
+}
+
+int					Server::getMaxBodySize()
+{
+	return (atoi(_vars->max_body_size.c_str()));
 }

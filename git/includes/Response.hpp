@@ -5,13 +5,23 @@
 #include <cstddef>
 
 class Response{
+	int				_fd;				// client fd
+	int				_maxBodySize;		// max body size
+	int				_metod;				// request method
+	std::string		_http;				// http version
+	std::string		_path;				// path from request
+	bool			_flag_connect;		// close connection
+	std::string		_body;				// 
+	size_t			_body_size;
+	size_t			_con_len;			// leigth of body
+	Response();
+
 public:
 	class	Exeption : public std::runtime_error {
 		public:
 			Exeption(const std::string& message) : std::runtime_error(message) {}
 	};
-	Response(std::string &str, int fd);
-	Response();
+	Response(std::string &str, int fd, int maxBodySize);
 	~Response();
 	//Response(const Response& resp);
 	//Response& operator= (const Response& resp);
@@ -24,16 +34,5 @@ public:
 	std::string 	getBody();
 	size_t 			getBodySize();
 	size_t 			getConLen();
-	
-private:
-	int				_fd;				// client fd
-	int				_metod;				// request method
-	std::string		_http;				// http version
-	std::string		_path;				// path from request
-	bool			_flag_connect;		// close connection
-	std::string		_body;				// 
-	size_t			_body_size;
-	size_t			_con_len;			// leigth of body
-
 };
 #endif

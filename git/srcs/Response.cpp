@@ -46,39 +46,9 @@ static std::string	setPath(std::string &str){
 	return (path);
 }
 
-std::string			Response::setBody(std::string str){
-	std::string::iterator it = str.begin();
-	size_t body_pos = str.find("\n\n");
-	if (body_pos == std::string::npos)
-		body_pos = str.find("\r\n\r\n");
-	else
-		it += body_pos + 2;
-	if (body_pos == std::string::npos)
-		std::cout << "no body" << std::endl;
-	else
-		it += body_pos + 4;
-	std::string body = "";
-	while (it != str.end()){
-		body += *it;
-		++it;
-	}
-	return (body);
-}
-
-void				Response::setBodySize(){
-	_body_size = _body.length();
-}
-
-Response::Response(){}
-
-Response::~Response(){}
-
-//Response::Response(const Response& resp){}
-
-//Response& Response::operator= (const Response& resp){}
-
-Response::Response(std::string &str, int fd):
+Response::Response(std::string &str, int fd, int maxBodySize):
 	_fd(fd),
+	_maxBodySize(maxBodySize),
 	_metod(0),
 	_flag_connect(false)
 {
@@ -146,6 +116,35 @@ Response::Response(std::string &str, int fd):
 	// step 7: Get body size
 	setBodySize();
 	// std::cout << "body_size =  " << _body_size << std::endl;
+}
+
+Response::~Response(){}
+
+//Response::Response(const Response& resp){}
+
+//Response& Response::operator= (const Response& resp){}
+
+std::string			Response::setBody(std::string str){
+	std::string::iterator it = str.begin();
+	size_t body_pos = str.find("\n\n");
+	if (body_pos == std::string::npos)
+		body_pos = str.find("\r\n\r\n");
+	else
+		it += body_pos + 2;
+	if (body_pos == std::string::npos)
+		std::cout << "no body" << std::endl;
+	else
+		it += body_pos + 4;
+	std::string body = "";
+	while (it != str.end()/* && static_cast<int>(body.size()) <= _maxBodySize*/){
+		body += *it;
+		++it;
+	}
+	return (body);
+}
+
+void				Response::setBodySize(){
+	_body_size = _body.length();
 }
 
 int					Response::getMetod(){
