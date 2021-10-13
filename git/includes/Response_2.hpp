@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:55:00 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/11 09:19:29 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/13 11:53:24 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,14 @@ public:
 
 	void			readRequest();
 	int				sendResponse();
-	int 			sendingResponseGet(std::string full_path,
+	int 			sendingResponseGet(Response *response,
+										std::string full_path,
 										struct stat is_a_dir,
 										std::string path);
 	std::string		getIndexFileName(std::string path);
 	bool			getCloseFlag();
 	std::string 	setVariables(std::string &str);
 	std::string		ft_get_dir_list(std::string& full_path);
-	int				getRequestContainerSize();					// Return size of unhandled requests container
+	int				getRequestContainerSize();									// Return size of unhandled requests container
+	void			getBlaCgiResult(Response *response, std::string full_path);	// Handle .bla CGI
 };
