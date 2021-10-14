@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/14 14:11:43 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/14 14:26:26 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,6 @@ void		Response_2::getBlaCgiResult(Response *response, std::string full_path)
 			resp.sendHeadliners(_fd);
 			throw Exeption("ERROR in response_2: execute script error");
 		}
-
 	}
 
 	// step 4: Close pipe
@@ -168,8 +167,6 @@ void		Response_2::getBlaCgiResult(Response *response, std::string full_path)
 
 
 	// step 7: Send body
-	// std::string::iterator	st = (response->getBody()).begin();
-	// std::string::iterator	end = (response->getBody()).end();
 	int						offset = 0;
 	int						size = (response->getBody()).size();
 	int						size_part = 1000;
@@ -211,18 +208,6 @@ void		Response_2::getBlaCgiResult(Response *response, std::string full_path)
 	}
 	std::cerr << "step 9 ok" << std::endl;
 
-	// step 8: Read result execute CGI script
-	// char		bufer[BUF_FOR_RESP];
-	// ret = BUF_FOR_RESP;
-	// while (ret == BUF_FOR_RESP)
-	// {
-	// 	ft_bzero(bufer, BUF_FOR_RESP);
-	// 	ret = read(pop[0], bufer, BUF_FOR_RESP);
-	// 	temp_file << bufer;
-	// 	std::cerr << "buffer = " << bufer << std::endl;
-	// }
-	// std::cerr << "step 8 ok" << std::endl;
-
 	// step 10: Close file and pipes
 	if ((ret = close(temp_file)) == -1)
 	{
@@ -245,9 +230,14 @@ void		Response_2::getBlaCgiResult(Response *response, std::string full_path)
 	sendFile(file_name);
 	std::cerr << "step 11 ok" << std::endl;
 
+	// step 12: delete temp file
+	if (file_name.size() && file_name.find(".temp", 0) == (file_name.size() - 5))
+		remove(file_name.c_str());
+
 #ifdef DEBUG
 	std::cout	<< "Response_2::getBlaCgiResult end" << std::endl;
 #endif
+	return ;
 }
 
 Response_2::Response_2(Server *server, int fd):
@@ -930,9 +920,9 @@ std::string		Response_2::ft_get_dir_list(std::string& full_path)
 
 int				Response_2::sendingResponseGet(Response *response, std::string full_path, struct stat is_a_dir, std::string path)
 {
-// #ifdef DEBUG
+#ifdef DEBUG
 	std::cout	<< "Response_2::sendingResponseGet start: fd = " << _fd << "; full path = " << full_path << std::endl;
-// #endif
+#endif
 	// step 1: Init data
 	int ret;
 
@@ -1076,7 +1066,8 @@ int				Response_2::sendingResponseGet(Response *response, std::string full_path,
 	return (ret);
 }
 
-std::string		Response_2::getIndexFileName(std::string path){
+std::string		Response_2::getIndexFileName(std::string path)
+{
 #ifdef DEBUG
 	std::cout	<< "Response_2::getIndexFileName start: fd = " << _fd << std::endl;
 #endif
@@ -1126,9 +1117,9 @@ int				Response_2::haveCGI(std::string &result_path)
 
 std::string		Response_2::handleCGI(std::string &result_path)
 {
-// #ifdef DEBUG
+#ifdef DEBUG
 	std::cout	<< "Response_2::handleCGI start; path = " << result_path << std::endl;
-// #endif
+#endif
 	// step 1: Init data
 
 	// step 2: Create argv

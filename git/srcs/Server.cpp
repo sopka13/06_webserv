@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:57 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/12 08:21:40 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/14 14:29:21 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 Server::~Server()
 {}
 
-static int		setRoot(std::string &str, t_location *location)
+static int					setRoot(std::string &str, t_location *location)
 {
 #ifdef DEBUG
 	std::cout << "setRoot start; str = |" << str << "|" << std::endl;
@@ -67,7 +67,7 @@ static int		setRoot(std::string &str, t_location *location)
 	return (0);
 }
 
-static int		setAutoindex(std::string &str, t_location *location)
+static int					setAutoindex(std::string &str, t_location *location)
 {
 #ifdef DEBUG
 	std::cout << "setAutoindex start; str = |" << str << "|" << std::endl;
@@ -111,7 +111,7 @@ static int		setAutoindex(std::string &str, t_location *location)
 	return (0);
 }
 
-static int		setRedirect(std::string &str, t_location *location)
+static int					setRedirect(std::string &str, t_location *location)
 {
 #ifdef DEBUG
 	std::cout << "setRedirect start; str = |" << str << "|" << std::endl;
@@ -156,7 +156,7 @@ static int		setRedirect(std::string &str, t_location *location)
 	return (0);
 }
 
-static int		setMethods(std::string &str, t_location *location)
+static int					setMethods(std::string &str, t_location *location)
 {
 #ifdef DEBUG
 	std::cout << "setMethods start; str = |" << str << "|" << std::endl;
@@ -201,7 +201,7 @@ static int		setMethods(std::string &str, t_location *location)
 	return (0);
 }
 
-static int		setIndex(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
+static int					setIndex(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
 {
 #ifdef DEBUG
 	std::cout << "setIndex start; str = |" << str << "|" << std::endl;
@@ -249,7 +249,7 @@ static int		setIndex(t_server *server_data, std::string &str, std::map<std::stri
 	return (0);
 }
 
-static int		setListen(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
+static int					setListen(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
 {
 #ifdef DEBUG
 	std::cout << "setListen start; str = |" << str << "|" << std::endl;
@@ -327,7 +327,7 @@ static int		setListen(t_server *server_data, std::string &str, std::map<std::str
 	return (0);
 }
 
-static int		setName(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
+static int					setName(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
 {
 #ifdef DEBUG
 	std::cout << "setName start; str = |" << str << "|" << std::endl;
@@ -376,7 +376,7 @@ static int		setName(t_server *server_data, std::string &str, std::map<std::strin
 	return (0);
 }
 
-static int		setLocation(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
+static int					setLocation(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
 {
 #ifdef DEBUG
 	std::cout << "setLocation start; str = |" << str << "|" << std::endl;
@@ -479,7 +479,7 @@ static int		setLocation(t_server *server_data, std::string &str, std::map<std::s
 	return (0);
 }
 
-static int		setCGI_format(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
+static int					setCGI_format(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
 {
 #ifdef DEBUG
 	std::cout << "setCGI_format start; str = |" << str << "|" << std::endl;
@@ -522,53 +522,6 @@ static int		setCGI_format(t_server *server_data, std::string &str, std::map<std:
 #endif
 	return (0);
 }
-
-// static int		setCGI_handler(t_server *server_data, std::string &str, std::map<std::string, t_location> *locations)
-// {
-// #ifdef DEBUG
-// 	std::cout << "setCGI_handler start; str = |" << str << "|" << std::endl;
-// #endif
-
-// 	// server_data->CGI_handler = _vars->
-
-// 	// step 1: Init data
-// 	if (locations == NULL)
-// 		std::cout << "Bad args in setCGI_handler" << std::endl;
-
-// 	// step 1: Init data
-// 	std::string::iterator	start = str.begin();
-// 	std::string				temp_value;
-
-// 	// step 2: Get value
-// 	while (str.length() && *start != ' ' && *start != '\t' && *start != ';')
-// 	{
-// 		temp_value += *start;
-// 		str.erase(start);
-// 		start = str.begin();
-// 	}
-// 	// std::cout << temp_value << std::endl;
-
-// 	// step 3: Trim spaces and tabs
-// 	while (str.length() && (*start == ' ' || *start == '\t'))
-// 	{
-// 		str.erase(start);
-// 		start = str.begin();
-// 	}
-// 	// std::cout << str << std::endl;
-
-// 	// step 4: Check errors and write data
-// 	if (*start == ';')
-// 	{
-// 		str.erase(start);
-// 		server_data->CGI_handler = temp_value;
-// 	}
-// 	else
-// 		return (1);
-// #ifdef DEBUG
-// 	std::cout << "setCGI_handler end; str = |" << str << "|" << std::endl;
-// #endif
-// 	return (0);
-// }
 
 Server::Server(std::string &str, t_vars *vars):
 	_vars(vars)
@@ -668,14 +621,14 @@ Server::Server(std::string &str, t_vars *vars):
 #endif
 }
 
-const std::string*	Server::getName() const
+const std::string*			Server::getName() const
 {
 	if (!server_data.server_name.empty())
 		return (&server_data.server_name[0]);
 	return (NULL);
 }
 
-const std::string*	Server::getName(std::string &str) const
+const std::string*			Server::getName(std::string &str) const
 {
 	if (!server_data.server_name.empty())
 	{
@@ -687,17 +640,17 @@ const std::string*	Server::getName(std::string &str) const
 	return (NULL);
 }
 
-const std::string&	Server::getIp() const
+const std::string&			Server::getIp() const
 {
 	return (server_data.ip);
 }
 
-int					Server::getPort() const
+int							Server::getPort() const
 {
 	return (server_data.port);
 }
 
-bool				Server::getRedirect(std::string &str)
+bool						Server::getRedirect(std::string &str)
 {
 	std::map<std::string, t_location>::iterator it = locations.find(str);
 	if (it == locations.end())
@@ -705,7 +658,7 @@ bool				Server::getRedirect(std::string &str)
 	return ((locations[str]).redirect);
 }
 
-std::string			Server::getRedirectAdress(std::string &str)
+std::string					Server::getRedirectAdress(std::string &str)
 {
 	std::map<std::string, t_location>::iterator it = locations.find(str);
 	if (it == locations.end())
@@ -713,7 +666,7 @@ std::string			Server::getRedirectAdress(std::string &str)
 	return ((locations[str]).redirect_adress);
 }
 
-bool				Server::getAutoindex(std::string &str)
+bool						Server::getAutoindex(std::string &str)
 {
 	std::map<std::string, t_location>::iterator it = locations.find(str);
 	if (it == locations.end())
@@ -722,7 +675,7 @@ bool				Server::getAutoindex(std::string &str)
 	return ((locations[str]).autoindex);
 }
 
-std::string			Server::getLocations(std::string str)
+std::string					Server::getLocations(std::string str)
 {
 	std::map<std::string, t_location>::iterator it = locations.find(str);
 	if (it == locations.end())
@@ -730,22 +683,22 @@ std::string			Server::getLocations(std::string str)
 	return ((locations[str]).location_addr);
 }
 
-socklen_t*			Server::getSockLen()
+socklen_t*					Server::getSockLen()
 {
 	return (&(server_data.sock_data.sock_len));
 }
 
-sockaddr_in*		Server::getServAddr()
+sockaddr_in*				Server::getServAddr()
 {
 	return (&(server_data.sock_data.serv_addr));
 }
 
-bool				Server::getDefault()
+bool						Server::getDefault()
 {
 	return (server_data.default_server);
 }
 
-bool				Server::getMethods(std::string &key, std::string &method)
+bool						Server::getMethods(std::string &key, std::string &method)
 {
 	std::map<std::string, t_location>::iterator it = locations.find(key);
 	if (it == locations.end())
@@ -769,47 +722,47 @@ bool				Server::getMethods(std::string &key, std::string &method)
 	return (false);
 }
 
-std::vector<std::string>		*Server::getIndexName()
+std::vector<std::string>	*Server::getIndexName()
 {
 	return (&server_data.index);
 }
 
-const std::string	&Server::getErrPage()
+const std::string			&Server::getErrPage()
 {
 	return (_vars->error_page);
 }
 
-const std::string	&Server::getWelcomePage()
+const std::string			&Server::getWelcomePage()
 {
 	return (_vars->welcome_page);
 }
 
-const std::string	&Server::getCGI_format()
+const std::string			&Server::getCGI_format()
 {
 	return (server_data.CGI_format);
 }
 
-const std::string	&Server::getCGI_handler()
+const std::string			&Server::getCGI_handler()
 {
 	return (server_data.CGI_handler);
 }
 
-int					Server::getSockFd()
+int							Server::getSockFd()
 {
 	return (server_data.sock_data.tcp_sockfd);
 }
 
-int					Server::getEpollFd()
+int							Server::getEpollFd()
 {
 	return (_vars->epoll_fd);
 }
 
-struct epoll_event*	Server::getEpollEvent()
+struct epoll_event*			Server::getEpollEvent()
 {
 	return (&_vars->ev);
 }
 
-void				Server::setSockFd(int fd)
+void						Server::setSockFd(int fd)
 {
 	server_data.sock_data.tcp_sockfd = fd;
 }
@@ -819,7 +772,7 @@ std::map<int, Response_2*>*	Server::getRequestContainerPointer()
 	return (_vars->request_container);
 }
 
-int					Server::getMaxBodySize()
+int							Server::getMaxBodySize()
 {
 	return (atoi(_vars->max_body_size.c_str()));
 }

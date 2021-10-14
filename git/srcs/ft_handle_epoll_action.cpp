@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 17:13:43 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/11 21:49:20 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/14 14:21:59 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,6 @@
 
 void		ft_handle_epoll_action(t_vars *vars, int fd, uint32_t events)
 {
-#ifdef DEBUG
-	std::cout	<< "ft_handle_epoll_action start: fd = " << fd << std::endl;
-#endif
-	Response_2	*resp;
 	// 1. It's socket
 	//	a. get fd
 	//	b. create Resp_2
@@ -37,6 +33,10 @@ void		ft_handle_epoll_action(t_vars *vars, int fd, uint32_t events)
 	//			a. read request
 	//		2.2 need write
 	//			a. write response
+#ifdef DEBUG
+	std::cout	<< "ft_handle_epoll_action start: fd = " << fd << std::endl;
+#endif
+	Response_2	*resp;
 
 	// 1. It's socket
 	for (int i = 0; i < static_cast<int>(vars->sockets->size()); ++i)

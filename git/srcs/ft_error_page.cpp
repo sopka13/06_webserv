@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 09:52:15 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/14 13:08:22 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/14 14:21:18 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ int			ft_error_page(t_vars* vars, std::string &str)
 #ifdef DEBUG
 	std::cout << "ft_error_page start" << std::endl;
 #endif
-
 	// step 1: Init data
 	std::string::iterator	start = str.begin();
 	std::string				err_page_name;
