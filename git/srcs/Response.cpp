@@ -46,11 +46,16 @@ static std::string	setPath(std::string &str){
 	return (path);
 }
 
+std::string	Response::body_chunk(std::string str){
+
+}
+
 Response::Response(std::string &str, int fd, int maxBodySize):
 	_fd(fd),
 	_maxBodySize(maxBodySize),
 	_metod(0),
-	_flag_connect(false)
+	_flag_connect(false),
+	_flag_chunk(false)
 {
 	// step 1: Get method
 	this->_metod = setMetod(str);
@@ -91,9 +96,14 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 	}
 
 	// step 4: If close connection set flag
+	size_t connection_pos = str.find("Transfer-Encoding: Chunked");
+	if (connection_pos != std::string::npos)
+		_flag_chunk = true;
+
 	size_t connection_pos = str.find("Connection: close");
 	if (connection_pos != std::string::npos)
 		_flag_connect = true;
+
 
 	// step 5: Get connection_length
 	connection_pos = str.find("Content-Length");
@@ -111,6 +121,8 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 	
 	// step 6: Get body of reqvest
 	_body = setBody(str);
+	if (_flag_chunk)
+		_body = body_chunk(_body);
 	// std::cout << "body =  " << _body << std::endl;
 
 	// step 7: Get body size
