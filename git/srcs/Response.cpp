@@ -61,7 +61,27 @@ static std::string	setPath(std::string &str)
 }
 
 std::string	Response::body_chunk(std::string str){
+	std::string::iterator it = str.begin();
+	std::string col = "";
+	int i;
+	int k;
+	std::string body = "";
 
+	while (it < str.end()){
+		while (it < str.end() && isdigit(*it) == 1 ){
+			col += *it;
+			++it;
+		}
+		i = atoi(col.c_str());
+		for (k = 0; k < i; k++){
+			if (it < str.end()){
+				body += *it;
+				++it;
+			}
+		}
+		while (it < str.end() && isdigit(*it) == 0)
+			++i;
+	}
 }
 
 Response::Response(std::string &str, int fd, int maxBodySize):
