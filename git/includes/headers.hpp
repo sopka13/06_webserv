@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/13 11:12:29 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/14 11:10:35 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@
 #include <dirent.h>			//opendir
 #include <fcntl.h>			//open
 #include <unistd.h>			//dup2
+#include <pthread.h>
+// #include <stdlib.h>
 // #include <semaphore.h>		//sem_open
 // #include <csignal>
 // #include <thread>
@@ -63,6 +65,13 @@ class Response;
 class Response_2;
 
 extern	bool	exit_flag;				// exit flag for threads
+
+typedef struct		s_args				// struct for thread
+{
+	int			fd;						// pipe
+	int			tmp_file;				// output pile fd
+}					t_args;
+
 
 typedef struct		s_request
 {

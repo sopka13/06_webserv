@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/13 13:36:33 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/14 14:26:26 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,28 @@ static std::string	ft_remove_underscore(std::string path, std::string title)
 	return (path + '/' + title);
 }
 
+static void*		readCgiFromThread(void *args)
+{
+#ifdef DEBUG
+	std::cout	<< "readCgiFromThread start; " << std::endl;
+#endif
+	t_args	*arg = (t_args*) args;
+	char	bufer[65000];
+	int		ret = 65000;
+	while (ret > 0)
+	{
+		ft_bzero(bufer, 65000);
+		ret = read(arg->fd, bufer, 65000);
+		write(arg->tmp_file, bufer, ret);
+		// std::cerr << "buffer = " << bufer << std::endl;
+	}
+
+#ifdef DEBUG
+	std::cout	<< "readCgiFromThread end; " << std::endl;
+#endif
+	return (arg);
+}
+
 void		Response_2::getBlaCgiResult(Response *response, std::string full_path)
 {
 	// This function handle .bla CGI file
@@ -40,16 +62,18 @@ void		Response_2::getBlaCgiResult(Response *response, std::string full_path)
 	int		pip[2];			// pipe for send body for script
 	int		pop[2];			// pipe for send response from CGI
 
-	// step x: Create pipe
+	// step 2: Create pipe
 	if ((ret = pipe(pip)) == -1 || (ret = pipe(pop)) == -1)
 	{
 		Headliners resp(std::string("HTTP/1.1"), std::string("500"));
 		resp.sendHeadliners(_fd);
 		throw Exeption("ERROR in response_2: create pipe for CGI handlerr error");
 	}
+	std::cerr << "step 2 ok" << std::endl;
 
-	// step x: Fork
+	// step 3: Fork
 	id = fork();
+	std::cerr << "step 3 ok" << std::endl;
 	if (id == -1)			// error
 	{
 		Headliners resp(std::string("HTTP/1.1"), std::string("500"));
@@ -58,120 +82,162 @@ void		Response_2::getBlaCgiResult(Response *response, std::string full_path)
 	}
 	else if (id == 0)		// child
 	{
-		// step x: Close pipe
+		// step 3.1: Close pipe
 		if ((ret = close(pip[1])) == -1 || (ret = close(pop[0])) == -1)
 		{
 			Headliners resp(std::string("HTTP/1.1"), std::string("500"));
 			resp.sendHeadliners(_fd);
 			throw Exeption("ERROR in response_2: close pipe[1] for CGI handlerr error");
 		}
+		std::cerr << "step 3.1 ok" << std::endl;
 
-		// step x: Change fd
+		// step 3.2: Change fd
 		if ((ret = dup2(pip[0], STDIN_FILENO)) == -1 || (ret = dup2(pop[1], STDOUT_FILENO)) == -1)
 		{
 			Headliners resp(std::string("HTTP/1.1"), std::string("500"));
 			resp.sendHeadliners(_fd);
 			throw Exeption("ERROR in response_2: close pipe[1] for CGI handlerr error");
 		}
+		std::cerr << "step 3.2 ok" << std::endl;
 
-		// step x: Close fd
+		// step 3.3: Close fd
 		close(pip[0]);
 		close(pop[1]);
+		std::cerr << "step 3.3 ok" << std::endl;
 
-		// step x: Create env vars
+		// step 3.4: Create env vars
 		char*	argv[] = {
 			// (_server->getCGI_handler()).c_str(),
 			NULL
 		};
 		std::vector<char *> envp;
-		char	tmp[] = "REDIRECT_STATUS=200"; 
-		envp.push_back(tmp);
-			// "CONTENT_LENGTH"]	=	iToString(this->_req.body_size);	// content-length de la requete
-			// "CONTENT_TYPE"]		=	headers["content-type"];	// content-type de la requete (POST)
-		char	tmp1[] = "GATEWAY_INTERFACE=CGI/1.1";	// version du CGI qu'utilise le server
-		envp.push_back(tmp1);
 		char	tmp2[] = "PATH_INFO=/home/sergey/My_prog/21_school/06_webserv/git/sites_avaliable/test/ubuntu_cgi_tester";	// derniere partie de l'URI apres le host
 		envp.push_back(tmp2);
-			// "PATH_TRANSLATED"]	=	this->_res.getTarget();	// adresse reelle du script (idem PATH_INFO pour nous)
-			// "QUERY_STRING"]		=	this->_req.req_line.query_string;	// Contient tout ce qui suit le « ? » dans l'URL envoyée par le client.
-			// "REMOTE_ADDR"]		=	this->_req.host_uri;;	// adress ip du client
 		char	tmp3[] = "REQUEST_METHOD=GET;POST";	// GET ou POST ou ...
 		envp.push_back(tmp3);
-			// "REQUEST_URI"]		=	this->_req.req_line.target; // --> For the 42 tester
-			// "SCRIPT_NAME"]		=	this->_res.getTarget();	// full path du fichier de script
-			// "SCRIPT_FILENAME"]	=	this->_res.getTarget();	// full path du fichier de script
-			// "SERVER_NAME"`]		=	this->_req.host_uri;	// DNS ou IP du server (hostname)
-			// "SERVER_PORT"]		=	this->_req.host_port;	// port ayant reçu la requête
 		char	tmp4[] = "SERVER_PROTOCOL=HTTP/1.1";	// protocol HTTP (toujours HTTP/1.1 ?)
 		envp.push_back(tmp4);
-			// "SERVER_SOFTWARE"]	=	"webserv";
-			// "UPLOAD_DIR"]		=	this->_req.config.upload_dir;
 		envp.push_back(NULL);
+		std::cerr << "step 3.4 ok" << std::endl;
 
-		// step x: Execute script
+		// step 3.5: Execute script
 		if ((ret = execve((_server->getCGI_handler()).c_str(), argv, &(*envp.begin()))))
 		{
 			Headliners resp(std::string("HTTP/1.1"), std::string("500"));
 			resp.sendHeadliners(_fd);
 			throw Exeption("ERROR in response_2: execute script error");
 		}
-
 	}
 
-	// step x: Close pipe
+	// step 4: Close pipe
 	if ((ret = close(pip[0])) == -1 || (ret = close(pop[1])) == -1)
 	{
 		Headliners resp(std::string("HTTP/1.1"), std::string("500"));
 		resp.sendHeadliners(_fd);
 		throw Exeption("ERROR in response_2: close pipe[0] for CGI handlerr error");
 	}
+	std::cerr << "step 4 ok" << std::endl;
 
-	// step x: Send body
-	if ((ret = write(pip[1], (response->getBody()).c_str(), response->getBodySize())) == -1)
-	{
-		Headliners resp(std::string("HTTP/1.1"), std::string("500"));
-		resp.sendHeadliners(_fd);
-		throw Exeption("ERROR in response_2: write in pipe for CGI handlerr error");
-	}
+	// write(2, (response->getBody()).c_str(), response->getBodySize());
+	// write(2, "\0", 2);
+	// std::cerr << "step 4.1 ok" << std::endl;
 
-	// step x: Wait child process
-	int		status;
-	waitpid(id, &status, 0);
-
-	// step x: Create file
+	// step 5: Create file for data from CGI
 	std::string		file_name(full_path + ".temp");
-	std::ofstream	temp_file;
-	temp_file.open(file_name.c_str());
-	if (!temp_file.is_open())
-	if ((ret = write(pip[1], (response->getBody()).c_str(), response->getBodySize())) == -1)
+	int				temp_file;
+	if ((temp_file = open(file_name.c_str(), O_CREAT | O_TRUNC | O_RDWR)) == -1)
 	{
+		std::cerr << "strerror = " << strerror(errno) << "; file name = " << file_name << std::endl;
+
 		Headliners resp(std::string("HTTP/1.1"), std::string("500"));
 		resp.sendHeadliners(_fd);
 		throw Exeption("ERROR in response_2: create file for CGI handlerr error");
 	}
+	std::cerr << "step 5 ok" << std::endl;
 
-	// step x: Read result execute CGI script
-	char		bufer[BUF_FOR_RESP];
-	ret = BUF_FOR_RESP;
-	while (ret == BUF_FOR_RESP)
+	// step 6: Create thread for read data from CGI
+	pthread_t	readCgiThread;
+	int			status_pthread;
+	// int			args[] = {pop[0], temp_file};
+	t_args		args;
+	args.fd = pop[0];
+	args.tmp_file = temp_file;
+	status_pthread = pthread_create(&readCgiThread, NULL, readCgiFromThread, &args);
+	std::cerr << "step 6 ok" << std::endl;
+
+
+	// step 7: Send body
+	int						offset = 0;
+	int						size = (response->getBody()).size();
+	int						size_part = 1000;
+
+	while (offset < size)
 	{
-		ft_bzero(bufer, BUF_FOR_RESP);
-		ret = read(pop[0], bufer, BUF_FOR_RESP);
-		temp_file << bufer;
-		std::cerr << "buffer = " << bufer << std::endl;
-	}
+		if ((ret = write(pip[1],
+						(response->getBody()).c_str() + offset,
+						((offset + size_part) > size ? (size_part - (size - offset)) : size_part))) == -1)
+		{
+			std::cerr << "strerror = " << strerror(errno) << std::endl;
 
-	// step x: Close file and pipes
-	temp_file.close();
+			Headliners resp(std::string("HTTP/1.1"), std::string("500"));
+			resp.sendHeadliners(_fd);
+			throw Exeption("ERROR in response_2: write in pipe for CGI handlerr error");
+		}
+		offset += ret;
+		std::cerr << "offset = " << offset << std::endl;
+	}
+	std::cerr << "step 7 ok" << std::endl;
+
+	// step 8: Close pipe "EOF"
+	if ((ret = close(pip[1])) == -1)
+	{
+		Headliners resp(std::string("HTTP/1.1"), std::string("500"));
+		resp.sendHeadliners(_fd);
+		throw Exeption("ERROR in response_2: close pipe for CGI handlerr error");
+	}
+	std::cerr << "step 8 ok" << std::endl;
+
+	// step 9: Wait child process and threads for read data from thread
+	int		status;
+	waitpid(id, &status, 0);
+	if ((ret = pthread_join(readCgiThread, (void**)&status_pthread)) != 0)
+	{
+		Headliners resp(std::string("HTTP/1.1"), std::string("500"));
+		resp.sendHeadliners(_fd);
+		throw Exeption("ERROR in response_2: pthread for read data from CGI error");
+	}
+	std::cerr << "step 9 ok" << std::endl;
+
+	// step 10: Close file and pipes
+	if ((ret = close(temp_file)) == -1)
+	{
+		Headliners resp(std::string("HTTP/1.1"), std::string("500"));
+		resp.sendHeadliners(_fd);
+		throw Exeption("ERROR in response_2: close temp_file error");
+	}
 	close(pip[1]);
 	close(pop[0]);
+	std::cerr << "step 10 ok" << std::endl;
 
-	// step x: Send file
+	// step 11: Send file
+	struct stat	info;
+	stat(file_name.c_str(), &info);
+
+	Headliners resp(std::string("HTTP/1.1"), std::string("200"));
+	resp.setContentLeigth(info.st_size);
+	resp.setCloseConnection(false);
+	resp.sendHeadliners(_fd);
 	sendFile(file_name);
+	std::cerr << "step 11 ok" << std::endl;
+
+	// step 12: delete temp file
+	if (file_name.size() && file_name.find(".temp", 0) == (file_name.size() - 5))
+		remove(file_name.c_str());
 
 #ifdef DEBUG
 	std::cout	<< "Response_2::getBlaCgiResult end" << std::endl;
 #endif
+	return ;
 }
 
 Response_2::Response_2(Server *server, int fd):
@@ -323,13 +389,9 @@ void			Response_2::postHandle(Response *response)
 		path.erase(end);
 		end--;
 	}
+	// if (path.size())
+	// 	full_path = _server->getLocations(path) + full_path;
 
-	// step x: If .bla
-	if (haveCGI(full_path) && _server->getCGI_format() == ".bla")
-	{
-		getBlaCgiResult(response, full_path);
-		return ;
-	}
 
 	// step 3: Check error - if no path, and if have path get full_path with locations
 	if (path == "")
@@ -345,10 +407,28 @@ void			Response_2::postHandle(Response *response)
 	}
 	else
 	{
+		// construct location + target_file name
 		temp = ft_remove_underscore(_server->getLocations(path), full_path);
 		full_path = temp;
-		full_path += getIndexFileName(full_path);
+
+		// check it's a dir or file
+		struct stat		is_a_dir;
+		ret = lstat(full_path.c_str(), &is_a_dir);
+
+		if ((ret = lstat(full_path.c_str(), &is_a_dir)) != -1 && S_ISDIR(is_a_dir.st_mode))
+		{
+			temp = ft_remove_underscore(full_path, getIndexFileName(full_path)); // need upgrade if indexfile more than one
+			full_path = temp;
+		}
 		// std::cerr << "Full path = " << full_path << std::endl;
+	}
+	
+	// step x: If .bla
+	std::cerr << "full path = " << full_path << std::endl;
+	if (haveCGI(full_path) && _server->getCGI_format() == ".bla")
+	{
+		getBlaCgiResult(response, full_path);
+		return ;
 	}
 
 	// step 4: Check error - if method no supported
@@ -365,7 +445,7 @@ void			Response_2::postHandle(Response *response)
 	// step 5: Check target file/dir for exist
 	struct stat	info;
 	ret = stat(full_path.c_str(), &info);
-	if (ret == -1 || (haveCGI(full_path) && _server->getCGI_format() == ".bla"))							//file/dir doesn't exist
+	if (ret == -1 /*|| (haveCGI(full_path) && _server->getCGI_format() == ".bla")*/)							//file/dir doesn't exist	{
 	{
 		// step 1: Create new file and write body
 		std::ofstream	new_file;
@@ -646,7 +726,7 @@ void			Response_2::readRequest()
 		// step 2.1: Read
 		// ret = read(_fd, _buff, sizeof(_buff));
 		ret = recv(_fd, _buff, sizeof(_buff), 0);
-		std::cerr << "ret = " << ret << "; fd = " << _fd << std::endl;
+		// std::cerr << "ret = " << ret << "; fd = " << _fd << std::endl;
 		// if (ret < 0)
 		// {
 		// 	Headliners resp(std::string("HTTP/1.1"), std::string("403"));
@@ -752,7 +832,10 @@ void			Response_2::readRequest()
 		(_server->getEpollEvent())->data.fd = _fd;
 		ret = epoll_ctl(_server->getEpollFd(), EPOLL_CTL_MOD, _fd, _server->getEpollEvent());
 	}
-	std::cerr << "--\n" << data << "\n--" << std::endl;
+	write(2, "###\n", 4);
+	write(2, data.c_str(), (data.size() > 500 ? 500 : data.size()));
+	write(2, "\n###\n", 6);
+	// std::cerr << "--\n" << data << "\n--" << std::endl;
 
 #ifdef DEBUG
 	std::cout	<< "Response_2::readRequest end: fd = "
@@ -781,6 +864,8 @@ std::string		Response_2::ft_get_dir_list(std::string& full_path)
 	std::cerr << "step 2 ok" << std::endl;
 	while ((dp = readdir(dirp)) != NULL)
 	{
+		std::cerr << "iteration ok" << std::endl;
+		
 		// std::cout	<< "xxx = " << dp->d_name
 		// 			<< "; " << dp->d_ino
 		// 			<< "; " << dp->d_off
@@ -835,16 +920,16 @@ std::string		Response_2::ft_get_dir_list(std::string& full_path)
 
 int				Response_2::sendingResponseGet(Response *response, std::string full_path, struct stat is_a_dir, std::string path)
 {
-// #ifdef DEBUG
+#ifdef DEBUG
 	std::cout	<< "Response_2::sendingResponseGet start: fd = " << _fd << "; full path = " << full_path << std::endl;
-// #endif
+#endif
 	// step 1: Init data
 	int ret;
 
 	// step 2: Check it's file or dir
-	lstat(full_path.c_str(), &is_a_dir);
+	ret = lstat(full_path.c_str(), &is_a_dir);
 	std::string rezult_path;
-	if (S_ISDIR(is_a_dir.st_mode))
+	if (ret != -1 && S_ISDIR(is_a_dir.st_mode))
 	{
 		// step x: Add '/' character to the end of the line
 		if (*(full_path.end() - 1) != '/')
@@ -981,7 +1066,8 @@ int				Response_2::sendingResponseGet(Response *response, std::string full_path,
 	return (ret);
 }
 
-std::string		Response_2::getIndexFileName(std::string path){
+std::string		Response_2::getIndexFileName(std::string path)
+{
 #ifdef DEBUG
 	std::cout	<< "Response_2::getIndexFileName start: fd = " << _fd << std::endl;
 #endif
@@ -1031,9 +1117,9 @@ int				Response_2::haveCGI(std::string &result_path)
 
 std::string		Response_2::handleCGI(std::string &result_path)
 {
-// #ifdef DEBUG
+#ifdef DEBUG
 	std::cout	<< "Response_2::handleCGI start; path = " << result_path << std::endl;
-// #endif
+#endif
 	// step 1: Init data
 
 	// step 2: Create argv

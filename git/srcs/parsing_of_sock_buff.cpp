@@ -1,7 +1,19 @@
-#include "../includes/headers.hpp"
-#include <string>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing_of_sock_buff.cpp                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/10/14 14:25:33 by eyohn             #+#    #+#             */
+/*   Updated: 2021/10/14 14:25:52 by eyohn            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-int getMetod(std::string sock_buff, t_request *req){
+#include "../includes/headers.hpp"
+
+int getMetod(std::string sock_buff, t_request *req)
+{
 	if (sock_buff.compare(0, 3, "GET") == 0)
 		req->metod = 1;
 	else if (sock_buff.compare(0, 4, "POST") == 0)
@@ -15,7 +27,8 @@ int getMetod(std::string sock_buff, t_request *req){
 	return (req->metod);
 }
 
-int parsing_of_sock_buff(char buff[BUF_FOR_RESP]){
+int parsing_of_sock_buff(char buff[BUF_FOR_RESP])
+{
 	t_request req;
 
 	std::string sock_buff = static_cast<std::string>(buff);

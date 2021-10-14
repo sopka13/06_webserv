@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Response.cpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/10/14 14:26:31 by eyohn             #+#    #+#             */
+/*   Updated: 2021/10/14 14:27:34 by eyohn            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/Response.hpp"
 
 static int			setMetod(std::string &sock_buff)
@@ -27,7 +39,8 @@ static int			setMetod(std::string &sock_buff)
 	return (ret);
 }
 
-static std::string	erase_back(std::string &str){
+static std::string	erase_back(std::string &str)
+{
 	int i = 0;
 	while (str[i] && (str[i] == ' ' || str[i] == '\n' || str[i] == '\r' || str[i] == '\t'))
 		++i;
@@ -35,7 +48,8 @@ static std::string	erase_back(std::string &str){
 	return (str);
 }
 
-static std::string	setPath(std::string &str){
+static std::string	setPath(std::string &str)
+{
 	std::string path = "";
 	int i = 0;
 	while (str[i] && str[i] != ' ' && str[i] != '\t' && str[i] != '\n' && str[i] != '\r'){
@@ -132,11 +146,8 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 
 Response::~Response(){}
 
-//Response::Response(const Response& resp){}
-
-//Response& Response::operator= (const Response& resp){}
-
-std::string			Response::setBody(std::string str){
+std::string			Response::setBody(std::string str)
+{
 	std::string::iterator it = str.begin();
 	size_t body_pos = str.find("\n\n");
 	if (body_pos == std::string::npos)
@@ -155,37 +166,45 @@ std::string			Response::setBody(std::string str){
 	return (body);
 }
 
-void				Response::setBodySize(){
+void				Response::setBodySize()
+{
 	_body_size = _body.length();
 }
 
-int					Response::getMetod(){
+int					Response::getMetod()
+{
 	return (_metod);
 }
 
-std::string			Response::getHttp(){
+std::string			Response::getHttp()
+{
 	return (_http);
 }
 
-std::string			Response::getPath(){
+std::string			Response::getPath()
+{
 	return (_path);
 }
 
-bool				Response::getClose(){
+bool				Response::getClose()
+{
 	return (_flag_connect);
 }
 
-std::string			Response::getBody(){
+std::string&		Response::getBody()
+{
 	// std::cout << "BODY " << _body << std::endl;
 	return (_body);
 }
 
-size_t				Response::getBodySize(){
+size_t				Response::getBodySize()
+{
 	// std::cout << "SIZE " << _body_size << std::endl;
 	return (_body_size);
 }
 
-size_t				Response::getConLen(){
+size_t				Response::getConLen()
+{
 	// std::cout << "CON_LEN " << _con_len << std::endl;
 	return (_con_len);
 }

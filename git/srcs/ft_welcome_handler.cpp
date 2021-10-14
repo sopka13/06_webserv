@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/08 09:34:37 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/08 10:43:35 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/14 14:24:11 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ int			ft_welcome_page(t_vars* vars, std::string &str)
 #ifdef DEBUG
 	std::cout << "ft_welcome_page start" << std::endl;
 #endif
-
 	// step 1: Init data
 	std::string::iterator	start = str.begin();
 	std::string				welcome_page_name;

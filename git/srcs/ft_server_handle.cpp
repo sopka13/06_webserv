@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/19 10:57:36 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/05 10:37:24 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/14 14:23:30 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 */
 
 // Need sorter servers for check single default server
-
 
 #include "../includes/headers.hpp"
 
@@ -35,7 +34,6 @@ int			ft_server_handle(t_vars* vars, std::string &str)
 		std::cerr << e.what() << '\n';
 		return (1);
 	}
-	
 
 #ifdef DEBUG
 	std::cout << "ft_server_handle end: size servers = " << vars->servers->size() << std::endl;

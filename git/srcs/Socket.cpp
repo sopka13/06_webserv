@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/05 14:48:29 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/08 18:49:25 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/14 14:30:19 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,10 @@ Socket::Socket(Server *server):
 	// }
 	++ret; //без этого ругается компилятор
 }
-Socket::~Socket(){}
+
+Socket::~Socket()
+{}
+
 // Socket::Socket(const Socket& soc){
 // 	_sock_len = soc._sock_len;
 // 	_serv_addr.sin_family = soc._serv_addr.sin_family;
@@ -66,18 +69,22 @@ Socket::~Socket(){}
 // }
 
 
-std::string Socket::getLoc(std::string path){
+std::string		Socket::getLoc(std::string path)
+{
 	return(_server->getLocations(path));
 }
 
-int Socket::getFd(){
+int				Socket::getFd()
+{
 	return (_fd);
 }
 
-int Socket::getTcp_sockfd(){
+int				Socket::getTcp_sockfd()
+{
 	return (_tcp_sockfd);
 }
 
-void Socket::setFd(){
+void 			Socket::setFd()
+{
 	_fd = accept(_tcp_sockfd, (struct sockaddr *)(_server->getServAddr()), _server->getSockLen());
 }

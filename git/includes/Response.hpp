@@ -32,7 +32,7 @@ public:
 	bool			getClose();
 	std::string 	setBody(std::string str);
 	void 			setBodySize();
-	std::string 	getBody();
+	std::string& 	getBody();
 	size_t 			getBodySize();
 	size_t 			getConLen();
 	std::string		body_chunk(std::string str);
