@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/14 14:26:31 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/14 14:27:34 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/14 22:27:12 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,9 @@ std::string	Response::body_chunk(std::string str){
 			++it;
 		}
 		i = atoi(col.c_str());
+
+		std::cerr << "col = " << col << std::endl;
+
 		for (k = 0; k < i; k++){
 			if (it < str.end()){
 				body += *it;
@@ -82,6 +85,10 @@ std::string	Response::body_chunk(std::string str){
 		while (it < str.end() && isdigit(*it) == 0)
 			++i;
 	}
+
+	std::cerr << "body = " << body << std::endl;
+
+	return (body);
 }
 
 Response::Response(std::string &str, int fd, int maxBodySize):
@@ -130,8 +137,8 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 	}
 
 	// step 4: If close connection set flag
-	size_t connection_pos = str.find("Transfer-Encoding: Chunked");
-	if (connection_pos != std::string::npos)
+	size_t connection_pos_1 = str.find("Transfer-Encoding: Chunked");
+	if (connection_pos_1 != std::string::npos)
 		_flag_chunk = true;
 
 	size_t connection_pos = str.find("Connection: close");
@@ -157,6 +164,7 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 	_body = setBody(str);
 	if (_flag_chunk)
 		_body = body_chunk(_body);
+	_flag_chunk = false;
 	// std::cout << "body =  " << _body << std::endl;
 
 	// step 7: Get body size
