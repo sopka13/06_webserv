@@ -163,7 +163,7 @@ bool				Response::getClose(){
 	return (_flag_connect);
 }
 
-std::string			Response::getBody(){
+std::string&		Response::getBody(){
 	// std::cout << "BODY " << _body << std::endl;
 	return (_body);
 }

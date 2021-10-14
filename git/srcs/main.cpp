@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/10 17:21:10 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/13 21:28:28 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,7 @@
 //	25. check body size with POST request
 //	26. add use nameserver
 //	27. add use body_size
+//	28. handle connection: close/closed; - remuve fd from queue and close connect
 //	+ 2. геттер в сервере на фавикон
 //	+ 3. файл для фавикона
 //	+ 4. обработать все краши на функциях
