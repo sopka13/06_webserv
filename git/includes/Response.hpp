@@ -14,6 +14,7 @@ class Response{
 	std::string		_body;				// 
 	size_t			_body_size;
 	size_t			_con_len;			// leigth of body
+	bool			_flag_chunk;
 	Response();
 
 public:
@@ -34,5 +35,6 @@ public:
 	std::string& 	getBody();
 	size_t 			getBodySize();
 	size_t 			getConLen();
+	std::string		body_chunk(std::string str);
 };
 #endif
