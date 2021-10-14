@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 17:13:43 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/14 14:21:59 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/14 14:41:38 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void		ft_handle_epoll_action(t_vars *vars, int fd, uint32_t events)
 	// 1. It's socket
 	for (int i = 0; i < static_cast<int>(vars->sockets->size()); ++i)
 	{
-		std::cerr << "ITS socket ?							 fd = " << fd << "; socket = " << vars->sockets->operator[](i).getTcp_sockfd() << std::endl;
+		// std::cerr << "ITS socket ?							 fd = " << fd << "; socket = " << vars->sockets->operator[](i).getTcp_sockfd() << std::endl;
 		if (fd == vars->sockets->operator[](i).getTcp_sockfd())
 		{
 			// step 1.1: Get fd

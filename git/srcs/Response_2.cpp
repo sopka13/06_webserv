@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/14 14:26:26 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/14 21:22:54 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ static void*		readCgiFromThread(void *args)
 	return (arg);
 }
 
-void		Response_2::getBlaCgiResult(Response *response, std::string full_path)
+void			Response_2::getBlaCgiResult(Response *response, std::string full_path)
 {
 	// This function handle .bla CGI file
 #ifdef DEBUG
@@ -396,8 +396,12 @@ void			Response_2::postHandle(Response *response)
 	// step 3: Check error - if no path, and if have path get full_path with locations
 	if (path == "")
 	{
+		struct stat	info;
+		stat((_server->getErrPage()).c_str(), &info);
+
 		Headliners resp(std::string("HTTP/1.1"), std::string("404"));
 		resp.setCloseConnection(false);
+		resp.setContentLeigth(info.st_size);
 		resp.sendHeadliners(_fd);
 
 		sendFile(_server->getErrPage());
@@ -437,6 +441,7 @@ void			Response_2::postHandle(Response *response)
 	{
 		Headliners resp(std::string("HTTP/1.1"), std::string("405"));
 		resp.setCloseConnection(false);
+		resp.setContentLeigth(0);
 		resp.sendHeadliners(_fd);
 
 		return ;
@@ -554,22 +559,24 @@ int				Response_2::sendResponse()
 		// sendFile(_server->getWelcomePage());
 
 		// have data monitoring only
-		// (_server->getEpollEvent())->events = EPOLLIN;
-		// (_server->getEpollEvent())->data.fd = _fd;
-		// ret = epoll_ctl(_server->getEpollFd(), EPOLL_CTL_MOD, _fd, _server->getEpollEvent());
-		// std::cerr << "ret = " << ret << " err = " << errno << " fd = " << _fd << std::endl;
+		(_server->getEpollEvent())->events = EPOLLIN;
+		(_server->getEpollEvent())->data.fd = _fd;
+		ret = epoll_ctl(_server->getEpollFd(), EPOLL_CTL_MOD, _fd, _server->getEpollEvent());
+		std::cerr << "ret = " << ret << " err = " << errno << " fd = " << _fd << std::endl;
 
-		if (epoll_ctl(_server->getEpollFd(), EPOLL_CTL_DEL, _fd, _server->getEpollEvent()) == -1)
-		{
-			throw Exeption("ERROR in Response_2::sendResponse: Epoll_ctl del error");
-		}
-		if ((ret = close(_fd)) == -1)
-			std::cerr << "FAIL!!!" << std::endl;
 
-		// delete element from request container
-		((_server->getRequestContainerPointer())->operator[](_fd))->~Response_2();
-		(_server->getRequestContainerPointer())->erase(_fd);
-		// if (ret == -1) // error handle
+
+		// if (epoll_ctl(_server->getEpollFd(), EPOLL_CTL_DEL, _fd, _server->getEpollEvent()) == -1)
+		// {
+		// 	throw Exeption("ERROR in Response_2::sendResponse: Epoll_ctl del error");
+		// }
+		// if ((ret = close(_fd)) == -1)
+		// 	std::cerr << "FAIL!!!" << std::endl;
+
+		// // delete element from request container
+		// ((_server->getRequestContainerPointer())->operator[](_fd))->~Response_2();
+		// (_server->getRequestContainerPointer())->erase(_fd);
+		// // if (ret == -1) // error handle
 
 		return (0);
 	}
@@ -659,8 +666,8 @@ int				Response_2::sendResponse()
 			}
 			else{
 				Headliners resp(std::string("HTTP/1.1"), std::string("200"));
+				resp.setContentLeigth(0);
 				resp.sendHeadliners(_fd);
-
 			}
 			// ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
 			// std::cout << "\n RESPONS PUT: " << buff_1 << std::endl;
@@ -722,7 +729,7 @@ void			Response_2::readRequest()
 	while (1)
 	{
 		if (TEST)
-			usleep(200);
+			usleep(500);
 		// step 2.1: Read
 		// ret = read(_fd, _buff, sizeof(_buff));
 		ret = recv(_fd, _buff, sizeof(_buff), 0);
@@ -947,8 +954,15 @@ int				Response_2::sendingResponseGet(Response *response, std::string full_path,
 				// std::cerr << "this; " << path << "|" << std::endl;
 				if (TEST)
 				{
-					Headliners resp(std::string("HTTP/1.1"), std::string("404")); 
+					struct stat	info;
+					stat((_server->getErrPage()).c_str(), &info);
+
+					Headliners resp(std::string("HTTP/1.1"), std::string("404"));
+					resp.setCloseConnection(false);
+					resp.setContentLeigth(info.st_size);
 					resp.sendHeadliners(_fd);
+
+					sendFile(_server->getErrPage());
 				}
 				else
 				{
@@ -1019,14 +1033,24 @@ int				Response_2::sendingResponseGet(Response *response, std::string full_path,
 	std::cerr << "result path 4 = " << rezult_path << std::endl;
 
 	fileIndex.open(rezult_path.c_str());
-	if (!fileIndex.is_open()){
+	if (!fileIndex.is_open())
+	{
+		struct stat	info;
+		stat((_server->getErrPage()).c_str(), &info);
+
 		Headliners resp(std::string("HTTP/1.1"), std::string("404"));
+		resp.setCloseConnection(false);
+		resp.setContentLeigth(info.st_size);
 		resp.sendHeadliners(_fd);
 
-		std::ifstream err_404((_server->getErrPage()).c_str());
-		std::string str;
-		while(std::getline(err_404, str))
-			send(_fd, str.c_str(), str.size(), 0);
+		sendFile(_server->getErrPage());
+		// Headliners resp(std::string("HTTP/1.1"), std::string("404"));
+		// resp.sendHeadliners(_fd);
+
+		// std::ifstream err_404((_server->getErrPage()).c_str());
+		// std::string str;
+		// while(std::getline(err_404, str))
+		// 	send(_fd, str.c_str(), str.size(), 0);
 
 		std::cerr	<< "ERROR in sendingResponseGet: Target file open error" << std::endl;
 		return (-1);
