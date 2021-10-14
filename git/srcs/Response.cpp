@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/14 14:26:31 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/14 22:27:12 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/14 23:34:36 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,19 +60,77 @@ static std::string	setPath(std::string &str)
 	return (path);
 }
 
+static unsigned long		setDecFromHex(std::string str)
+{
+#ifdef DEBUG
+	std::cout	<< "setDecFromHex start; str = " << str << std::endl;
+#endif
+	// size_t					length = str.size();
+	std::string::iterator	it = str.end() - 1;
+	int						k = 1;
+	unsigned long 			ret = 0;
+
+
+	for ( ; it >= str.begin(); it--)
+	{
+		switch (*it)
+		{
+		case 'a':
+			ret += 10 * k;
+			break;
+		case 'b':
+			ret += 11 * k;
+			break;
+		case 'c':
+			ret += 12 * k;
+			break;
+		case 'd':
+			ret += 13 * k;
+			break;
+		case 'e':
+			ret += 14 * k;
+			break;
+		case 'f':
+			ret += 15 * k;
+			break;
+		default:
+			ret += (*it - 48) * k;//atoi(*it + "") * k;
+			break;
+		}
+		// ret += k * *it;
+		std::cerr << "RET = " << ret << std::endl;
+		k *= 16;
+	}
+
+
+#ifdef DEBUG
+	std::cout	<< "setDecFromHex end; ret = " << ret << std::endl;
+#endif
+	return (ret);
+}
+
 std::string	Response::body_chunk(std::string str){
 	std::string::iterator it = str.begin();
 	std::string col = "";
-	int i;
-	int k;
+	unsigned long i;
+	unsigned long k;
 	std::string body = "";
 
+	// while (it < str.end())
+	// {
+		
+	// }
+
 	while (it < str.end()){
-		while (it < str.end() && isdigit(*it) == 1 ){
+		while (it < str.end() &&
+				!(*it == '\r' && *(it + 1) == '\n') &&
+				(isdigit(*it) || *it == 'a' || *it == 'b' || *it == 'c' || *it == 'd' || *it == 'e' || *it == 'f')){
 			col += *it;
 			++it;
 		}
-		i = atoi(col.c_str());
+		i = setDecFromHex(col);
+
+		it += 2;
 
 		std::cerr << "col = " << col << std::endl;
 
@@ -82,8 +140,9 @@ std::string	Response::body_chunk(std::string str){
 				++it;
 			}
 		}
-		while (it < str.end() && isdigit(*it) == 0)
-			++i;
+		// while (it < str.end() && isdigit(*it) == 0)
+		// 	++i;
+		it += 4;
 	}
 
 	std::cerr << "body = " << body << std::endl;
@@ -137,7 +196,7 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 	}
 
 	// step 4: If close connection set flag
-	size_t connection_pos_1 = str.find("Transfer-Encoding: Chunked");
+	size_t connection_pos_1 = str.find("Transfer-Encoding: chunked");
 	if (connection_pos_1 != std::string::npos)
 		_flag_chunk = true;
 
