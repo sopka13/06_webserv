@@ -27,4 +27,5 @@ public:
 	void			setCloseConnection(bool);	// set Connection headliner true: keep-alive, false: close
 	void			setContentLeigth(int);		// set Content-Leigth headliner
 	void			sendHeadliners(int);		// send headliners in passed fd
+	std::string 	getAnswer(std::string str);
 };

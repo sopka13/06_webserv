@@ -150,3 +150,15 @@ void			Headliners::sendHeadliners(int fd)
 
 	return ;
 }
+
+std::string Headliners::getAnswer(std::string str){
+	std::string::iterator	it = str.begin();
+	int k = 0;
+	while (it < str.end() && k < 4){
+		if (*it == '\n' || *it == '\r')
+			++k;
+		++it;
+	}
+	str.erase(str.begin(), it);
+	return(str);
+}
