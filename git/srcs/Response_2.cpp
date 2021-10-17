@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/17 10:39:40 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/17 10:42:14 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,8 +290,8 @@ void			Response_2::getBlaCgiResult(Response *response, std::string full_path)
 	std::cerr << "step 11 ok" << std::endl;
 
 	// step 12: delete temp file
-	// if (file_name.size() && file_name.find(".temp", 0) == (file_name.size() - 5) && info.st_size < 10000000)
-	// 	remove(file_name.c_str());
+	if (file_name.size() && file_name.find(".temp", 0) == (file_name.size() - 5))// && info.st_size < 10000000)
+		remove(file_name.c_str());
 
 #ifdef DEBUG
 	std::cout	<< "Response_2::getBlaCgiResult end" << std::endl;
