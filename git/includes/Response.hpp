@@ -15,6 +15,7 @@ class Response{
 	size_t			_body_size;
 	size_t			_con_len;			// leigth of body
 	bool			_flag_chunk;
+	std::string		_secret_flag;		// x-secret-header-for-test
 	Response();
 
 public:
@@ -35,6 +36,7 @@ public:
 	std::string& 	getBody();
 	size_t 			getBodySize();
 	size_t 			getConLen();
+	std::string		getSecretFlag();				// return secret flag
 	std::string		body_chunk(std::string str);
 };
 #endif

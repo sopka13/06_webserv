@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/23 08:53:42 by eyohn             #+#    #+#             */
-/*   Updated: 2021/09/24 22:32:56 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/16 17:52:46 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,11 @@ public:
 																			// return_code ("200")
 	~Headliners();
 
-	std::string		getHeadliners();			// return result headliners
-	void			setCloseConnection(bool);	// set Connection headliner true: keep-alive, false: close
-	void			setContentLeigth(int);		// set Content-Leigth headliner
-	void			sendHeadliners(int);		// send headliners in passed fd
+	std::string		getHeadliners();					// return result headliners
+	void			setCloseConnection(bool);			// set Connection headliner true: keep-alive, false: close
+	void			setContentLeigth(int);				// set Content-Leigth headliner
+	void			setContentType(std::string);		// set Content-Type headliner
+	void			setTransferEncoding();				// set Transfer-Encoding: chunked
+	void			setSecretFlag(std::string);			// set x-secret-header-for-test
+	void			sendHeadliners(int);				// send headliners in passed fd
 };

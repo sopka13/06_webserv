@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/23 09:00:15 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/14 14:24:44 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/16 17:53:47 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,6 +135,25 @@ void			Headliners::setContentLeigth(int length)
 #ifdef DEBUG
 	std::cout	<< "Headliners setContentLeigth end; _headliners size = " << size_size << std::endl;
 #endif
+	return ;
+}
+
+void			Headliners::setContentType(std::string type)
+{
+	_headliners += "\nContent-Type: ";
+	_headliners += type;
+	return ;
+}
+
+void			Headliners::setTransferEncoding()
+{
+	_headliners += "\nTransfer-Encoding: chunked";
+	return ;
+}
+
+void			Headliners::setSecretFlag(std::string value)
+{
+	_headliners += "\nX-Secret-Header-For-Test: " + value;
 	return ;
 }
 

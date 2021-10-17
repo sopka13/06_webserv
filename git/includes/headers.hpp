@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/14 14:33:05 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/17 10:39:46 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@
 #include <fcntl.h>			//open
 #include <unistd.h>			//dup2
 #include <pthread.h>
+#include <sstream>
 // #include <stdlib.h>
 // #include <semaphore.h>		//sem_open
 // #include <csignal>

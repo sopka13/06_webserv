@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/14 14:26:31 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/14 23:34:36 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/16 17:58:47 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ static unsigned long		setDecFromHex(std::string str)
 	unsigned long 			ret = 0;
 
 
-	for ( ; it >= str.begin(); it--)
+	for ( ; it >= str.begin(); --it)
 	{
 		switch (*it)
 		{
@@ -98,7 +98,7 @@ static unsigned long		setDecFromHex(std::string str)
 			break;
 		}
 		// ret += k * *it;
-		std::cerr << "RET = " << ret << std::endl;
+		std::cerr << "RET = " << ret << "; it = " << *it << std::endl;
 		k *= 16;
 	}
 
@@ -116,19 +116,38 @@ std::string	Response::body_chunk(std::string str){
 	unsigned long k;
 	std::string body = "";
 
-	// while (it < str.end())
-	// {
-		
-	// }
-
 	while (it < str.end()){
+		col.clear();
 		while (it < str.end() &&
 				!(*it == '\r' && *(it + 1) == '\n') &&
-				(isdigit(*it) || *it == 'a' || *it == 'b' || *it == 'c' || *it == 'd' || *it == 'e' || *it == 'f')){
+				(isdigit(*it) || *it == 'a' || *it == 'b' || *it == 'c' || *it == 'd' || *it == 'e' || *it == 'f' ||
+								*it == 'A' || *it == 'B' || *it == 'C' || *it == 'D' || *it == 'E' || *it == 'F')){
 			col += *it;
 			++it;
 		}
+		if (!((*it == '\r' && *(it + 1) == '\n') ||
+			(*(it - 1) == '\r' && *it == '\n' && *(it + 1) == '\r' && *(it + 2) == '\n')))
+		{
+			std::cerr	<< "ERROOOOOOOR 1; |"
+						<< (int)*(it - 2) << "|"
+						<< (int)*(it - 1) << "|"
+						<< (int)*it << "|"
+						<< (int)*(it + 1) << "|"
+						<< (int)*(it + 2) << "|"
+						<< std::endl;
+			break ;
+		}
 		i = setDecFromHex(col);
+		std::cerr	<< "step 1; |"
+						<< (int)*(it - 2) << "|"
+						<< (int)*(it - 1) << "|"
+						<< (int)*it << "|"
+						<< (int)*(it + 1) << "|"
+						<< (int)*(it + 2) << "|"
+						<< std::endl;
+
+		if (i == 0)
+			break ;
 
 		it += 2;
 
@@ -140,12 +159,28 @@ std::string	Response::body_chunk(std::string str){
 				++it;
 			}
 		}
-		// while (it < str.end() && isdigit(*it) == 0)
-		// 	++i;
-		it += 4;
+		std::cerr	<< "step 2; |"
+						<< (int)*(it - 2) << "|"
+						<< (int)*(it - 1) << "|"
+						<< (int)*it << "|"
+						<< (int)*(it + 1) << "|"
+						<< (int)*(it + 2) << "|"
+						<< std::endl;
+		if (!(*it == '\r' && *(it + 1) == '\n'/* && *(it + 2) == '\r' && *(it + 3) == '\n'*/))
+		{
+			std::cerr	<< "ERROOOOOOOR 2; |"
+						<< (int)*(it - 1) << "|"
+						<< (int)*it << "|"
+						<< (int)*(it + 1) << "|"
+						<< (int)*(it + 2) << "|"
+						<< (int)*(it + 3) << "|"
+						<< std::endl;
+			break ;
+		}
+		it += 2;
 	}
 
-	std::cerr << "body = " << body << std::endl;
+	// std::cerr << "body = " << body << std::endl;
 
 	return (body);
 }
@@ -169,6 +204,7 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 		throw Exeption(str_1);
 	}
 	str = erase_back(str);
+	std::cerr << "Response::Response step 1 ok" << std::endl;
 
 	// step 2: Get path
 	this->_path = setPath(str);
@@ -182,6 +218,7 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 		throw Exeption(str_1);
 	}
 	str = erase_back(str);
+	std::cerr << "Response::Response step 2 ok" << std::endl;
 
 	// step 3: Get http
 	_http = setPath(str);
@@ -204,6 +241,18 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 	if (connection_pos != std::string::npos)
 		_flag_connect = true;
 
+	connection_pos = str.find("X-Secret-Header-For-Test:");
+	if (connection_pos != std::string::npos){
+		std::string::iterator it = str.begin();
+		it += connection_pos + 26;
+		std::string con_l = "";
+		while (*it != ' ' && *it != '\n'){
+			_secret_flag += *it;
+			++it;
+		}
+		// _secret_flag = std::atoi(con_l.c_str());
+		// std::cout << "CON =" << con_l << "R" << std::endl;
+	}
 
 	// step 5: Get connection_length
 	connection_pos = str.find("Content-Length");
@@ -294,4 +343,9 @@ size_t				Response::getConLen()
 {
 	// std::cout << "CON_LEN " << _con_len << std::endl;
 	return (_con_len);
+}
+
+std::string			Response::getSecretFlag()
+{
+	return (_secret_flag);
 }
