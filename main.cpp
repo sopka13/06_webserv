@@ -6,28 +6,34 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/13 08:05:16 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/13 08:13:24 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/17 13:18:34 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <unistd.h>
+#include <dirent.h>
 
 int		main(void)
 {
-	char*	path = "/home/sergey/My_prog/21_school/06_webserv/git/sites_avaliable/test/ubuntu_cgi_tester";
-	char*	argv[] = {
-		"/home/sergey/My_prog/21_school/06_webserv/git/sites_avaliable/test/ubuntu_cgi_tester",
-		"/home/sergey/My_prog/21_school/06_webserv/git/sites_avaliable/test/YoupiBanane/youpi.bla",
-		NULL
-	};
-	char*	envp[] = {
-		"REQUEST_METHOD=POST",
-		"SERVER_PROTOCOL=HTTP/1.1",
-		"PATH_INFO=/home/sergey/My_prog/21_school/06_webserv/git/sites_avaliable/test/YoupiBanane/youpi.bla",
-		NULL
-	};
+	char*			path = "./git/sites_avaliable/test/YoupiBanane/";
+	DIR*			dirp;
+	struct dirent*	dp;
 
-	execve(path, argv, envp);
+	// step 2: Construct html
+	if ((dirp = opendir(path)))
+	{
+		while ((dp = readdir(dirp)) != NULL)
+		{
+			std::cout << "###############" << std::endl;
+			std::cout << "d_ino: " << dp->d_ino << std::endl;
+			std::cout << "d_name: " << dp->d_name << std::endl;
+			std::cout << "d_off: " << dp->d_off << std::endl;
+			std::cout << "d_reclen: " << dp->d_reclen << std::endl;
+			std::cout << "d_type: " << dp->d_type << std::endl;
+		}
+	}
+	else
+		std::cout << "Open error" << std::endl;
 	return (0);
 }

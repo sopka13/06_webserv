@@ -6,7 +6,7 @@
 #    By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/08/13 16:55:16 by eyohn             #+#    #+#              #
-#    Updated: 2021/10/05 10:55:47 by eyohn            ###   ########.fr        #
+#    Updated: 2021/10/17 23:05:28 by eyohn            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ SRCS			= ${shell find ./srcs -type f -name *.cpp}		#take all source files
 
 OBJS			= ${SRCS:.cpp=.o}
 
-CC				= g++ #clang++
+CC				= clang++
 
 FLAGS			= -Wall -Wextra -Werror -g -fstack-protector -pthread -std=c++98
 

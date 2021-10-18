@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/07 17:13:43 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/14 14:41:38 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/17 22:55:24 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void		ft_handle_epoll_action(t_vars *vars, int fd, uint32_t events)
 			}
 			
 			if (events & EPOLLIN){	// need read
-				std::cerr << "Socket, need read" << std::endl;
+				// std::cerr << "Socket, need read" << std::endl;
 				try {
 					resp->readRequest();
 				}
@@ -68,7 +68,7 @@ void		ft_handle_epoll_action(t_vars *vars, int fd, uint32_t events)
 				}
 			}
 			else {					// need write
-				std::cerr << "Socket, need write" << std::endl;
+				// std::cerr << "Socket, need write" << std::endl;
 				try {
 					resp->sendResponse();
 				}
@@ -102,7 +102,7 @@ void		ft_handle_epoll_action(t_vars *vars, int fd, uint32_t events)
 	{
 		if (events & EPOLLIN)	// need read
 		{
-			std::cerr << "Not socket, need read" << std::endl;
+			// std::cerr << "Not socket, need read" << std::endl;
 			try {
 				it->second->readRequest();
 			}
@@ -112,7 +112,7 @@ void		ft_handle_epoll_action(t_vars *vars, int fd, uint32_t events)
 			}
 		}
 		else {					// need write
-			std::cerr << "Not socket, need write" << std::endl;
+			// std::cerr << "Not socket, need write" << std::endl;
 			try {
 				it->second->sendResponse();
 			}

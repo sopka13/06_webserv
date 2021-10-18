@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/14 14:26:31 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/16 17:58:47 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/18 21:21:34 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ static unsigned long		setDecFromHex(std::string str)
 			break;
 		}
 		// ret += k * *it;
-		std::cerr << "RET = " << ret << "; it = " << *it << std::endl;
+		// std::cerr << "RET = " << ret << "; it = " << *it << std::endl;
 		k *= 16;
 	}
 
@@ -109,7 +109,11 @@ static unsigned long		setDecFromHex(std::string str)
 	return (ret);
 }
 
-std::string	Response::body_chunk(std::string str){
+std::string	Response::body_chunk(std::string str)
+{
+#ifdef DEBUG
+	std::cout	<< "Response::body_chunk start" << std::endl;
+#endif
 	std::string::iterator it = str.begin();
 	std::string col = "";
 	unsigned long i;
@@ -128,30 +132,30 @@ std::string	Response::body_chunk(std::string str){
 		if (!((*it == '\r' && *(it + 1) == '\n') ||
 			(*(it - 1) == '\r' && *it == '\n' && *(it + 1) == '\r' && *(it + 2) == '\n')))
 		{
-			std::cerr	<< "ERROOOOOOOR 1; |"
-						<< (int)*(it - 2) << "|"
-						<< (int)*(it - 1) << "|"
-						<< (int)*it << "|"
-						<< (int)*(it + 1) << "|"
-						<< (int)*(it + 2) << "|"
-						<< std::endl;
+			// std::cerr	<< "ERROOOOOOOR 1; |"
+			// 			<< (int)*(it - 2) << "|"
+			// 			<< (int)*(it - 1) << "|"
+			// 			<< (int)*it << "|"
+			// 			<< (int)*(it + 1) << "|"
+			// 			<< (int)*(it + 2) << "|"
+			// 			<< std::endl;
 			break ;
 		}
 		i = setDecFromHex(col);
-		std::cerr	<< "step 1; |"
-						<< (int)*(it - 2) << "|"
-						<< (int)*(it - 1) << "|"
-						<< (int)*it << "|"
-						<< (int)*(it + 1) << "|"
-						<< (int)*(it + 2) << "|"
-						<< std::endl;
+		// std::cerr	<< "step 1; |"
+		// 				<< (int)*(it - 2) << "|"
+		// 				<< (int)*(it - 1) << "|"
+		// 				<< (int)*it << "|"
+		// 				<< (int)*(it + 1) << "|"
+		// 				<< (int)*(it + 2) << "|"
+		// 				<< std::endl;
 
 		if (i == 0)
 			break ;
 
 		it += 2;
 
-		std::cerr << "col = " << col << std::endl;
+		// std::cerr << "col = " << col << std::endl;
 
 		for (k = 0; k < i; k++){
 			if (it < str.end()){
@@ -159,22 +163,22 @@ std::string	Response::body_chunk(std::string str){
 				++it;
 			}
 		}
-		std::cerr	<< "step 2; |"
-						<< (int)*(it - 2) << "|"
-						<< (int)*(it - 1) << "|"
-						<< (int)*it << "|"
-						<< (int)*(it + 1) << "|"
-						<< (int)*(it + 2) << "|"
-						<< std::endl;
+		// std::cerr	<< "step 2; |"
+		// 				<< (int)*(it - 2) << "|"
+		// 				<< (int)*(it - 1) << "|"
+		// 				<< (int)*it << "|"
+		// 				<< (int)*(it + 1) << "|"
+		// 				<< (int)*(it + 2) << "|"
+		// 				<< std::endl;
 		if (!(*it == '\r' && *(it + 1) == '\n'/* && *(it + 2) == '\r' && *(it + 3) == '\n'*/))
 		{
-			std::cerr	<< "ERROOOOOOOR 2; |"
-						<< (int)*(it - 1) << "|"
-						<< (int)*it << "|"
-						<< (int)*(it + 1) << "|"
-						<< (int)*(it + 2) << "|"
-						<< (int)*(it + 3) << "|"
-						<< std::endl;
+			// std::cerr	<< "ERROOOOOOOR 2; |"
+			// 			<< (int)*(it - 1) << "|"
+			// 			<< (int)*it << "|"
+			// 			<< (int)*(it + 1) << "|"
+			// 			<< (int)*(it + 2) << "|"
+			// 			<< (int)*(it + 3) << "|"
+			// 			<< std::endl;
 			break ;
 		}
 		it += 2;
@@ -182,6 +186,9 @@ std::string	Response::body_chunk(std::string str){
 
 	// std::cerr << "body = " << body << std::endl;
 
+#ifdef DEBUG
+	std::cout	<< "Response::body_chunk end" << std::endl;
+#endif
 	return (body);
 }
 
@@ -204,7 +211,7 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 		throw Exeption(str_1);
 	}
 	str = erase_back(str);
-	std::cerr << "Response::Response step 1 ok" << std::endl;
+	// std::cerr << "Response::Response step 1 ok" << std::endl;
 
 	// step 2: Get path
 	this->_path = setPath(str);
@@ -218,7 +225,7 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 		throw Exeption(str_1);
 	}
 	str = erase_back(str);
-	std::cerr << "Response::Response step 2 ok" << std::endl;
+	// std::cerr << "Response::Response step 2 ok" << std::endl;
 
 	// step 3: Get http
 	_http = setPath(str);
@@ -245,7 +252,9 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 	if (connection_pos != std::string::npos){
 		std::string::iterator it = str.begin();
 		it += connection_pos + 26;
-		std::string con_l = "";
+		while (*it == ' ')
+			++it;
+		std::string con_l;
 		while (*it != ' ' && *it != '\n'){
 			_secret_flag += *it;
 			++it;
@@ -290,9 +299,9 @@ std::string			Response::setBody(std::string str)
 		body_pos = str.find("\r\n\r\n");
 	else
 		it += body_pos + 2;
-	if (body_pos == std::string::npos)
-		std::cout << "no body" << std::endl;
-	else
+	if (body_pos != std::string::npos)
+		// std::cout << "no body" << std::endl;
+	// else
 		it += body_pos + 4;
 	std::string body = "";
 	while (it != str.end()/* && static_cast<int>(body.size()) <= _maxBodySize*/){

@@ -6,13 +6,13 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/17 10:39:46 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/18 00:51:53 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#define DEBUG 0
+// #define DEBUG 0
 #define TEST 1
 
 #define BUF_FOR_RESP 2048							// buff for response to client

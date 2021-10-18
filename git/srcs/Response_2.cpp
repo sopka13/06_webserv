@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/17 10:42:14 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/18 21:35:48 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static std::string	ft_remove_underscore(std::string path, std::string title)
 {
 #ifdef DEBUG
-	std::cout	<< "ft_remove_underscore start: path = " << path << "; title = " << title << std::endl;
+	std::cerr	<< "ft_remove_underscore start: path = " << path << "; title = " << title << std::endl;
 #endif
 	while (path.size() && *(path.end() - 1) == '/')
 		path.erase((path.end() - 1));
@@ -23,7 +23,7 @@ static std::string	ft_remove_underscore(std::string path, std::string title)
 		title.erase(title.begin());
 
 #ifdef DEBUG
-	std::cout	<< "ft_remove_underscore end: result = " << path + '/' + title << std::endl;
+	std::cerr	<< "ft_remove_underscore end: result = " << path + '/' + title << std::endl;
 #endif
 	return (path + '/' + title);
 }
@@ -31,7 +31,7 @@ static std::string	ft_remove_underscore(std::string path, std::string title)
 static void*		readCgiFromThread(void *args)
 {
 #ifdef DEBUG
-	std::cout	<< "readCgiFromThread start; " << std::endl;
+	std::cerr	<< "readCgiFromThread start; " << std::endl;
 #endif
 	t_args			*arg = (t_args*) args;
 	char			bufer[65000];
@@ -47,14 +47,14 @@ static void*		readCgiFromThread(void *args)
 		// response += bufer;
 		if (!first_cycle)
 		{
-			std::cerr << "First cycle start" << std::endl;
+			// std::cerr << "First cycle start" << std::endl;
 			int i = 0;
 			while (i < ret)
 			{
 				// std::cerr << "|" << (int)bufer[i]; 
 				if (bufer[i] == '\n' && i > 3 && bufer[i - 1] == '\r' && bufer[i - 2] == '\n' && bufer[i - 3] == '\r')
 				{
-					std::cerr << "End headliners find" << std::endl;
+					// std::cerr << "End headliners find" << std::endl;
 					i++;
 					int k = 0;
 					char	tmp_buff[ret - i];
@@ -66,7 +66,7 @@ static void*		readCgiFromThread(void *args)
 					tmp_buff[k] = '\0';
 					// ret = k - 1;
 					write(arg->tmp_file, tmp_buff, k);
-					std::cerr << "i = " << i << "; k = " << k << std::endl;
+					// std::cerr << "i = " << i << "; k = " << k << std::endl;
 					break ;
 				}
 				i++;
@@ -80,7 +80,7 @@ static void*		readCgiFromThread(void *args)
 		write(arg->tmp_file, bufer, ret);
 		// std::cerr << "buffer = " << bufer << std::endl;
 	}
-	std::cerr << "readCgiFromThread step 1 ok" << std::endl;
+	// std::cerr << "readCgiFromThread step 1 ok" << std::endl;
 
 	// Response resp(response, arg->tmp_file, 0);
 	// std::cerr << "readCgiFromThread step 2 ok" << std::endl;
@@ -88,22 +88,25 @@ static void*		readCgiFromThread(void *args)
 	// std::cerr << "readCgiFromThread step 3 ok" << std::endl;
 
 #ifdef DEBUG
-	std::cout	<< "readCgiFromThread end; " << std::endl;
+	std::cerr	<< "readCgiFromThread end; " << std::endl;
 #endif
 	return (arg);
 }
 
-void			Response_2::getBlaCgiResult(Response *response, std::string full_path)
+void				Response_2::getBlaCgiResult(Response *response, std::string full_path)
 {
 	// This function handle .bla CGI file
 #ifdef DEBUG
-	std::cout	<< "Response_2::getBlaCgiResult start; " << std::endl;
+	std::cerr	<< "Response_2::getBlaCgiResult start; " << std::endl;
 #endif
 	// step 1: Init data
 	int		ret = 0;		// return value
 	int		id;				// if child CGI script process
 	int		pip[2];			// pipe for send body for script
 	int		pop[2];			// pipe for send response from CGI
+	std::string flag = "HTTP_X_SECRET_HEADER_FOR_TEST=" + response->getSecretFlag();
+	int			size_1 = flag.size();
+	char		flg[size_1 + 1];
 
 	// step 2: Create pipe
 	if ((ret = pipe(pip)) == -1 || (ret = pipe(pop)) == -1)
@@ -112,11 +115,11 @@ void			Response_2::getBlaCgiResult(Response *response, std::string full_path)
 		resp.sendHeadliners(_fd);
 		throw Exeption("ERROR in response_2: create pipe for CGI handlerr error");
 	}
-	std::cerr << "step 2 ok" << std::endl;
+	// std::cerr << "step 2 ok" << std::endl;
 
 	// step 3: Fork
 	id = fork();
-	std::cerr << "step 3 ok" << std::endl;
+	// std::cerr << "step 3 ok" << std::endl;
 	if (id == -1)			// error
 	{
 		Headliners resp(std::string("HTTP/1.1"), std::string("500"));
@@ -125,6 +128,7 @@ void			Response_2::getBlaCgiResult(Response *response, std::string full_path)
 	}
 	else if (id == 0)		// child
 	{
+		// char*	flg;			// for secret headliner
 		// step 3.1: Close pipe
 		if ((ret = close(pip[1])) == -1 || (ret = close(pop[0])) == -1)
 		{
@@ -132,7 +136,7 @@ void			Response_2::getBlaCgiResult(Response *response, std::string full_path)
 			resp.sendHeadliners(_fd);
 			throw Exeption("ERROR in response_2: close pipe[1] for CGI handlerr error");
 		}
-		std::cerr << "step 3.1 ok" << std::endl;
+		// std::cerr << "step 3.1 ok" << std::endl;
 
 		// step 3.2: Change fd
 		if ((ret = dup2(pip[0], STDIN_FILENO)) == -1 || (ret = dup2(pop[1], STDOUT_FILENO)) == -1)
@@ -141,12 +145,12 @@ void			Response_2::getBlaCgiResult(Response *response, std::string full_path)
 			resp.sendHeadliners(_fd);
 			throw Exeption("ERROR in response_2: close pipe[1] for CGI handlerr error");
 		}
-		std::cerr << "step 3.2 ok" << std::endl;
+		// std::cerr << "step 3.2 ok" << std::endl;
 
 		// step 3.3: Close fd
 		close(pip[0]);
 		close(pop[1]);
-		std::cerr << "step 3.3 ok" << std::endl;
+		// std::cerr << "step 3.3 ok" << std::endl;
 
 		// step 3.4: Create env vars
 		char*	argv[] = {
@@ -162,16 +166,18 @@ void			Response_2::getBlaCgiResult(Response *response, std::string full_path)
 		envp.push_back(tmp4);
 		if ((response->getSecretFlag()).size())
 		{
-			std::string flag = "HTTP_X_SECRET_HEADER_FOR_TEST=" + response->getSecretFlag();
-			int			size = flag.size();
-			char*		flg = new char[size + 1];
-			std::copy(flag.begin(), flag.end(), flg);
-			flg[flag.size()] = '\0';
+			int i;
+			for (i = 0; i < size_1; ++i)
+			{
+				flg[i] = flag.operator[](i);
+				std::cerr << "|" << flg[i];
+			}
+			std::cerr << std::endl;
+			flg[i] = '\0';
 			envp.push_back(flg);
-			delete[] flg;
 		}
 		envp.push_back(NULL);
-		std::cerr << "step 3.4 ok" << std::endl;
+		// std::cerr << "step 3.4 ok" << std::endl;
 
 		// step 3.5: Execute script
 		if ((ret = execve((_server->getCGI_handler()).c_str(), argv, &(*envp.begin()))))
@@ -189,7 +195,7 @@ void			Response_2::getBlaCgiResult(Response *response, std::string full_path)
 		resp.sendHeadliners(_fd);
 		throw Exeption("ERROR in response_2: close pipe[0] for CGI handlerr error");
 	}
-	std::cerr << "step 4 ok" << std::endl;
+	// std::cerr << "step 4 ok" << std::endl;
 
 	// write(2, (response->getBody()).c_str(), response->getBodySize());
 	// write(2, "\0", 2);
@@ -200,13 +206,13 @@ void			Response_2::getBlaCgiResult(Response *response, std::string full_path)
 	int				temp_file;
 	if ((temp_file = open(file_name.c_str(), O_CREAT | O_TRUNC | O_RDWR, 0666)) == -1)
 	{
-		std::cerr << "strerror = " << strerror(errno) << "; file name = " << file_name << std::endl;
+		// std::cerr << "strerror = " << strerror(errno) << "; file name = " << file_name << std::endl;
 
 		Headliners resp(std::string("HTTP/1.1"), std::string("500"));
 		resp.sendHeadliners(_fd);
 		throw Exeption("ERROR in response_2: create file for CGI handlerr error");
 	}
-	std::cerr << "step 5 ok" << std::endl;
+	// std::cerr << "step 5 ok" << std::endl;
 
 	// step 6: Create thread for read data from CGI
 	pthread_t	readCgiThread;
@@ -216,7 +222,7 @@ void			Response_2::getBlaCgiResult(Response *response, std::string full_path)
 	args.fd = pop[0];
 	args.tmp_file = temp_file;
 	status_pthread = pthread_create(&readCgiThread, NULL, readCgiFromThread, &args);
-	std::cerr << "step 6 ok" << std::endl;
+	// std::cerr << "step 6 ok" << std::endl;
 
 
 	// step 7: Send body
@@ -230,7 +236,7 @@ void			Response_2::getBlaCgiResult(Response *response, std::string full_path)
 						(response->getBody()).c_str() + offset,
 						((offset + size_part) > size ? (size_part - (size - offset)) : size_part))) == -1)
 		{
-			std::cerr << "strerror = " << strerror(errno) << std::endl;
+			// std::cerr << "strerror = " << strerror(errno) << std::endl;
 
 			Headliners resp(std::string("HTTP/1.1"), std::string("500"));
 			resp.sendHeadliners(_fd);
@@ -239,7 +245,7 @@ void			Response_2::getBlaCgiResult(Response *response, std::string full_path)
 		offset += ret;
 		// std::cerr << "offset = " << offset << std::endl;
 	}
-	std::cerr << "step 7 ok" << std::endl;
+	// std::cerr << "step 7 ok" << std::endl;
 
 	// step 8: Close pipe "EOF"
 	if ((ret = close(pip[1])) == -1)
@@ -248,7 +254,7 @@ void			Response_2::getBlaCgiResult(Response *response, std::string full_path)
 		resp.sendHeadliners(_fd);
 		throw Exeption("ERROR in response_2: close pipe for CGI handlerr error");
 	}
-	std::cerr << "step 8 ok" << std::endl;
+	// std::cerr << "step 8 ok" << std::endl;
 
 	// step 9: Wait child process and threads for read data from thread
 	int		status;
@@ -259,7 +265,7 @@ void			Response_2::getBlaCgiResult(Response *response, std::string full_path)
 		resp.sendHeadliners(_fd);
 		throw Exeption("ERROR in response_2: pthread for read data from CGI error");
 	}
-	std::cerr << "step 9 ok" << std::endl;
+	// std::cerr << "step 9 ok" << std::endl;
 
 	// step 10: Close file and pipes
 	if ((ret = close(temp_file)) == -1)
@@ -270,7 +276,12 @@ void			Response_2::getBlaCgiResult(Response *response, std::string full_path)
 	}
 	close(pip[1]);
 	close(pop[0]);
-	std::cerr << "step 10 ok" << std::endl;
+
+	// step x: Clear memory
+	// if ((response->getSecretFlag()).size())
+	// 	delete[] flg;
+
+	// std::cerr << "step 10 ok" << std::endl;
 
 	// step 11: Send file
 	struct stat	info;
@@ -287,15 +298,15 @@ void			Response_2::getBlaCgiResult(Response *response, std::string full_path)
 	resp.setCloseConnection(false);
 	resp.sendHeadliners(_fd);
 	sendFile(file_name);
-	std::cerr << "step 11 ok" << std::endl;
+	// std::cerr << "step 11 ok" << std::endl;
 
 	// step 12: delete temp file
 	if (file_name.size() && file_name.find(".temp", 0) == (file_name.size() - 5))// && info.st_size < 10000000)
 		remove(file_name.c_str());
 
-#ifdef DEBUG
-	std::cout	<< "Response_2::getBlaCgiResult end" << std::endl;
-#endif
+// #ifdef DEBUG
+	std::cerr	<< "Response_2::getBlaCgiResult end" << std::endl;
+// #endif
 	return ;
 }
 
@@ -305,24 +316,24 @@ Response_2::Response_2(Server *server, int fd):
 	_close_flag(false)
 {
 #ifdef DEBUG
-	std::cout	<< "Response_2::Response_2 start: fd = " << _fd << std::endl;
+	std::cerr	<< "Response_2::Response_2 start: fd = " << _fd << std::endl;
 #endif
 	// step 1: Clear buff
 	bzero(_buff, sizeof(_buff));
 
 #ifdef DEBUG
-	std::cout	<< "Response_2::Response_2 end: fd = " << _fd << std::endl;
+	std::cerr	<< "Response_2::Response_2 end: fd = " << _fd << std::endl;
 #endif
 }
 
 Response_2::~Response_2()
 {
 #ifdef DEBUG
-	std::cout	<< "Response_2::~Response_2 start: fd = " << _fd << std::endl;
+	std::cerr	<< "Response_2::~Response_2 start: fd = " << _fd << std::endl;
 #endif
 	// std::cerr << "dctor" << std::endl;
 #ifdef DEBUG
-	std::cout	<< "Response_2::~Response_2 end: fd = " << _fd << std::endl;
+	std::cerr	<< "Response_2::~Response_2 end: fd = " << _fd << std::endl;
 #endif
 }
 
@@ -346,13 +357,13 @@ std::string		Response_2::setVariables(std::string &str)
 void			Response_2::sendFile(std::string full_path)
 {
 	// This function send file
-// #ifdef DEBUG
-	std::cout	<< "Response_2::sendFile start; path = " << full_path << std::endl;
-// #endif
+#ifdef DEBUG
+	std::cerr	<< "Response_2::sendFile start; path = " << full_path << std::endl;
+#endif
 	// step 1: Init data
 	int		ret = 0;
 	int		fd_from;
-	std::cerr << "Response_2::sendFile step 1 ok" << std::endl;
+	// std::cerr << "Response_2::sendFile step 1 ok" << std::endl;
 
 	// step 2: Get file_info
 	struct stat	info;
@@ -365,7 +376,7 @@ void			Response_2::sendFile(std::string full_path)
 		std::string str("ERROR in Response_2::sendFile: File not found");
 		throw Exeption(str);
 	}
-	std::cerr << "Response_2::sendFile step 2 ok" << std::endl;
+	// std::cerr << "Response_2::sendFile step 2 ok" << std::endl;
 
 	// step 3: Open file
 	fd_from = open(full_path.c_str(), O_RDONLY);
@@ -377,7 +388,7 @@ void			Response_2::sendFile(std::string full_path)
 		std::string str("ERROR in Response_2::sendFile: Open file error");
 		throw Exeption(str);
 	}
-	std::cerr << "Response_2::sendFile step 3 ok" << std::endl;
+	// std::cerr << "Response_2::sendFile step 3 ok" << std::endl;
 
 	// step 4: Send file
 	off_t	offset = 0;
@@ -385,12 +396,12 @@ void			Response_2::sendFile(std::string full_path)
 	char	temp_buf[32000];
 	if (info.st_size < 32000)
 	{
-		std::cerr << "Response_2::sendFile step 4.1 start" << std::endl;
+		// std::cerr << "Response_2::sendFile step 4.1 start" << std::endl;
 		ret = sendfile(_fd, fd_from, &offset, info.st_size);
 	}
 	else
 	{
-		std::cerr << "Response_2::sendFile step 4.2 start" << std::endl;
+		// std::cerr << "Response_2::sendFile step 4.2 start" << std::endl;
 		// std::string		file_body;
 		// int				rek = 1;
 		// while (rek)
@@ -407,27 +418,52 @@ void			Response_2::sendFile(std::string full_path)
 
 		while (ret > 0 && offset < info.st_size)
 		{
-			ret = read(fd_from, temp_buf, 32000);
-			std::stringstream stream;
-			stream << std::hex << ret;
-			std::string result(stream.str());
+			if (TEST)
+				usleep(100);
+			if ((ret = read(fd_from, temp_buf, 32000)) == -1)
+			{
+				std::cerr << "ERROR in sendfile: Read file for output error" << std::endl;
+				break ;
+			}
+			else if (ret == 0)
+			{
+				std::cerr << "ERROR in sendfile: All data in file readed" << std::endl;
+				break ;
+			}
+			else
+			{
+				int		rt = 0;
+				offset += ret;
+				std::stringstream stream;
+				stream << std::hex << ret;
+				std::string result(stream.str());
 
-			std::cerr << "ret == " << ret << "| pffset = " << offset;
+				// std::cerr << "ret == " << ret << "| pffset = " << offset;
 
-			send(_fd, result.c_str(), result.size(), 0);
-			send(_fd, "\r\n", 2, 0);
-			send(_fd, temp_buf, ret, 0);
-			send(_fd, "\r\n", 2, 0);
-			// ret = sendfile(_fd, fd_from, &offset, info.st_size);
-			offset += ret;
-			lseek(fd_from, offset, SEEK_SET);
+				if ((rt = send(_fd, result.c_str(), result.size(), 0)) == -1 ||
+					(rt = send(_fd, "\r\n", 2, 0)) == -1 ||
+					(rt = send(_fd, temp_buf, ret, 0)) == -1 ||
+					(rt = send(_fd, "\r\n", 2, 0)) == -1)
+				{
+					std::cerr << "ERROR in sendfile: Send data error; strerror = " << strerror(errno) << "; errno = " << errno << std::endl;
+					break ;
+				}
+				if ((rt = lseek(fd_from, offset, SEEK_SET)) == -1)
+				{
+					std::cerr << "ERROR in sendfile: lseek error" << std::endl;
+					break ;
+				}
+			}
 		}
-		send(_fd, "0", 1, 0);
-		send(_fd, "\r\n", 2, 0);
-		send(_fd, "\r\n", 2, 0);
+		if ((ret = send(_fd, "0", 1, 0)) == -1 ||
+			(ret = send(_fd, "\r\n", 2, 0)) == -1 ||
+			(ret = send(_fd, "\r\n", 2, 0)) == -1)
+			std::cerr << "ERROR in sendfile: Send last data error" << std::endl;
+		else
+			std::cerr << "Sendfile ok; ret = " << ret << std::endl;
 	}
 
-	std::cerr << "Sendfile error = " << strerror(errno) << "; errno = " << errno << std::endl;
+	// std::cerr << "Sendfile error = " << strerror(errno) << "; errno = " << errno << std::endl;
 
 	// if (ret == -1)
 	// {
@@ -441,9 +477,9 @@ void			Response_2::sendFile(std::string full_path)
 	// step 5: Close file
 	close(fd_from);
 
-// #ifdef DEBUG
-	std::cout	<< "Response_2::sendFile end; ret = " << offset << std::endl;
-// #endif
+#ifdef DEBUG
+	std::cerr	<< "Response_2::sendFile end; ret = " << offset << std::endl;
+#endif
 	return ;
 }
 
@@ -466,7 +502,7 @@ void			Response_2::postHandle(Response *response)
 	// 			b. If it's a file
 	// 				- return 400 - Bad request
 #ifdef DEBUG
-	std::cout	<< "Response_2::postHandle start" << std::endl;
+	std::cerr	<< "Response_2::postHandle start" << std::endl;
 #endif
 	// // step 0: Check body size
 	// if (static_cast<int>(response->getBodySize()) > _server->getMaxBodySize())
@@ -485,7 +521,7 @@ void			Response_2::postHandle(Response *response)
 	std::string		method("POST");
 	int				ret = 0;
 	_variables = setVariables(path);
-	std::cout << "path = " << path << std::endl;
+	// std::cerr << "path = " << path << std::endl;
 
 	// step 2: Get full_path with locations
 	std::string::iterator	end = path.end();
@@ -500,7 +536,7 @@ void			Response_2::postHandle(Response *response)
 		end--;
 	}
 	// if (path.size())
-	// 	full_path = _server->getLocations(path) + full_path;
+		// full_path = _server->getLocations(path) + full_path;
 
 
 	// step 3: Check error - if no path, and if have path get full_path with locations
@@ -537,15 +573,14 @@ void			Response_2::postHandle(Response *response)
 		// std::cerr << "Full path = " << full_path << std::endl;
 	}
 	
-	// step x: If .bla
-	std::cerr << "full path = " << full_path << std::endl;
+	// step 4: If .bla
 	if (haveCGI(full_path) && _server->getCGI_format() == ".bla")
 	{
 		getBlaCgiResult(response, full_path);
 		return ;
 	}
 
-	// step 4: Check error - if method no supported
+	// step 5: Check error - if method no supported
 	// std::string		temp_1(response->getPath());
 	if (!_server->getMethods(path, method)/* && !(haveCGI(temp_1) && _server->getCGI_format() == ".bla")*/)
 	{
@@ -557,23 +592,42 @@ void			Response_2::postHandle(Response *response)
 		return ;
 	}
 
-	// step 5: Check target file/dir for exist
+	// step 6: Check target file/dir for exist
+	// std::cerr << "full path = " << full_path << std::endl;
+
+	// if (*(full_path.end() - 1) == '/')
+	// 	full_path.erase(full_path.end() - 1);
+
 	struct stat	info;
 	ret = stat(full_path.c_str(), &info);
-	if (ret == -1 /*|| (haveCGI(full_path) && _server->getCGI_format() == ".bla")*/)							//file/dir doesn't exist	{
+	if (ret == -1)							//file/dir doesn't exist
 	{
-		// step 1: Create new file and write body
-		std::ofstream	new_file;
-		new_file.open(full_path.c_str());
-		new_file << response->getBody();
-		new_file.close();
-		ret = stat(full_path.c_str(), &info);
+		// step 6.1: Create new file and write body
+		std::ofstream	new_file(full_path.c_str());
+		if (new_file.is_open())
+		{
+			new_file << response->getBody();
+			new_file.close();
+			ret = stat(full_path.c_str(), &info);
 
-		// step 2: Send headliners
-		Headliners resp(std::string("HTTP/1.1"), std::string("201"));
-		resp.setContentLeigth(0);
-		resp.setCloseConnection(false);
-		resp.sendHeadliners(_fd);
+			// step 6.2: Send headliners
+			Headliners resp(std::string("HTTP/1.1"), std::string("201"));
+			resp.setContentLeigth(0);
+			resp.setCloseConnection(false);
+			resp.sendHeadliners(_fd);
+		}
+		else
+		{
+			// step 6.2: Send headliners
+			Headliners resp(std::string("HTTP/1.1"), std::string("500"));
+			resp.setContentLeigth(0);
+			resp.setCloseConnection(false);
+			resp.sendHeadliners(_fd);
+
+			std::string str("ERROR in ft_post_handle: create target file error");
+			throw Exeption(str);
+		}
+
 
 		return ;
 	}
@@ -581,14 +635,14 @@ void			Response_2::postHandle(Response *response)
 	{
 		if (haveCGI(full_path))				//target_file is a CGI
 		{
-			// step 1: Add body in vars
+			// step 7.1: Add body in vars
 			_variables += response->getBody();
 
-			// step 2: Execute CGI file
+			// step 7.2: Execute CGI file
 			std::string		target_file;
 			target_file = handleCGI(full_path);
 
-			// step 3: Send headliners
+			// step 7.3: Send headliners
 			struct stat	info_2;
 			stat(target_file.c_str(), &info_2);
 			if (info_2.st_size == 0)
@@ -604,11 +658,11 @@ void			Response_2::postHandle(Response *response)
 				resp.sendHeadliners(_fd);
 			}
 
-			// step 4: Send file
-			std::cout << "target_file = " << target_file << std::endl;
+			// step 7.4: Send file
+			std::cerr << "target_file = " << target_file << std::endl;
 			sendFile(target_file);
 
-			// step 5: Remove temp file
+			// step 7.5: Remove temp file
 			if (target_file.size() && target_file.find(".temp", 0) == (target_file.size() - 5))
 				remove(target_file.c_str());
 			return ;
@@ -617,17 +671,43 @@ void			Response_2::postHandle(Response *response)
 		{
 			if (S_ISDIR(info.st_mode))	//it's a directory
 			{
-				// step 1: Create new file and write body
+				// step 8.1: Check body_size. If body_size < max_body
 				std::ofstream	new_file;
-				new_file.open(full_path.c_str());
-				new_file << response->getBody();
-				new_file.close();
-				
-				// step 2: Send headliners
-				Headliners resp(std::string("HTTP/1.1"), std::string("201"));
-				resp.setContentLeigth(0);
-				resp.setCloseConnection(false);
-				resp.sendHeadliners(_fd);
+				if (_server->getMaxBodySize() >= static_cast<int>(response->getBodySize()))
+				{
+					// step 8.1.1: Create new file and write body
+					std::string		new_file_name(ft_remove_underscore(full_path, std::string("new_file")));
+					new_file.open(new_file_name.c_str());
+					if (new_file.is_open())
+					{
+						new_file << response->getBody();
+						new_file.close();
+						
+						Headliners resp(std::string("HTTP/1.1"), std::string("201"));
+						resp.setContentLeigth(0);
+						resp.setCloseConnection(false);
+						resp.sendHeadliners(_fd);
+					}
+					else
+					{
+						Headliners resp(std::string("HTTP/1.1"), std::string("500"));
+						resp.setContentLeigth(0);
+						resp.setCloseConnection(false);
+						resp.sendHeadliners(_fd);
+
+						std::string str("ERROR in ft_post_handle: create temp file error");
+						throw Exeption(str);
+					}
+				}
+				// step 8.2: If body_size > max_body
+				else
+				{
+					// step 8.2.1: Create new file and write body
+					Headliners resp(std::string("HTTP/1.1"), std::string("413"));
+					resp.setContentLeigth(0);
+					resp.setCloseConnection(false);
+					resp.sendHeadliners(_fd);
+				}
 
 				return ;
 			}
@@ -644,16 +724,16 @@ void			Response_2::postHandle(Response *response)
 
 
 #ifdef DEBUG
-	std::cout	<< "Response_2::postHandle end" << std::endl;
+	std::cerr	<< "Response_2::postHandle end" << std::endl;
 #endif
 	return ;
 }
 
 int				Response_2::sendResponse()
 {
-// #ifdef DEBUG
-	std::cout	<< "Response_2::sendResponse start: fd = " << _fd << "; size container = " << _requests.size() << std::endl;
-// #endif
+#ifdef DEBUG
+	std::cerr	<< "Response_2::sendResponse start: fd = " << _fd << "; size container = " << _requests.size() << std::endl;
+#endif
 	// step 1: Init data
 	int						ret = 0;
 	std::string				path;
@@ -674,7 +754,7 @@ int				Response_2::sendResponse()
 		(_server->getEpollEvent())->events = EPOLLIN;
 		(_server->getEpollEvent())->data.fd = _fd;
 		ret = epoll_ctl(_server->getEpollFd(), EPOLL_CTL_MOD, _fd, _server->getEpollEvent());
-		std::cerr << "ret = " << ret << " err = " << errno << " fd = " << _fd << std::endl;
+		// std::cerr << "ret = " << ret << " err = " << errno << " fd = " << _fd << std::endl;
 
 
 
@@ -719,8 +799,8 @@ int				Response_2::sendResponse()
 		// step 5: Write data for client
 		path = response.getPath();
 		_variables = setVariables(path);
-		// std::cout	<< "Response_2::_variables =R" << _variables << "R" << std::endl;
-		// std::cout	<< "Response_2::path =R" << path << "R" << std::endl;
+		// std::cerr	<< "Response_2::_variables =R" << _variables << "R" << std::endl;
+		// std::cerr	<< "Response_2::path =R" << path << "R" << std::endl;
 		tile = "";
 		slesh = path.end() - 1;
 		while (_server->getLocations(path) == "" && path.length() > 1){
@@ -756,7 +836,7 @@ int				Response_2::sendResponse()
 			int i = lstat(full_path.c_str(), &is_a_dir);
 			std::ofstream file;
 
-			std::cerr << "BAD FILE = " << full_path << std::endl;
+			// std::cerr << "BAD FILE = " << full_path << std::endl;
 
 			file.open(full_path.c_str());
 			if (!file.is_open()){
@@ -783,7 +863,7 @@ int				Response_2::sendResponse()
 				resp.sendHeadliners(_fd);
 			}
 			// ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
-			// std::cout << "\n RESPONS PUT: " << buff_1 << std::endl;
+			// std::cerr << "\n RESPONS PUT: " << buff_1 << std::endl;
 		}
 		m = "DELETE";
 		if (response.getMetod() == 4 &&
@@ -797,7 +877,7 @@ int				Response_2::sendResponse()
 				resp.sendHeadliners(_fd);
 			}
 			else {
-				std::cout << "rez " << rez << std::endl;
+				std::cerr << "rez " << rez << std::endl;
 				Headliners resp(std::string("HTTP/1.1"), std::string("500"));
 				resp.sendHeadliners(_fd);
 			}
@@ -813,11 +893,11 @@ int				Response_2::sendResponse()
 	}
 	
 
-	if (ret > 0)
-		std::cout << "Respons " << ret  << std::endl;
+	// if (ret > 0)
+	// 	std::cerr << "Respons " << ret  << std::endl;
 
 #ifdef DEBUG
-	std::cout	<< "Response_2::sendResponse end: fd = " << _fd << "; size container = " << _requests.size() << std::endl;
+	std::cerr	<< "Response_2::sendResponse end: fd = " << _fd << "; size container = " << _requests.size() << std::endl;
 #endif
 	return (0);
 }
@@ -825,7 +905,7 @@ int				Response_2::sendResponse()
 void			Response_2::readRequest()
 {
 #ifdef DEBUG
-	std::cout	<< "Response_2::readRequest start: fd = " << _fd << "; size container = " << _requests.size() << std::endl;
+	std::cerr	<< "Response_2::readRequest start: fd = " << _fd << "; size container = " << _requests.size() << std::endl;
 #endif
 	// step 1: Init data
 	int				ret = 0;
@@ -958,7 +1038,7 @@ void			Response_2::readRequest()
 	// std::cerr << "--\n" << data << "\n--" << std::endl;
 
 #ifdef DEBUG
-	std::cout	<< "Response_2::readRequest end: fd = "
+	std::cerr	<< "Response_2::readRequest end: fd = "
 				<< _fd
 				<< "; size container = "
 				<< _requests.size()
@@ -970,47 +1050,54 @@ void			Response_2::readRequest()
 std::string		Response_2::ft_get_dir_list(std::string& full_path)
 {
 #ifdef DEBUG
-	std::cout	<< "Response_2::ft_get_dir_list start; full path = " << full_path << std::endl;
+	std::cerr	<< "Response_2::ft_get_dir_list start; full path = " << full_path << std::endl;
 #endif
 	// step 1: Init data
 	DIR*			dirp;
 	struct dirent*	dp;
 	std::string		dir_content("<html>\n\t<body>\n");
-	std::cerr << "step 1 ok" << std::endl;
+	// std::cerr << "step 1 ok" << std::endl;
 
 
 	// step 2: Construct html
-	dirp = opendir(full_path.c_str());
-	std::cerr << "step 2 ok" << std::endl;
-	while ((dp = readdir(dirp)) != NULL)
+	if ((dirp = opendir(full_path.c_str())))
 	{
-		std::cerr << "iteration ok" << std::endl;
-		
-		// std::cout	<< "xxx = " << dp->d_name
-		// 			<< "; " << dp->d_ino
-		// 			<< "; " << dp->d_off
-		// 			<< "; " << dp->d_reclen
-		// 			<< "; " << static_cast<int>(dp->d_type)
-		// 			<< std::endl;
-		// step x: If hidden file or dir
-		if (dp->d_name[0] == '.')
-			continue ;
-		// step x: If dir
-		else if (static_cast<int>(dp->d_type) == 4)
+		while ((dp = readdir(dirp)) != NULL)
 		{
-			dir_content += "\t\t<p>";
-			dir_content += dp->d_name;
-			dir_content += '/';
-			dir_content += "</p>\n";
+			// std::cerr << "iteration ok" << std::endl;
+			
+			// std::cerr	<< "xxx = " << dp->d_name
+			// 			<< "; " << dp->d_ino
+			// 			<< "; " << dp->d_off
+			// 			<< "; " << dp->d_reclen
+			// 			<< "; " << static_cast<int>(dp->d_type)
+			// 			<< std::endl;
+			// step x: If hidden file or dir
+			if (dp->d_name[0] == '.')
+				continue ;
+			// step x: If dir
+			else if (static_cast<int>(dp->d_type) == 4)
+			{
+				dir_content += "\t\t<p>";
+				dir_content += dp->d_name;
+				dir_content += '/';
+				dir_content += "</p>\n";
+			}
+			else
+			{
+				dir_content += "\t\t<p>";
+				dir_content += dp->d_name;
+				dir_content += "</p>\n";
+			}
 		}
-		else
-		{
-			dir_content += "\t\t<p>";
-			dir_content += dp->d_name;
-			dir_content += "</p>\n";
-		}
+		(void)closedir(dirp);
 	}
-	(void)closedir(dirp);
+	else
+	{
+		dir_content += "\t\t<p>";
+		dir_content += "Open target dir error";
+		dir_content += "</p>\n";
+	}
 	dir_content += "\t</body>\n</html>\n";
 
 	// step 3: Create file and write data
@@ -1019,10 +1106,15 @@ std::string		Response_2::ft_get_dir_list(std::string& full_path)
 	cur_dir += "/dir_content.temp";
 	temp_file.open(cur_dir.c_str(), std::ofstream::trunc);
 	if (!temp_file.is_open())
+	{
+		std::cerr << "Strerror = " << strerror(errno) << "; errno = " << errno << std::endl;
+		Headliners resp(std::string("HTTP/1.1"), std::string("500"));
+		resp.sendHeadliners(_fd);
 		throw Exeption("ERROR in response_2: create temp_file error!");
+	}
 	temp_file << dir_content;
 	temp_file.close();
-	std::cerr << "step 3 ok" << std::endl;
+	// std::cerr << "step 3 ok" << std::endl;
 
 		// if (dp->d_reclen == len && !strcmp(dp->d_name, full_path.c_str())) {
 		// 		(void)closedir(dirp);
@@ -1031,7 +1123,7 @@ std::string		Response_2::ft_get_dir_list(std::string& full_path)
 
 
 #ifdef DEBUG
-	std::cout	<< "Response_2::ft_get_dir_list end; cur_dir = " << cur_dir
+	std::cerr	<< "Response_2::ft_get_dir_list end; cur_dir = " << cur_dir
 				<< "; ret data = " << dir_content
 				<< std::endl;
 #endif
@@ -1041,7 +1133,7 @@ std::string		Response_2::ft_get_dir_list(std::string& full_path)
 int				Response_2::sendingResponseGet(Response *response, std::string full_path, struct stat is_a_dir, std::string path)
 {
 #ifdef DEBUG
-	std::cout	<< "Response_2::sendingResponseGet start: fd = " << _fd << "; full path = " << full_path << std::endl;
+	std::cerr	<< "Response_2::sendingResponseGet start: fd = " << _fd << "; full path = " << full_path << std::endl;
 #endif
 	// step 1: Init data
 	int ret;
@@ -1108,7 +1200,7 @@ int				Response_2::sendingResponseGet(Response *response, std::string full_path,
 				// }
 				// else		// else
 					rezult_path = ft_get_dir_list(full_path);
-					std::cerr << "; full path 1 = " << full_path << std::endl;
+					// std::cerr << "; full path 1 = " << full_path << std::endl;
 				// handler for create dirrect_list
 			}
 		}
@@ -1116,13 +1208,13 @@ int				Response_2::sendingResponseGet(Response *response, std::string full_path,
 		else
 		{
 			rezult_path = full_path + index_name;
-			std::cerr << "; full path 2 = " << full_path << std::endl;
+			// std::cerr << "; full path 2 = " << full_path << std::endl;
 		}
 	}
 	else
 	{
 		rezult_path = full_path;
-		std::cerr << "; full path 3 = " << full_path << std::endl;
+		// std::cerr << "; full path 3 = " << full_path << std::endl;
 	}
 
 	// step 3: If have cgi go handle
@@ -1143,7 +1235,7 @@ int				Response_2::sendingResponseGet(Response *response, std::string full_path,
 	// step 4: Open the requested file and read in buffer
 	std::ifstream	fileIndex;
 
-	std::cerr << "result path 4 = " << rezult_path << std::endl;
+	// std::cerr << "result path 4 = " << rezult_path << std::endl;
 
 	fileIndex.open(rezult_path.c_str());
 	if (!fileIndex.is_open())
@@ -1180,16 +1272,19 @@ int				Response_2::sendingResponseGet(Response *response, std::string full_path,
 	int		fd_from;
 	fd_from = open(rezult_path.c_str(), O_RDONLY);
 
-	std::cerr << "rezult_path = " << rezult_path << std::endl;
+	// std::cerr << "rezult_path = " << rezult_path << std::endl;
 
 	ret = sendfile(_fd, fd_from, NULL, info.st_size);
 	// std::string str;
 	// while(std::getline(fileIndex, str))
 	// {
 	// 	ret = send(_fd, str.c_str(), str.length(), 0);
-	// 	std::cout << "send:" << ret << std::endl;
+	// 	std::cerr << "send:" << ret << std::endl;
 	// }
 	
+	// step x: Close file
+	close(fd_from);
+
 	// step 7: Remove temp file
 	if (rezult_path.size() && rezult_path.find(".temp", 0) == (rezult_path.size() - 5))
 		remove(rezult_path.c_str());
@@ -1197,16 +1292,16 @@ int				Response_2::sendingResponseGet(Response *response, std::string full_path,
 	// step 8: Close target file
 	fileIndex.close();
 
-// #ifdef DEBUG
-	std::cout	<< "Response_2::sendingResponseGet end: rezult_path = " << rezult_path << std::endl;
-// #endif
+#ifdef DEBUG
+	std::cerr	<< "Response_2::sendingResponseGet end: rezult_path = " << rezult_path << std::endl;
+#endif
 	return (ret);
 }
 
 std::string		Response_2::getIndexFileName(std::string path)
 {
 #ifdef DEBUG
-	std::cout	<< "Response_2::getIndexFileName start: fd = " << _fd << std::endl;
+	std::cerr	<< "Response_2::getIndexFileName start: fd = " << _fd << std::endl;
 #endif
 	std::vector<std::string> ind = *(_server->getIndexName());
 	std::string name;
@@ -1222,7 +1317,7 @@ std::string		Response_2::getIndexFileName(std::string path)
 	}
 
 #ifdef DEBUG
-	std::cout	<< "Response_2::getIndexFileName end: fd = " << _fd << std::endl;
+	std::cerr	<< "Response_2::getIndexFileName end: fd = " << _fd << std::endl;
 #endif
 	return ("");
 }
@@ -1235,7 +1330,7 @@ bool			Response_2::getCloseFlag()
 int				Response_2::haveCGI(std::string &result_path)
 {
 #ifdef DEBUG
-	std::cout	<< "Response_2::haveCGI start; path = " << result_path << std::endl;
+	std::cerr	<< "Response_2::haveCGI start; path = " << result_path << std::endl;
 #endif
 	// step 1: If CGI format not defined
 	if (_server->getCGI_format() == "")
@@ -1247,7 +1342,7 @@ int				Response_2::haveCGI(std::string &result_path)
 		return (1);
 
 #ifdef DEBUG
-	std::cout	<< "Response_2::haveCGI end" << std::endl;
+	std::cerr	<< "Response_2::haveCGI end" << std::endl;
 #endif
 	return (0);
 }
@@ -1255,7 +1350,7 @@ int				Response_2::haveCGI(std::string &result_path)
 std::string		Response_2::handleCGI(std::string &result_path)
 {
 #ifdef DEBUG
-	std::cout	<< "Response_2::handleCGI start; path = " << result_path << std::endl;
+	std::cerr	<< "Response_2::handleCGI start; path = " << result_path << std::endl;
 #endif
 	// step 1: Init data
 
@@ -1373,6 +1468,7 @@ std::string		Response_2::handleCGI(std::string &result_path)
 
 		// step x: If hane errors close and exit
 		fclose(stdout);
+		fclose(rek);
 		exit(0);
 	}
 
@@ -1386,7 +1482,7 @@ std::string		Response_2::handleCGI(std::string &result_path)
 		delete[] envp.operator[](i);
 
 #ifdef DEBUG
-	std::cout	<< "Response_2::handleCGI end" << std::endl;
+	std::cerr	<< "Response_2::handleCGI end" << std::endl;
 #endif
 	return (cur_dir);
 }

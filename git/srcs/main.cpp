@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/14 14:33:42 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/18 22:02:19 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,6 @@
 //	24. проверить все пункты сабжа
 //	25. check body size with POST request
 //	26. add use nameserver
-//	27. add use body_size
 //	28. handle connection: close/closed; - remove fd from queue and close connect
 //	+ 2. геттер в сервере на фавикон
 //	+ 3. файл для фавикона
@@ -161,6 +160,7 @@
 //	+ 21. sendfile vs send
 //	+ 22. add post method
 //		- + fix bag in sendfile after POST + CGI
+//	+ 27. add use body_size
 
 #include "../includes/headers.hpp"
 
@@ -244,7 +244,7 @@ int		main(int argc, char **argv, char **envp)
 					std::cerr << "ERROR in main: close fd error" << std::endl;
 				// delete element from request container
 				(vars.request_container->operator[](vars.events[i].data.fd))->~Response_2();
-				// delete vars.request_container->operator[](vars.events[i].data.fd);
+				delete (vars.request_container->operator[](vars.events[i].data.fd));
 				vars.request_container->erase(vars.events[i].data.fd);
 				// std::cerr << "Close fine (main)" << std::endl;
 			}
