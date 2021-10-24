@@ -6,13 +6,13 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/18 00:51:53 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/24 09:26:15 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-// #define DEBUG 0
+#define DEBUG 0
 #define TEST 1
 
 #define BUF_FOR_RESP 2048							// buff for response to client
@@ -71,6 +71,7 @@ typedef struct		s_args				// struct for thread
 {
 	int			fd;						// pipe
 	int			tmp_file;				// output pile fd
+	int			exit_flag;				// flag for stop read cycle
 }					t_args;
 
 

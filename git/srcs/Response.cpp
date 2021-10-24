@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/14 14:26:31 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/18 21:21:34 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/24 09:58:10 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,6 +192,20 @@ std::string	Response::body_chunk(std::string str)
 	return (body);
 }
 
+static void			ft_clean_start(std::string& str)
+{
+	for (int i = 0; i < static_cast<int>(str.size()); ++i)
+	{
+		if (str.operator[](i) == '\r' ||
+			str.operator[](i) == '\n' ||
+			str.operator[](i) == ' ')
+			str.erase(i);
+		else
+			break ;
+	}
+	return ;
+}
+
 Response::Response(std::string &str, int fd, int maxBodySize):
 	_fd(fd),
 	_maxBodySize(maxBodySize),
@@ -199,10 +213,16 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 	_flag_connect(false),
 	_flag_chunk(false)
 {
+	ft_clean_start(str);
+
 	// step 1: Get method
 	this->_metod = setMetod(str);
 	if (_metod == 0)
 	{
+		// std::cerr << "Need P" << std::endl;
+		// int	p;
+		// std::cin >> p;
+
 		Headliners resp(std::string("HTTP/1.1"), std::string("405"));
 		resp.setCloseConnection(false);
 		resp.sendHeadliners(_fd);

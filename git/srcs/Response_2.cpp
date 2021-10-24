@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/18 21:35:48 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/24 10:16:15 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,19 @@ static std::string	ft_remove_underscore(std::string path, std::string title)
 	return (path + '/' + title);
 }
 
+static int			ft_check_have_data(std::string &data)
+{
+	for (int i = 0; i < static_cast<int>(data.size()); ++i)
+	{
+		if (data.operator[](i) != '\n' &&
+			data.operator[](i) != '\r' &&
+			data.operator[](i) != ' ' &&
+			data.operator[](i) != '\0')
+			return (1);
+	}
+	return (0);
+}
+
 static void*		readCgiFromThread(void *args)
 {
 #ifdef DEBUG
@@ -39,7 +52,7 @@ static void*		readCgiFromThread(void *args)
 	int				first_cycle = 0;
 	// std::string		response;
 
-	while (ret > 0)
+	while (arg->exit_flag)
 	{
 		// std::cerr << "cycle iteration" << std::endl;
 		ft_bzero(bufer, 65000);
@@ -74,8 +87,9 @@ static void*		readCgiFromThread(void *args)
 			first_cycle++;
 			if (i < ret)
 				continue ;
-			else if (i == ret)
-				break ;
+			// else if (i == ret)
+			// 	break ;
+			ret -= i;
 		}
 		write(arg->tmp_file, bufer, ret);
 		// std::cerr << "buffer = " << bufer << std::endl;
@@ -221,6 +235,7 @@ void				Response_2::getBlaCgiResult(Response *response, std::string full_path)
 	t_args		args;
 	args.fd = pop[0];
 	args.tmp_file = temp_file;
+	args.exit_flag = 1;
 	status_pthread = pthread_create(&readCgiThread, NULL, readCgiFromThread, &args);
 	// std::cerr << "step 6 ok" << std::endl;
 
@@ -259,12 +274,15 @@ void				Response_2::getBlaCgiResult(Response *response, std::string full_path)
 	// step 9: Wait child process and threads for read data from thread
 	int		status;
 	waitpid(id, &status, 0);
+	args.exit_flag = 0;
 	if ((ret = pthread_join(readCgiThread, (void**)&status_pthread)) != 0)
 	{
 		Headliners resp(std::string("HTTP/1.1"), std::string("500"));
 		resp.sendHeadliners(_fd);
 		throw Exeption("ERROR in response_2: pthread for read data from CGI error");
 	}
+
+	// step x: stop read cycle
 	// std::cerr << "step 9 ok" << std::endl;
 
 	// step 10: Close file and pipes
@@ -584,6 +602,10 @@ void			Response_2::postHandle(Response *response)
 	// std::string		temp_1(response->getPath());
 	if (!_server->getMethods(path, method)/* && !(haveCGI(temp_1) && _server->getCGI_format() == ".bla")*/)
 	{
+		// std::cerr << "Need P" << std::endl;
+		// int	p;
+		// std::cin >> p;
+
 		Headliners resp(std::string("HTTP/1.1"), std::string("405"));
 		resp.setCloseConnection(false);
 		resp.setContentLeigth(0);
@@ -792,6 +814,9 @@ int				Response_2::sendResponse()
 		// step x: Handle POST method
 		if (response.getMetod() == 2)
 		{
+			// std::cerr << "POST method start" << std::endl;
+			// int	p;
+			// std::cin >> p;
 			postHandle(&response);
 			return (0);
 		}
@@ -902,16 +927,27 @@ int				Response_2::sendResponse()
 	return (0);
 }
 
+static int		ft_search_end_header(std::string& temp)
+{
+	if (temp.find("\r\n\r\n", 0) != std::string::npos)
+	{
+		// std::cerr << "ft_search_end_header = " << "\n***\n" << temp << "\n***" << std::endl;
+		return (0);
+	}
+	return (1);
+}
+
 void			Response_2::readRequest()
 {
 #ifdef DEBUG
 	std::cerr	<< "Response_2::readRequest start: fd = " << _fd << "; size container = " << _requests.size() << std::endl;
 #endif
 	// step 1: Init data
-	int				ret = 0;
+	int				ret = 1;
 	// fd_set			rfd;
 	// fd_set			wfd;
 	std::string		data;
+	int				cycle = 1;
 	// struct timeval	tv;
 	// tv.tv_sec = 0;
 	// tv.tv_usec = 150;
@@ -919,10 +955,13 @@ void			Response_2::readRequest()
 	fcntl(_fd, F_SETFL, O_NONBLOCK);
 
 	// step 2: Cycle for read data from fd in _buff
-	while (1)
+	// if (TEST)
+	// 	usleep(850);
+	while (ret || cycle)
 	{
+		// std::cerr << "data = " << data << std::endl;
 		if (TEST)
-			usleep(500);
+			usleep(300);
 		// step 2.1: Read
 		// ret = read(_fd, _buff, sizeof(_buff));
 		ret = recv(_fd, _buff, sizeof(_buff), 0);
@@ -949,6 +988,7 @@ void			Response_2::readRequest()
 					throw Exeption("ERROR in Response_2::readRequest: Epoll_ctl del error");
 				}
 				((_server->getRequestContainerPointer())->operator[](_fd))->~Response_2();
+				// delete ((_server->getRequestContainerPointer())->operator[](_fd));
 				(_server->getRequestContainerPointer())->erase(_fd);
 			}
 
@@ -975,56 +1015,20 @@ void			Response_2::readRequest()
 			// std::cerr << "Close fine (Response_2)" << std::endl;
 		}
 
+		if (cycle)
+			cycle = ft_search_end_header(data);
 
-		if (ret <= 0) // if no data in fd
-		{
+		if (ret <= 0 && cycle == 0) // if no data in fd
 			break ;
-			// Headliners resp(std::string("HTTP/1.1"), std::string("100"));
-			// resp.sendHeadliners(_fd);
-		}
 
-
-
-		// step 2.2: Accumulate received data and clean _buff
-		// else
-		// {
-			data += _buff;
-			ft_bzero(&_buff, sizeof(_buff));
-		// 	continue ;
-		// }
-
-		// // step 2.3: Clear data for select
-		// FD_ZERO(&rfd);
-		// // FD_ZERO(&wfd);
-		// FD_SET(_fd, &rfd);
-		// // FD_SET(_fd, &wfd);
-
-
-		// // step 2.4: Check action on client fd
-		// ret = select(_fd + 1, &rfd, 0, 0, &tv);
-		// //		if error
-		// if (ret < 0)
-		// {
-		// 	Headliners resp(std::string("HTTP/1.1"), std::string("500"));
-		// 	resp.sendHeadliners(_fd);
-		// 	std::string str("ERROR in ft_handle_epoll_fd: select fall");
-		// 	throw Exeption(str);
-		// }
-		// //		if no actions
-		// else if (ret == 0)
-		// 	break ;
-		// //		if have actions
-		// else
-		// {
-		// 	if (FD_ISSET(_fd, &rfd))
-		// 		continue ;
-		// 	// if (FD_ISSET(_fd, &wfd))
-		// 	break ;
-		// }
+		data += _buff;
+		ft_bzero(&_buff, sizeof(_buff));
 	}
 
+
+
 	// step 3: Add request in container if have any data from fd
-	if (data.size())
+	if (data.size() && ft_check_have_data(data))
 	{
 		_requests.push_back(data);
 
@@ -1032,6 +1036,14 @@ void			Response_2::readRequest()
 		(_server->getEpollEvent())->data.fd = _fd;
 		ret = epoll_ctl(_server->getEpollFd(), EPOLL_CTL_MOD, _fd, _server->getEpollEvent());
 	}
+
+	// int	tfd = 0;
+	// tfd = open ("./response", O_CREAT | O_APPEND | O_WRONLY, 0666);
+	// write(tfd, "###\n", 4);
+	// write(tfd, data.c_str(), (data.size() > 500 ? 500 : data.size()));
+	// write(tfd, "\n###\n", 6);
+	// close(tfd);
+
 	write(2, "###\n", 4);
 	write(2, data.c_str(), (data.size() > 500 ? 500 : data.size()));
 	write(2, "\n###\n", 6);
@@ -1042,6 +1054,8 @@ void			Response_2::readRequest()
 				<< _fd
 				<< "; size container = "
 				<< _requests.size()
+				<< "; cycle = "
+				<< cycle
 				<< std::endl;
 #endif
 	return ;

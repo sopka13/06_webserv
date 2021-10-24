@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/18 22:02:19 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/23 10:58:09 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,7 +234,7 @@ int		main(int argc, char **argv, char **envp)
 				// Headliners resp(std::string("HTTP/1.1"), std::string("408"));
 				// resp.setCloseConnection(false);
 				// resp.sendHeadliners(vars.events[i].data.fd);
-				std::cerr << "EPOLLERR: fd = " << vars.events[i].data.fd << std::endl;
+				std::cerr << "EPOLLERR: fd2 = " << vars.events[i].data.fd << std::endl;
 				if (epoll_ctl(vars.epoll_fd, EPOLL_CTL_DEL, vars.events[i].data.fd, &vars.ev) == -1)
 				{
 					std::cerr << "ERROR in main: Epoll_ctl del error" << std::endl;
@@ -244,7 +244,7 @@ int		main(int argc, char **argv, char **envp)
 					std::cerr << "ERROR in main: close fd error" << std::endl;
 				// delete element from request container
 				(vars.request_container->operator[](vars.events[i].data.fd))->~Response_2();
-				delete (vars.request_container->operator[](vars.events[i].data.fd));
+				// delete (vars.request_container->operator[](vars.events[i].data.fd));
 				vars.request_container->erase(vars.events[i].data.fd);
 				// std::cerr << "Close fine (main)" << std::endl;
 			}
