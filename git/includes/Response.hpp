@@ -31,7 +31,7 @@ public:
 	std::string		getHttp();
 	std::string		getPath();
 	bool			getClose();
-	std::string 	setBody(std::string str);
+	std::string 	setBody(std::string& str);
 	void 			setBodySize();
 	std::string& 	getBody();
 	size_t 			getBodySize();

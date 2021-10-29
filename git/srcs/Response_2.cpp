@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/24 10:16:15 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/27 23:15:24 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,16 @@ static int			ft_check_have_data(std::string &data)
 			return (1);
 	}
 	return (0);
+}
+
+static int			ft_search_end_header(std::string& temp)
+{
+	if (temp.find("\r\n\r\n", 0) != std::string::npos)
+	{
+		// std::cerr << "ft_search_end_header = " << "\n***\n" << temp << "\n***" << std::endl;
+		return (0);
+	}
+	return (1);
 }
 
 static void*		readCgiFromThread(void *args)
@@ -94,17 +104,39 @@ static void*		readCgiFromThread(void *args)
 		write(arg->tmp_file, bufer, ret);
 		// std::cerr << "buffer = " << bufer << std::endl;
 	}
-	// std::cerr << "readCgiFromThread step 1 ok" << std::endl;
-
-	// Response resp(response, arg->tmp_file, 0);
-	// std::cerr << "readCgiFromThread step 2 ok" << std::endl;
-
-	// std::cerr << "readCgiFromThread step 3 ok" << std::endl;
 
 #ifdef DEBUG
 	std::cerr	<< "readCgiFromThread end; " << std::endl;
 #endif
 	return (arg);
+}
+
+Response_2::Response_2(Server *server, int fd):
+	_server(server),
+	_fd(fd),
+	_close_flag(false),
+	_requests()
+{
+#ifdef DEBUG
+	std::cerr	<< "Response_2::Response_2 start: fd = " << _fd << std::endl;
+#endif
+	// step 1: Clear buff
+	bzero(_buff, sizeof(_buff));
+
+#ifdef DEBUG
+	std::cerr	<< "Response_2::Response_2 end: fd = " << _fd << std::endl;
+#endif
+}
+
+Response_2::~Response_2()
+{
+#ifdef DEBUG
+	std::cerr	<< "Response_2::~Response_2 start: fd = " << _fd << std::endl;
+#endif
+	// std::cerr << "dctor" << std::endl;
+#ifdef DEBUG
+	std::cerr	<< "Response_2::~Response_2 end: fd = " << _fd << std::endl;
+#endif
 }
 
 void				Response_2::getBlaCgiResult(Response *response, std::string full_path)
@@ -114,11 +146,11 @@ void				Response_2::getBlaCgiResult(Response *response, std::string full_path)
 	std::cerr	<< "Response_2::getBlaCgiResult start; " << std::endl;
 #endif
 	// step 1: Init data
-	int		ret = 0;		// return value
-	int		id;				// if child CGI script process
-	int		pip[2];			// pipe for send body for script
-	int		pop[2];			// pipe for send response from CGI
-	std::string flag = "HTTP_X_SECRET_HEADER_FOR_TEST=" + response->getSecretFlag();
+	int			ret = 0;		// return value
+	int			id;				// if child CGI script process
+	int			pip[2];			// pipe for send body for script
+	int			pop[2];			// pipe for send response from CGI
+	std::string	flag = "HTTP_X_SECRET_HEADER_FOR_TEST=" + response->getSecretFlag();
 	int			size_1 = flag.size();
 	char		flg[size_1 + 1];
 
@@ -328,34 +360,7 @@ void				Response_2::getBlaCgiResult(Response *response, std::string full_path)
 	return ;
 }
 
-Response_2::Response_2(Server *server, int fd):
-	_server(server),
-	_fd(fd),
-	_close_flag(false)
-{
-#ifdef DEBUG
-	std::cerr	<< "Response_2::Response_2 start: fd = " << _fd << std::endl;
-#endif
-	// step 1: Clear buff
-	bzero(_buff, sizeof(_buff));
-
-#ifdef DEBUG
-	std::cerr	<< "Response_2::Response_2 end: fd = " << _fd << std::endl;
-#endif
-}
-
-Response_2::~Response_2()
-{
-#ifdef DEBUG
-	std::cerr	<< "Response_2::~Response_2 start: fd = " << _fd << std::endl;
-#endif
-	// std::cerr << "dctor" << std::endl;
-#ifdef DEBUG
-	std::cerr	<< "Response_2::~Response_2 end: fd = " << _fd << std::endl;
-#endif
-}
-
-std::string		Response_2::setVariables(std::string &str)
+std::string			Response_2::setVariables(std::string &str)
 {
 	// Need handle getter vars from body. If have POST method with vars in body.
 	size_t i = str.find("?");
@@ -372,7 +377,7 @@ std::string		Response_2::setVariables(std::string &str)
 	return (var);
 }
 
-void			Response_2::sendFile(std::string full_path)
+void				Response_2::sendFile(std::string full_path)
 {
 	// This function send file
 #ifdef DEBUG
@@ -381,7 +386,6 @@ void			Response_2::sendFile(std::string full_path)
 	// step 1: Init data
 	int		ret = 0;
 	int		fd_from;
-	// std::cerr << "Response_2::sendFile step 1 ok" << std::endl;
 
 	// step 2: Get file_info
 	struct stat	info;
@@ -394,7 +398,6 @@ void			Response_2::sendFile(std::string full_path)
 		std::string str("ERROR in Response_2::sendFile: File not found");
 		throw Exeption(str);
 	}
-	// std::cerr << "Response_2::sendFile step 2 ok" << std::endl;
 
 	// step 3: Open file
 	fd_from = open(full_path.c_str(), O_RDONLY);
@@ -406,34 +409,15 @@ void			Response_2::sendFile(std::string full_path)
 		std::string str("ERROR in Response_2::sendFile: Open file error");
 		throw Exeption(str);
 	}
-	// std::cerr << "Response_2::sendFile step 3 ok" << std::endl;
 
 	// step 4: Send file
 	off_t	offset = 0;
 	ret = 1;
 	char	temp_buf[32000];
 	if (info.st_size < 32000)
-	{
-		// std::cerr << "Response_2::sendFile step 4.1 start" << std::endl;
 		ret = sendfile(_fd, fd_from, &offset, info.st_size);
-	}
 	else
 	{
-		// std::cerr << "Response_2::sendFile step 4.2 start" << std::endl;
-		// std::string		file_body;
-		// int				rek = 1;
-		// while (rek)
-		// {
-		// 	off_t	sss = 0;
-		// 	rek = read(fd_from, temp_buf, 32000);
-		// 	file_body += temp_buf;
-		// 	ft_bzero(temp_buf, 32000);
-		// 	sss += rek;
-		// 	lseek(fd_from, sss, SEEK_SET);
-		// }
-
-		// std::cerr << "size file = " << file_body.size() << std::endl;
-
 		while (ret > 0 && offset < info.st_size)
 		{
 			if (TEST)
@@ -455,8 +439,6 @@ void			Response_2::sendFile(std::string full_path)
 				std::stringstream stream;
 				stream << std::hex << ret;
 				std::string result(stream.str());
-
-				// std::cerr << "ret == " << ret << "| pffset = " << offset;
 
 				if ((rt = send(_fd, result.c_str(), result.size(), 0)) == -1 ||
 					(rt = send(_fd, "\r\n", 2, 0)) == -1 ||
@@ -481,18 +463,6 @@ void			Response_2::sendFile(std::string full_path)
 			std::cerr << "Sendfile ok; ret = " << ret << std::endl;
 	}
 
-	// std::cerr << "Sendfile error = " << strerror(errno) << "; errno = " << errno << std::endl;
-
-	// if (ret == -1)
-	// {
-	// 	Headliners resp(std::string("HTTP/1.1"), std::string("500"));
-	// 	resp.sendHeadliners(_fd);
-
-	// 	std::string str("ERROR in Response_2::sendFile: Send file error");
-	// 	throw Exeption(str);
-	// }
-
-	// step 5: Close file
 	close(fd_from);
 
 #ifdef DEBUG
@@ -501,7 +471,7 @@ void			Response_2::sendFile(std::string full_path)
 	return ;
 }
 
-void			Response_2::postHandle(Response *response)
+void				Response_2::postHandle(Response *response)
 {
 	// This function handle POST method and has the following logic:
 	// 	-- 0. if body size larger than the allowed one return error
@@ -751,7 +721,7 @@ void			Response_2::postHandle(Response *response)
 	return ;
 }
 
-int				Response_2::sendResponse()
+int					Response_2::sendResponse()
 {
 #ifdef DEBUG
 	std::cerr	<< "Response_2::sendResponse start: fd = " << _fd << "; size container = " << _requests.size() << std::endl;
@@ -765,38 +735,13 @@ int				Response_2::sendResponse()
 	// step 2: If no unhandled request
 	if (!_requests.size())
 	{
-		// send(_fd, "\0\0", 2, 0);
-		// std::cerr << "end" << std::endl;
-		// Headliners resp(std::string("HTTP/1.1"), std::string("200"));
-		// resp.setCloseConnection(false);
-		// resp.sendHeadliners(_fd);
-		// sendFile(_server->getWelcomePage());
-
 		// have data monitoring only
 		(_server->getEpollEvent())->events = EPOLLIN;
 		(_server->getEpollEvent())->data.fd = _fd;
 		ret = epoll_ctl(_server->getEpollFd(), EPOLL_CTL_MOD, _fd, _server->getEpollEvent());
 		// std::cerr << "ret = " << ret << " err = " << errno << " fd = " << _fd << std::endl;
-
-
-
-		// if (epoll_ctl(_server->getEpollFd(), EPOLL_CTL_DEL, _fd, _server->getEpollEvent()) == -1)
-		// {
-		// 	throw Exeption("ERROR in Response_2::sendResponse: Epoll_ctl del error");
-		// }
-		// if ((ret = close(_fd)) == -1)
-		// 	std::cerr << "FAIL!!!" << std::endl;
-
-		// // delete element from request container
-		// ((_server->getRequestContainerPointer())->operator[](_fd))->~Response_2();
-		// (_server->getRequestContainerPointer())->erase(_fd);
-		// // if (ret == -1) // error handle
-
 		return (0);
 	}
-		// return (1); 
-
-	// step 1: Cycle of send response ??? do we need
 
 	// step 3: Parse response
 	int		flag = 0;
@@ -808,15 +753,18 @@ int				Response_2::sendResponse()
 
 		// step 4: If have close connection - return
 		_close_flag = response.getClose();
-		if (_close_flag)
-			return (2);
+		// if (_close_flag)
+		// {
+		// 	Headliners resp(std::string("HTTP/1.1"), std::string("500"));
+		// 	resp.sendHeadliners(_fd);
+
+		// 	std::string str("ERROR in Response_2::sendFile: File not found");
+		// 	throw Exeption(str);
+		// }
 
 		// step x: Handle POST method
 		if (response.getMetod() == 2)
 		{
-			// std::cerr << "POST method start" << std::endl;
-			// int	p;
-			// std::cin >> p;
 			postHandle(&response);
 			return (0);
 		}
@@ -824,8 +772,6 @@ int				Response_2::sendResponse()
 		// step 5: Write data for client
 		path = response.getPath();
 		_variables = setVariables(path);
-		// std::cerr	<< "Response_2::_variables =R" << _variables << "R" << std::endl;
-		// std::cerr	<< "Response_2::path =R" << path << "R" << std::endl;
 		tile = "";
 		slesh = path.end() - 1;
 		while (_server->getLocations(path) == "" && path.length() > 1){
@@ -861,8 +807,6 @@ int				Response_2::sendResponse()
 			int i = lstat(full_path.c_str(), &is_a_dir);
 			std::ofstream file;
 
-			// std::cerr << "BAD FILE = " << full_path << std::endl;
-
 			file.open(full_path.c_str());
 			if (!file.is_open()){
 				Headliners resp(std::string("HTTP/1.1"), std::string("500"));
@@ -887,8 +831,6 @@ int				Response_2::sendResponse()
 				resp.setContentLeigth(0);
 				resp.sendHeadliners(_fd);
 			}
-			// ret = send(_fd, buff_1.c_str(), buff_1.length(), 0);
-			// std::cerr << "\n RESPONS PUT: " << buff_1 << std::endl;
 		}
 		m = "DELETE";
 		if (response.getMetod() == 4 &&
@@ -916,118 +858,83 @@ int				Response_2::sendResponse()
 		}
 		std::cerr << e.what() << '\n';
 	}
+	if (_close_flag)
+	{
+		if (epoll_ctl(_server->getEpollFd(), EPOLL_CTL_DEL, _fd, _server->getEpollEvent()) == -1)
+			throw Exeption("ERROR in Response_2::readRequest: Epoll_ctl del error");
+		((_server->getRequestContainerPointer())->operator[](_fd))->~Response_2();
+		delete ((_server->getRequestContainerPointer())->operator[](_fd));
+		(_server->getRequestContainerPointer())->erase(_fd);
+
+		if ((ret = close(_fd)) == -1)
+			std::cerr << "FAIL!!!" << std::endl;
+
+		std::string str("ERROR in Response_2::sendFile: Closes connection flag");
+		throw Exeption(str);
+	}
 	
-
-	// if (ret > 0)
-	// 	std::cerr << "Respons " << ret  << std::endl;
-
 #ifdef DEBUG
 	std::cerr	<< "Response_2::sendResponse end: fd = " << _fd << "; size container = " << _requests.size() << std::endl;
 #endif
 	return (0);
 }
 
-static int		ft_search_end_header(std::string& temp)
-{
-	if (temp.find("\r\n\r\n", 0) != std::string::npos)
-	{
-		// std::cerr << "ft_search_end_header = " << "\n***\n" << temp << "\n***" << std::endl;
-		return (0);
-	}
-	return (1);
-}
-
-void			Response_2::readRequest()
+void				Response_2::readRequest()
 {
 #ifdef DEBUG
 	std::cerr	<< "Response_2::readRequest start: fd = " << _fd << "; size container = " << _requests.size() << std::endl;
 #endif
 	// step 1: Init data
 	int				ret = 1;
-	// fd_set			rfd;
-	// fd_set			wfd;
 	std::string		data;
 	int				cycle = 1;
-	// struct timeval	tv;
-	// tv.tv_sec = 0;
-	// tv.tv_usec = 150;
 
+	// step 2: Change fd mode
 	fcntl(_fd, F_SETFL, O_NONBLOCK);
 
-	// step 2: Cycle for read data from fd in _buff
-	// if (TEST)
-	// 	usleep(850);
+	// step 3: Cycle for read data from fd in _buff
 	while (ret || cycle)
 	{
-		// std::cerr << "data = " << data << std::endl;
 		if (TEST)
 			usleep(300);
-		// step 2.1: Read
-		// ret = read(_fd, _buff, sizeof(_buff));
-		ret = recv(_fd, _buff, sizeof(_buff), 0);
-		// std::cerr << "ret = " << ret << "; fd = " << _fd << std::endl;
-		// if (ret < 0)
-		// {
-		// 	Headliners resp(std::string("HTTP/1.1"), std::string("403"));
-		// 	resp.sendHeadliners(_fd);
-		// 	std::string str("ERROR in get response: read fail");
-		// 	throw Exeption(str);
-		// }
 
-		// If first cycle and ret == 0
-		if (ret <= 0 && data.size() == 0)// ||
-			//(data.size() > (_server->getMaxBodySize() + sizeof(_buff)) && data.find("POST", 0) == 0))
+		// step 3.1: Read
+		ret = recv(_fd, _buff, sizeof(_buff), 0);
+
+		// step 3.2: If first cycle and ret == 0
+		if (ret <= 0 && data.size() == 0)
 		{
 			std::cerr << "EPOLLERR: fd = " << _fd << std::endl;
 			if ((_server->getRequestContainerPointer())->size() &&
 				(_server->getRequestContainerPointer())->find(_fd) != (_server->getRequestContainerPointer())->end())
 			{
 				if (epoll_ctl(_server->getEpollFd(), EPOLL_CTL_DEL, _fd, _server->getEpollEvent()) == -1)
-				{
-					// std::cerr << "strerror = " << strerror(errno) << "; errno = " << errno << std::endl;
 					throw Exeption("ERROR in Response_2::readRequest: Epoll_ctl del error");
-				}
-				((_server->getRequestContainerPointer())->operator[](_fd))->~Response_2();
-				// delete ((_server->getRequestContainerPointer())->operator[](_fd));
-				(_server->getRequestContainerPointer())->erase(_fd);
+				// ((_server->getRequestContainerPointer())->operator[](_fd))->~Response_2();
+				delete ((_server->getRequestContainerPointer())->operator[](_fd));
+				(_server->getRequestContainerPointer())->operator[](_fd) = NULL;
+				(_server->getRequestContainerPointer())->erase((_server->getRequestContainerPointer())->find(_fd));
 			}
-
-			// if (data.size() > (_server->getMaxBodySize() + sizeof(_buff)))
-			// {
-			// 	break ;
-			// 	Headliners resp(std::string("HTTP/1.1"), std::string("200"));
-			// 	resp.setCloseConnection(true);
-			// 	resp.sendHeadliners(_fd);
-
-			// 	if ((ret = close(_fd)) == -1)
-			// 		std::cerr << "FAIL!!!" << std::endl;
-
-			// 	std::cerr << "--\n" << data << "\n--" << std::endl;
-
-			// 	std::string str("ERROR in ft_post_handle: Body size too long");
-			// 	throw Exeption(str);
-			// }
 
 			if ((ret = close(_fd)) == -1)
 				std::cerr << "FAIL!!!" << std::endl;
 			break ;
-			// delete element from request container
-			// std::cerr << "Close fine (Response_2)" << std::endl;
 		}
 
+		// step 3.3: For search "\r\n\r\n"
 		if (cycle)
 			cycle = ft_search_end_header(data);
 
-		if (ret <= 0 && cycle == 0) // if no data in fd
+		// step 3.4: If no data
+		if (ret <= 0 && cycle == 0)
 			break ;
 
+		// step 3.5: Add data in arr
 		data += _buff;
 		ft_bzero(&_buff, sizeof(_buff));
 	}
 
-
-
-	// step 3: Add request in container if have any data from fd
+	// step 4: Add request in container if have any data from fd
 	if (data.size() && ft_check_have_data(data))
 	{
 		_requests.push_back(data);
@@ -1037,17 +944,9 @@ void			Response_2::readRequest()
 		ret = epoll_ctl(_server->getEpollFd(), EPOLL_CTL_MOD, _fd, _server->getEpollEvent());
 	}
 
-	// int	tfd = 0;
-	// tfd = open ("./response", O_CREAT | O_APPEND | O_WRONLY, 0666);
-	// write(tfd, "###\n", 4);
-	// write(tfd, data.c_str(), (data.size() > 500 ? 500 : data.size()));
-	// write(tfd, "\n###\n", 6);
-	// close(tfd);
-
 	write(2, "###\n", 4);
 	write(2, data.c_str(), (data.size() > 500 ? 500 : data.size()));
 	write(2, "\n###\n", 6);
-	// std::cerr << "--\n" << data << "\n--" << std::endl;
 
 #ifdef DEBUG
 	std::cerr	<< "Response_2::readRequest end: fd = "
@@ -1061,7 +960,7 @@ void			Response_2::readRequest()
 	return ;
 }
 
-std::string		Response_2::ft_get_dir_list(std::string& full_path)
+std::string			Response_2::ft_get_dir_list(std::string& full_path)
 {
 #ifdef DEBUG
 	std::cerr	<< "Response_2::ft_get_dir_list start; full path = " << full_path << std::endl;
@@ -1144,7 +1043,7 @@ std::string		Response_2::ft_get_dir_list(std::string& full_path)
 	return (cur_dir);
 }
 
-int				Response_2::sendingResponseGet(Response *response, std::string full_path, struct stat is_a_dir, std::string path)
+int					Response_2::sendingResponseGet(Response *response, std::string full_path, struct stat is_a_dir, std::string path)
 {
 #ifdef DEBUG
 	std::cerr	<< "Response_2::sendingResponseGet start: fd = " << _fd << "; full path = " << full_path << std::endl;
@@ -1284,10 +1183,12 @@ int				Response_2::sendingResponseGet(Response *response, std::string full_path,
 	// step 6: Send body
 	fileIndex.close();
 	int		fd_from;
-	fd_from = open(rezult_path.c_str(), O_RDONLY);
+	if ((fd_from = open(rezult_path.c_str(), O_RDONLY)) == -1)
+	{
+		return (ret);
+	}
 
 	// std::cerr << "rezult_path = " << rezult_path << std::endl;
-
 	ret = sendfile(_fd, fd_from, NULL, info.st_size);
 	// std::string str;
 	// while(std::getline(fileIndex, str))
@@ -1312,7 +1213,7 @@ int				Response_2::sendingResponseGet(Response *response, std::string full_path,
 	return (ret);
 }
 
-std::string		Response_2::getIndexFileName(std::string path)
+std::string			Response_2::getIndexFileName(std::string path)
 {
 #ifdef DEBUG
 	std::cerr	<< "Response_2::getIndexFileName start: fd = " << _fd << std::endl;
@@ -1336,12 +1237,12 @@ std::string		Response_2::getIndexFileName(std::string path)
 	return ("");
 }
 
-bool			Response_2::getCloseFlag()
+bool				Response_2::getCloseFlag()
 {
 	return (_close_flag);
 }
 
-int				Response_2::haveCGI(std::string &result_path)
+int					Response_2::haveCGI(std::string &result_path)
 {
 #ifdef DEBUG
 	std::cerr	<< "Response_2::haveCGI start; path = " << result_path << std::endl;
@@ -1361,7 +1262,7 @@ int				Response_2::haveCGI(std::string &result_path)
 	return (0);
 }
 
-std::string		Response_2::handleCGI(std::string &result_path)
+std::string			Response_2::handleCGI(std::string &result_path)
 {
 #ifdef DEBUG
 	std::cerr	<< "Response_2::handleCGI start; path = " << result_path << std::endl;
@@ -1501,7 +1402,7 @@ std::string		Response_2::handleCGI(std::string &result_path)
 	return (cur_dir);
 }
 
-int				Response_2::getRequestContainerSize()
+int					Response_2::getRequestContainerSize()
 {
 	return (_requests.size());
 }

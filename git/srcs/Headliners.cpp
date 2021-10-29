@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/23 09:00:15 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/24 09:42:07 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/25 15:50:27 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,12 +167,12 @@ void			Headliners::sendHeadliners(int fd)
 	// std::cout << "send:" << ret << std::endl;
 	std::cout << "Headliners:\n" << getHeadliners();
 
-	if (_headliners.find("405", 0) != std::string::npos)
-	{
-		std::cerr << "Need NPOS P" << std::endl;
-		int	p;
-		std::cin >> p;
-	}
+	// if (_headliners.find("405", 0) != std::string::npos)
+	// {
+	// 	std::cerr << "Need NPOS P" << std::endl;
+	// 	int	p;
+	// 	std::cin >> p;
+	// }
 
 	// int	tfd;
 	// tfd = open("./response", O_CREAT | O_APPEND | O_WRONLY, 0666);

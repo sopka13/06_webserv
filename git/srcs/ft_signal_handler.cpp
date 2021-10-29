@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/26 23:23:19 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/14 14:23:39 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/27 22:21:44 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,5 +19,5 @@
 void		ft_signal_handler(int signal_num)
 {
 	std::cout << "Get signal " << signal_num << std::endl;
-	exit_flag = true;
+	ft_exit(g_vars);
 }

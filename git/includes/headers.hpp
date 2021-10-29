@@ -6,13 +6,13 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/13 17:08:32 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/24 09:26:15 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/27 23:21:12 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#define DEBUG 0
+// #define DEBUG 0
 #define TEST 1
 
 #define BUF_FOR_RESP 2048							// buff for response to client
@@ -24,8 +24,6 @@
 #define WAIT_CLIENT_SEC 0							// timeout for monitoring request from client in second
 #define WAIT_CLIENT_USEC 1							// timeout for monitoring request from client in microsecond
 
-// #define MAXEVENTS 64
-// #define PORT 9000
 
 #include <iostream>
 #include <fstream>			//ifstream
@@ -65,7 +63,7 @@ class Server;
 class Response;
 class Response_2;
 
-extern	bool	exit_flag;				// exit flag for threads
+// extern	bool	exit_flag;				// exit flag for threads
 
 typedef struct		s_args				// struct for thread
 {
@@ -98,7 +96,6 @@ typedef struct		s_location
 	std::vector<std::string>	allowed_methods;			// methods
 }					t_location;
 
-
 typedef struct 		s_server
 {
 	std::string					ip;							// ip adress
@@ -110,7 +107,6 @@ typedef struct 		s_server
 	std::string					CGI_format;					// supported CGI format
 	std::string					CGI_handler;				// handler for CGI scripts
 }					t_server;
-
 
 typedef struct		s_vars
 {
@@ -137,6 +133,7 @@ typedef struct		s_vars
 	std::map<int, Response_2*>	*request_container;			// container for request from fd
 }					t_vars;
 
+extern t_vars* g_vars;
 
 #include "../includes/Socket.hpp"
 #include "../includes/Server.hpp"

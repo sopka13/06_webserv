@@ -6,13 +6,13 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/14 14:26:31 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/24 09:58:10 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/29 05:06:57 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Response.hpp"
 
-static int			setMetod(std::string &sock_buff)
+static int				setMetod(std::string &sock_buff)
 {
 	int		ret = 0;
 
@@ -39,7 +39,7 @@ static int			setMetod(std::string &sock_buff)
 	return (ret);
 }
 
-static std::string	erase_back(std::string &str)
+static std::string		erase_back(std::string &str)
 {
 	int i = 0;
 	while (str[i] && (str[i] == ' ' || str[i] == '\n' || str[i] == '\r' || str[i] == '\t'))
@@ -48,7 +48,7 @@ static std::string	erase_back(std::string &str)
 	return (str);
 }
 
-static std::string	setPath(std::string &str)
+static std::string		setPath(std::string &str)
 {
 	std::string path = "";
 	int i = 0;
@@ -60,16 +60,14 @@ static std::string	setPath(std::string &str)
 	return (path);
 }
 
-static unsigned long		setDecFromHex(std::string str)
+static unsigned long	setDecFromHex(std::string str)
 {
 #ifdef DEBUG
 	std::cout	<< "setDecFromHex start; str = " << str << std::endl;
 #endif
-	// size_t					length = str.size();
 	std::string::iterator	it = str.end() - 1;
 	int						k = 1;
 	unsigned long 			ret = 0;
-
 
 	for ( ; it >= str.begin(); --it)
 	{
@@ -97,102 +95,15 @@ static unsigned long		setDecFromHex(std::string str)
 			ret += (*it - 48) * k;//atoi(*it + "") * k;
 			break;
 		}
-		// ret += k * *it;
-		// std::cerr << "RET = " << ret << "; it = " << *it << std::endl;
 		k *= 16;
 	}
-
-
 #ifdef DEBUG
 	std::cout	<< "setDecFromHex end; ret = " << ret << std::endl;
 #endif
 	return (ret);
 }
 
-std::string	Response::body_chunk(std::string str)
-{
-#ifdef DEBUG
-	std::cout	<< "Response::body_chunk start" << std::endl;
-#endif
-	std::string::iterator it = str.begin();
-	std::string col = "";
-	unsigned long i;
-	unsigned long k;
-	std::string body = "";
-
-	while (it < str.end()){
-		col.clear();
-		while (it < str.end() &&
-				!(*it == '\r' && *(it + 1) == '\n') &&
-				(isdigit(*it) || *it == 'a' || *it == 'b' || *it == 'c' || *it == 'd' || *it == 'e' || *it == 'f' ||
-								*it == 'A' || *it == 'B' || *it == 'C' || *it == 'D' || *it == 'E' || *it == 'F')){
-			col += *it;
-			++it;
-		}
-		if (!((*it == '\r' && *(it + 1) == '\n') ||
-			(*(it - 1) == '\r' && *it == '\n' && *(it + 1) == '\r' && *(it + 2) == '\n')))
-		{
-			// std::cerr	<< "ERROOOOOOOR 1; |"
-			// 			<< (int)*(it - 2) << "|"
-			// 			<< (int)*(it - 1) << "|"
-			// 			<< (int)*it << "|"
-			// 			<< (int)*(it + 1) << "|"
-			// 			<< (int)*(it + 2) << "|"
-			// 			<< std::endl;
-			break ;
-		}
-		i = setDecFromHex(col);
-		// std::cerr	<< "step 1; |"
-		// 				<< (int)*(it - 2) << "|"
-		// 				<< (int)*(it - 1) << "|"
-		// 				<< (int)*it << "|"
-		// 				<< (int)*(it + 1) << "|"
-		// 				<< (int)*(it + 2) << "|"
-		// 				<< std::endl;
-
-		if (i == 0)
-			break ;
-
-		it += 2;
-
-		// std::cerr << "col = " << col << std::endl;
-
-		for (k = 0; k < i; k++){
-			if (it < str.end()){
-				body += *it;
-				++it;
-			}
-		}
-		// std::cerr	<< "step 2; |"
-		// 				<< (int)*(it - 2) << "|"
-		// 				<< (int)*(it - 1) << "|"
-		// 				<< (int)*it << "|"
-		// 				<< (int)*(it + 1) << "|"
-		// 				<< (int)*(it + 2) << "|"
-		// 				<< std::endl;
-		if (!(*it == '\r' && *(it + 1) == '\n'/* && *(it + 2) == '\r' && *(it + 3) == '\n'*/))
-		{
-			// std::cerr	<< "ERROOOOOOOR 2; |"
-			// 			<< (int)*(it - 1) << "|"
-			// 			<< (int)*it << "|"
-			// 			<< (int)*(it + 1) << "|"
-			// 			<< (int)*(it + 2) << "|"
-			// 			<< (int)*(it + 3) << "|"
-			// 			<< std::endl;
-			break ;
-		}
-		it += 2;
-	}
-
-	// std::cerr << "body = " << body << std::endl;
-
-#ifdef DEBUG
-	std::cout	<< "Response::body_chunk end" << std::endl;
-#endif
-	return (body);
-}
-
-static void			ft_clean_start(std::string& str)
+static void				ft_clean_start(std::string& str)
 {
 	for (int i = 0; i < static_cast<int>(str.size()); ++i)
 	{
@@ -219,10 +130,6 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 	this->_metod = setMetod(str);
 	if (_metod == 0)
 	{
-		// std::cerr << "Need P" << std::endl;
-		// int	p;
-		// std::cin >> p;
-
 		Headliners resp(std::string("HTTP/1.1"), std::string("405"));
 		resp.setCloseConnection(false);
 		resp.sendHeadliners(_fd);
@@ -231,7 +138,6 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 		throw Exeption(str_1);
 	}
 	str = erase_back(str);
-	// std::cerr << "Response::Response step 1 ok" << std::endl;
 
 	// step 2: Get path
 	this->_path = setPath(str);
@@ -245,11 +151,10 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 		throw Exeption(str_1);
 	}
 	str = erase_back(str);
-	// std::cerr << "Response::Response step 2 ok" << std::endl;
 
 	// step 3: Get http
 	_http = setPath(str);
-	if (!_http.size() || _http != "HTTP/1.1")//(_http != "HTTP/0.9" && _http != "HTTP/1.0" && _http != "HTTP/1.1"))
+	if (!_http.size() || (/*_http != "HTTP/0.9" &&*/ _http != "HTTP/1.0" && _http != "HTTP/1.1"))
 	{
 		Headliners resp(std::string("HTTP/1.1"), std::string("505"));
 		resp.setCloseConnection(false);
@@ -259,15 +164,17 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 		throw Exeption(str_1);
 	}
 
-	// step 4: If close connection set flag
+	// step 4: If Transfer-Encoding: chunked
 	size_t connection_pos_1 = str.find("Transfer-Encoding: chunked");
 	if (connection_pos_1 != std::string::npos)
 		_flag_chunk = true;
 
+	// step 5: If close connection set flag
 	size_t connection_pos = str.find("Connection: close");
 	if (connection_pos != std::string::npos)
 		_flag_connect = true;
 
+	// step 6: If X-Secret-Header-For-Test
 	connection_pos = str.find("X-Secret-Header-For-Test:");
 	if (connection_pos != std::string::npos){
 		std::string::iterator it = str.begin();
@@ -279,11 +186,9 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 			_secret_flag += *it;
 			++it;
 		}
-		// _secret_flag = std::atoi(con_l.c_str());
-		// std::cout << "CON =" << con_l << "R" << std::endl;
 	}
 
-	// step 5: Get connection_length
+	// step 7: Get connection_length
 	connection_pos = str.find("Content-Length");
 	if (connection_pos != std::string::npos){
 		std::string::iterator it = str.begin();
@@ -294,24 +199,71 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 			++it;
 		}
 		_con_len = std::atoi(con_l.c_str());
-		// std::cout << "CON =" << con_l << "R" << std::endl;
 	}
 	
-	// step 6: Get body of reqvest
+	// step 8: Get body of reqvest
 	_body = setBody(str);
 	if (_flag_chunk)
 		_body = body_chunk(_body);
 	_flag_chunk = false;
-	// std::cout << "body =  " << _body << std::endl;
 
-	// step 7: Get body size
+	// step 9: Get body size
 	setBodySize();
-	// std::cout << "body_size =  " << _body_size << std::endl;
 }
 
 Response::~Response(){}
 
-std::string			Response::setBody(std::string str)
+std::string			Response::body_chunk(std::string str)
+{
+#ifdef DEBUG
+	std::cout	<< "Response::body_chunk start" << std::endl;
+#endif
+	std::string::iterator it = str.begin();
+	std::string col = "";
+	unsigned long i;
+	unsigned long k;
+	std::string body = "";
+
+	while (it < str.end()){
+		col.clear();
+		while (it < str.end() &&
+				!(*it == '\r' && *(it + 1) == '\n') &&
+				(isdigit(*it) || *it == 'a' || *it == 'b' || *it == 'c' ||
+								*it == 'd' || *it == 'e' || *it == 'f' ||
+								*it == 'A' || *it == 'B' || *it == 'C' ||
+								*it == 'D' || *it == 'E' || *it == 'F')){
+			col += *it;
+			++it;
+		}
+		if (!((*it == '\r' && *(it + 1) == '\n') ||
+			(*(it - 1) == '\r' && *it == '\n' && *(it + 1) == '\r' && *(it + 2) == '\n')))
+		{
+			break ;
+		}
+		i = setDecFromHex(col);
+		if (i == 0)
+			break ;
+		it += 2;
+		for (k = 0; k < i; k++){
+			if (it < str.end()){
+				body += *it;
+				++it;
+			}
+		}
+		if (!(*it == '\r' && *(it + 1) == '\n'/* && *(it + 2) == '\r' && *(it + 3) == '\n'*/))
+		{
+			break ;
+		}
+		it += 2;
+	}
+
+#ifdef DEBUG
+	std::cout	<< "Response::body_chunk end" << std::endl;
+#endif
+	return (body);
+}
+
+std::string			Response::setBody(std::string& str)
 {
 	std::string::iterator it = str.begin();
 	size_t body_pos = str.find("\n\n");
@@ -320,11 +272,9 @@ std::string			Response::setBody(std::string str)
 	else
 		it += body_pos + 2;
 	if (body_pos != std::string::npos)
-		// std::cout << "no body" << std::endl;
-	// else
 		it += body_pos + 4;
 	std::string body = "";
-	while (it != str.end()/* && static_cast<int>(body.size()) <= _maxBodySize*/){
+	while (it != str.end()){
 		body += *it;
 		++it;
 	}
@@ -358,19 +308,16 @@ bool				Response::getClose()
 
 std::string&		Response::getBody()
 {
-	// std::cout << "BODY " << _body << std::endl;
 	return (_body);
 }
 
 size_t				Response::getBodySize()
 {
-	// std::cout << "SIZE " << _body_size << std::endl;
 	return (_body_size);
 }
 
 size_t				Response::getConLen()
 {
-	// std::cout << "CON_LEN " << _con_len << std::endl;
 	return (_con_len);
 }
 

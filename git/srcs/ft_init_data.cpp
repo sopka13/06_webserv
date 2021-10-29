@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 08:02:30 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/14 14:22:25 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/25 21:09:07 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void		ft_init_data(t_vars *vars, int argc, char** argv, char** envp)
 
 	// step 1: Clear struct
 	ft_bzero(vars, sizeof(t_vars));
-	exit_flag = false;
+	// exit_flag = false;
 
 	// step 2: argc, argv, envp
 	vars->argc = argc;

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/23 10:58:09 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/28 00:06:29 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,21 +114,24 @@
 ** // Обработка нескольких сиджи
 */
 
-//	1. запуск тестера															- 14.10-не работает
-//	6. добавить отправку информации в логфайл после реализации всего функционала
 //	11. проверить сервер на утечку дескрипторов
-//	14. нужен ли нам цикл чтения большого количества запросов что бы попорядку
-//		потом на них отвечать
-//	20. избавиться от состояния EPOLLOUT
 //	23. add check http:// path for valid
 //	24. проверить все пункты сабжа
-//	25. check body size with POST request
 //	26. add use nameserver
+//		a. + add http 1.1 on nginx proxy for Connection: keep_alive
+//		b. modify nginx config_file
+//		c. add handle Referer headliner in Response class
+//		d. compare with ip and server_name
+//			if == ip get handle
+//			if == server_name handle
+//			if != all send handle on default server
 //	28. handle connection: close/closed; - remove fd from queue and close connect
+//	+ 1. запуск тестера
 //	+ 2. геттер в сервере на фавикон
 //	+ 3. файл для фавикона
 //	+ 4. обработать все краши на функциях
 //	- 5. удалять сокеты при поступлении сигнала на закрытие
+//	+ 6. добавить отправку информации в логфайл после реализации всего функционала
 //	+ 7. добавить обработку переменных из тела запроса при приеме POST метода
 //		1 + get body
 //		2 + write body in _variables
@@ -145,6 +148,8 @@
 //		4 + exit server
 //		5 - correct execute engine for websockets (работает и так)
 //	- 13. добавить отправку закрытия соединения
+//	+ 14. нужен ли нам цикл чтения большого количества запросов что бы попорядку
+//		потом на них отвечать
 //	- 15. добавить возможность держать несколько серверов на одной паре хост:порт
 //	+ 16. добавить механизм отправки нужного кода ошибки
 //			1 + add new class
@@ -156,15 +161,17 @@
 //			4 + add execute file in request from client
 //	+ 18. реализовать автоиндекс
 //	+ 19. реализовать проверку версии http
+//	+ 20. избавиться от состояния EPOLLOUT
 //	+ 20. реализовать отправку заголовка content-leigth
 //	+ 21. sendfile vs send
 //	+ 22. add post method
 //		- + fix bag in sendfile after POST + CGI
+//	+ 25. check body size with POST request
 //	+ 27. add use body_size
 
 #include "../includes/headers.hpp"
 
-bool	exit_flag;
+t_vars*			g_vars;
 
 static int		ft_check_socket(t_vars* vars, int fd)
 {
@@ -185,6 +192,11 @@ int		main(int argc, char **argv, char **envp)
 	t_vars		vars;
 	int			nfds;
 	int			ret;
+
+	// step 2: Handle signal
+	g_vars = &vars;
+	signal(SIGINT, ft_signal_handler);
+	signal(SIGPIPE, SIG_IGN);
 
 	// step 2: Parse config file
 	ft_init_data(&vars, argc, argv, envp);
@@ -243,9 +255,10 @@ int		main(int argc, char **argv, char **envp)
 				if ((ret = close(vars.events[i].data.fd)) == -1)
 					std::cerr << "ERROR in main: close fd error" << std::endl;
 				// delete element from request container
-				(vars.request_container->operator[](vars.events[i].data.fd))->~Response_2();
-				// delete (vars.request_container->operator[](vars.events[i].data.fd));
-				vars.request_container->erase(vars.events[i].data.fd);
+				// (vars.request_container->operator[](vars.events[i].data.fd))->~Response_2();
+				delete (vars.request_container->operator[](vars.events[i].data.fd));
+				vars.request_container->operator[](vars.events[i].data.fd) = NULL;
+				vars.request_container->erase(vars.request_container->find(vars.events[i].data.fd));
 				// std::cerr << "Close fine (main)" << std::endl;
 			}
 			else
