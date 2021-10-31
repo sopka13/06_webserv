@@ -25,6 +25,7 @@ Headliners::Headliners(std::string http_version, std::string return_code):
 	status_code.insert(std::pair<std::string, std::string>("100", " Continue"));
 	status_code.insert(std::pair<std::string, std::string>("200", " OK"));
 	status_code.insert(std::pair<std::string, std::string>("201", " Created"));
+	status_code.insert(std::pair<std::string, std::string>("301", " Moved Permanently"));
 	status_code.insert(std::pair<std::string, std::string>("204", " No Content"));
 	status_code.insert(std::pair<std::string, std::string>("400", " Bad Request"));
 	status_code.insert(std::pair<std::string, std::string>("403", " Forbidden"));

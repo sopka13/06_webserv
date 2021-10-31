@@ -786,6 +786,25 @@ int					Response_2::sendResponse()
 				--slesh;
 			}
 		}
+
+		std::cout << "path = " << path << std::endl;
+		if (_server->getRedirect(path)){
+			std::cout << "Ya tut" << std::endl;
+			std::string str_of_redirect;
+			str_of_redirect = "<head> \n<meta http-equiv=\"refresh\" content=\"1;URL=";
+			str_of_redirect += _server->getRedirectAdress(path); 
+			str_of_redirect += "\" />\n</head>";
+			Headliners resp(std::string("HTTP/1.1"), std::string("301")); 
+			resp.setCloseConnection(false);
+			resp.setContentLeigth(str_of_redirect.size());
+			resp.sendHeadliners(_fd);
+			
+			std::cout << "str_of_redirect = " << str_of_redirect << std::endl;
+			send(_fd, str_of_redirect.c_str(), str_of_redirect.size(), 0);
+			return (1);
+		}
+
+
 		
 		std::reverse(tile.begin(), tile.end());
 		std::string m = "GET";
