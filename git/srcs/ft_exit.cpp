@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 09:09:14 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/27 23:05:41 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/31 22:37:22 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ void	ft_exit(t_vars *vars)
 		for (std::map<int, Response_2*>::iterator i = vars->request_container->begin(); i != vars->request_container->end(); ++i)
 		{
 			delete ((*i).second);
+			vars->request_container->erase(i);
 		}
 		delete vars->request_container;
 	}

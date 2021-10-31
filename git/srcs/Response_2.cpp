@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/27 23:15:24 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/31 22:18:36 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -910,14 +910,14 @@ void				Response_2::readRequest()
 			{
 				if (epoll_ctl(_server->getEpollFd(), EPOLL_CTL_DEL, _fd, _server->getEpollEvent()) == -1)
 					throw Exeption("ERROR in Response_2::readRequest: Epoll_ctl del error");
-				// ((_server->getRequestContainerPointer())->operator[](_fd))->~Response_2();
-				delete ((_server->getRequestContainerPointer())->operator[](_fd));
+				Response_2* itt = (_server->getRequestContainerPointer())->operator[](_fd);
 				(_server->getRequestContainerPointer())->operator[](_fd) = NULL;
+				if ((ret = close(_fd)) == -1)
+					std::cerr << "FAIL!!!" << std::endl;
 				(_server->getRequestContainerPointer())->erase((_server->getRequestContainerPointer())->find(_fd));
+				delete (itt);
 			}
 
-			if ((ret = close(_fd)) == -1)
-				std::cerr << "FAIL!!!" << std::endl;
 			break ;
 		}
 

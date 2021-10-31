@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/28 00:06:29 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/10/31 22:03:38 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,46 +243,20 @@ int		main(int argc, char **argv, char **envp)
 				ft_handle_epoll_action(&vars, vars.events[i].data.fd, vars.events[i].events);
 			else if (vars.events[i].events & EPOLLERR && !ft_check_socket(&vars, vars.events[i].data.fd))
 			{
-				// Headliners resp(std::string("HTTP/1.1"), std::string("408"));
-				// resp.setCloseConnection(false);
-				// resp.sendHeadliners(vars.events[i].data.fd);
 				std::cerr << "EPOLLERR: fd2 = " << vars.events[i].data.fd << std::endl;
 				if (epoll_ctl(vars.epoll_fd, EPOLL_CTL_DEL, vars.events[i].data.fd, &vars.ev) == -1)
-				{
 					std::cerr << "ERROR in main: Epoll_ctl del error" << std::endl;
-					ft_exit(&vars);
-				}
+				Response_2* itt = vars.request_container->operator[](vars.events[i].data.fd);
+				vars.request_container->operator[](vars.events[i].data.fd) = NULL;
 				if ((ret = close(vars.events[i].data.fd)) == -1)
 					std::cerr << "ERROR in main: close fd error" << std::endl;
-				// delete element from request container
-				// (vars.request_container->operator[](vars.events[i].data.fd))->~Response_2();
-				delete (vars.request_container->operator[](vars.events[i].data.fd));
-				vars.request_container->operator[](vars.events[i].data.fd) = NULL;
 				vars.request_container->erase(vars.request_container->find(vars.events[i].data.fd));
-				// std::cerr << "Close fine (main)" << std::endl;
+				delete (itt);
 			}
 			else
 				std::cerr << "ERROR: UNHANDLED ACTION" << std::endl;
 		}
 	}
-
-	// step 4: Create thread and start listen ports
-	// for (long unsigned int i = 0; i < vars.sockets->size(); ++i)
-	// {
-	// 	vars.threads.emplace_back(std::thread(ft_in_thread, std::ref(vars), i));
-	// 	sem_wait(vars.sema);
-	// 	sleep(1);
-	// }
-
-
-	// step 6: Wait feedback from threads
-	// sem_wait(vars.sema);
-	// exit_flag = true;
-	// for (long unsigned int i = 0; i < vars.threads.size(); ++i)
-	// {
-	// 	vars.threads.operator[](i).join();
-	// }
-
 
 #ifdef DEBUG
 	std::cout << "main end" << std::endl;
