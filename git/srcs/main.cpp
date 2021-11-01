@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/11 22:16:06 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/31 22:03:38 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/11/01 21:46:03 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,17 +115,8 @@
 */
 
 //	11. проверить сервер на утечку дескрипторов
-//	23. add check http:// path for valid
 //	24. проверить все пункты сабжа
-//	26. add use nameserver
-//		a. + add http 1.1 on nginx proxy for Connection: keep_alive
-//		b. modify nginx config_file
-//		c. add handle Referer headliner in Response class
-//		d. compare with ip and server_name
-//			if == ip get handle
-//			if == server_name handle
-//			if != all send handle on default server
-//	28. handle connection: close/closed; - remove fd from queue and close connect
+//	+ 28. handle connection: close/closed; - remove fd from queue and close connect
 //	+ 1. запуск тестера
 //	+ 2. геттер в сервере на фавикон
 //	+ 3. файл для фавикона
@@ -166,7 +157,16 @@
 //	+ 21. sendfile vs send
 //	+ 22. add post method
 //		- + fix bag in sendfile after POST + CGI
+//	- 23. add check http:// path for valid
 //	+ 25. check body size with POST request
+//	+ 26. add use nameserver
+//		+ a. add http 1.1 on nginx proxy for Connection: keep_alive
+//		+ b. modify nginx config_file
+//		- c. add handle Referer headliner in Response class
+//		- d. compare with ip and server_name
+//			if == ip get handle
+//			if == server_name handle
+//			if != all send handle on default server
 //	+ 27. add use body_size
 
 #include "../includes/headers.hpp"
@@ -211,7 +211,15 @@ int		main(int argc, char **argv, char **envp)
 	// step 4: Create socket and add in epoll queue
 	for (unsigned long int i = 0; i < vars.servers->size(); ++i)
 	{
-		vars.sockets->push_back(Socket(&vars.servers->operator[](i)));
+		try
+		{
+			vars.sockets->push_back(Socket(&vars.servers->operator[](i)));
+		}
+		catch(const std::exception& e)
+		{
+			std::cerr << e.what() << '\n';
+			ft_exit(&vars);
+		}
 
 		// init sock_fd in server
 		vars.servers->operator[](i).setSockFd(vars.sockets->operator[](i).getTcp_sockfd());

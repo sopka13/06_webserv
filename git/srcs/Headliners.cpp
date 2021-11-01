@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/23 09:00:15 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/31 21:57:46 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/11/01 20:36:06 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,6 +146,13 @@ void			Headliners::setContentType(std::string type)
 	return ;
 }
 
+void			Headliners::setAllowMethods(std::string types)
+{
+	_headliners += "\nAllow: ";
+	_headliners += types;
+	return ;
+}
+
 void			Headliners::setTransferEncoding()
 {
 	_headliners += "\nTransfer-Encoding: chunked";
@@ -185,7 +192,7 @@ void			Headliners::sendHeadliners(int fd)
 	return ;
 }
 
-std::string Headliners::getAnswer(std::string str){
+std::string		Headliners::getAnswer(std::string str){
 	std::string::iterator	it = str.begin();
 	int k = 0;
 	while (it < str.end() && k < 4){

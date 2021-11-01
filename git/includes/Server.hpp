@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:47 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/12 08:20:29 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/11/01 22:05:10 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,5 +54,6 @@ public:
 	void						setSockFd(int);								// Set socket fd
 	std::map<int, Response_2*>*	getRequestContainerPointer();				// Return pointer for request_container
 	int							getMaxBodySize();							// Return max body size from config file
+	std::string					getAllowMethods(std::string);				// Return allow methods
 	// const std::string&			getFavicon();								// Return favicon.ico adress
 };

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/14 14:26:31 by eyohn             #+#    #+#             */
-/*   Updated: 2021/11/01 11:03:20 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/11/01 21:13:11 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,22 +16,22 @@ static int				setMetod(std::string &sock_buff)
 {
 	int		ret = 0;
 
-	if (sock_buff.compare(0, 3, "GET") == 0)
+	if (sock_buff.compare(0, 4, "GET ") == 0)
 	{
 		sock_buff.erase(0, 3);
 		ret = 1;
 	}
-	else if (sock_buff.compare(0, 4, "POST") == 0)
+	else if (sock_buff.compare(0, 5, "POST ") == 0)
 	{
 		sock_buff.erase(0, 4);
 		ret = 2;
 	}
-	else if (sock_buff.compare(0, 3, "PUT") == 0)
+	else if (sock_buff.compare(0, 4, "PUT ") == 0)
 	{
 		sock_buff.erase(0, 3);
 		ret = 3;
 	}
-	else if (sock_buff.compare(0, 6, "DELETE") == 0)
+	else if (sock_buff.compare(0, 7, "DELETE ") == 0)
 	{
 		sock_buff.erase(0, 6);
 		ret = 4;
@@ -131,6 +131,11 @@ Response::Response(std::string &str, int fd, int maxBodySize):
 	if (_metod == 0)
 	{
 		Headliners resp(std::string("HTTP/1.1"), std::string("405"));
+
+		std::string methods = "GET POST DELETE PUT";
+
+		resp.setAllowMethods(methods);
+		resp.setContentLeigth(0);
 		resp.setCloseConnection(false);
 		resp.sendHeadliners(_fd);
 

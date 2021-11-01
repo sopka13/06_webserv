@@ -11,8 +11,8 @@ class Response{
 	std::string		_http;				// http version
 	std::string		_path;				// path from request
 	bool			_flag_connect;		// close connection
-	std::string		_body;				// 
-	size_t			_body_size;
+	std::string		_body;				// body
+	size_t			_body_size;			// size of body
 	size_t			_con_len;			// leigth of body
 	bool			_flag_chunk;
 	std::string		_secret_flag;		// x-secret-header-for-test

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/05 14:48:19 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/05 14:48:55 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/11/01 21:45:07 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,10 @@ public:
 	std::string getLoc(std::string);
 
 private:
+	class	Exeption : public std::runtime_error {
+		public:
+			Exeption(const std::string& message) : std::runtime_error(message) {}
+	};
 	int						_tcp_sockfd;				// socket fd
 	int						_fd;						// fd received after the acept call
 	Server					*_server;					// data for server

@@ -25,11 +25,11 @@ Check the code and ask questions
 	// Должно быть только одно чтение или одна запись для каждого клиента на
 	// выбор (или эквивалент). Попросите показать вам код, который идет от
 	// выбора (или эквивалента) к чтению и записи клиента. 
-- Search for all read/recv/write/send on a socket and check that if an error		-	!!!
+- Search for all read/recv/write/send on a socket and check that if an error		+
 	returned the client is removed
 	// Найдите все чтение / запись / запись / отправку в сокете и убедитесь,
 	// что в случае возврата ошибки клиент удален.
-- Search for all read/recv/write/send and check if the returned value is well		-	!!!
+- Search for all read/recv/write/send and check if the returned value is well		+
 	checked. (checking only -1 or 0 is not good you should check both)
 	// Найдите все чтение / получение / запись / отправку и проверьте,
 	// правильно ли проверено возвращаемое значение. (проверка только -1 или 0
@@ -38,7 +38,7 @@ Check the code and ask questions
 	evaluation and put a mark to 0
 	// Если проверка errno выполняется после чтения / получения / записи /
 	// /отправки. Пожалуйста, остановите оценку и поставьте оценку 0 
-- Writing or reading ANY file descriptor without going through the select (or		-
+- Writing or reading ANY file descriptor without going through the select (or		+
 	equivalent) is strictly FORBIDDEN
 	// Запись или чтение ЛЮБОГО файлового дескриптора без select (или его
 	// эквивалента) строго ЗАПРЕЩЕНО. 
@@ -113,11 +113,11 @@ Port issues
 	show the right website.
 	// В файле конфигурации настроены несколько сайтов и портов - проверь как
 	// все работает
-- In the configuration try to setup the same port multiple times. It should not		-
+- In the configuration try to setup the same port multiple times. It should not		+
 	work.
 	// Попробуй настроить один и тот же порт для разных сайтов - не должен
 	// работать
-- Launch multiple servers at the same time with different configurations but		-
+- Launch multiple servers at the same time with different configurations but		+
 	with common ports. Is it working? If it is working, ask why the server
 	should work if one of the configurations isn't working. keep going
 	// Запускайте несколько серверов одновременно с разными конфигурациями, но
@@ -126,18 +126,18 @@ Port issues
 	// конфигураций не работает. продолжайте
 
 Siege & stress test
-- Use Siege to run some stress tests.												-
+- Use Siege to run some stress tests.												+
 	// Запустите Siege для стресс теста
-- Availability should be above 99.5% for a simple get on an empty page with a		-
+- Availability should be above 99.5% for a simple get on an empty page with a		+
 	siege -b on that page
 	// Доступность должна быть выше 99,5% для простого перехода на пустую
 	// страницу с siege -b на этой странице. 
-- Check if there is no memory leak (monitor the process memory usage it should		-
+- Check if there is no memory leak (monitor the process memory usage it should		+
 	not go up indefinitely)
 	// Проверь утечки на процессах (не должны увеличиваться бесконечно)
-- Check if there is no hanging connection											-
+- Check if there is no hanging connection											+
 	// проверь нет ли зависшего соединения
-- You should be able to use siege indefinitely without restarting the server		-
+- You should be able to use siege indefinitely without restarting the server		+
 	(look at siege -b)
 	// должна быть возможность использовать siege бесконечно без перезапуска
 	// сервера

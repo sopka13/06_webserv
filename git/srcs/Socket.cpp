@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/05 14:48:29 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/14 14:30:19 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/11/01 21:45:16 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,11 @@ Socket::Socket(Server *server):
 
 	// step 2: Assigning a name to a socket
 	ret = bind(_tcp_sockfd, (struct sockaddr *)(_server->getServAddr()), *_server->getSockLen());
-	// if (vars->ret < 0)
-	// {
-	// 	std::cerr << "ERROR Assigning name to a socket fail: " << strerror(errno) << std::endl;
-	// 	return (1);
-	// }
+	if (ret < 0)
+	{
+		std::string str = "ERROR Assigning name to a socket fail";
+		throw Exeption(str);
+	}
 	// step 3: Create queue connection (очередь)
 	ret = listen(_tcp_sockfd, SOMAXCONN);
 	// if (vars->ret < 0)

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/23 08:53:42 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/17 10:43:26 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/11/01 20:36:03 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,5 +30,6 @@ public:
 	void			setTransferEncoding();				// set Transfer-Encoding: chunked
 	void			setSecretFlag(std::string);			// set x-secret-header-for-test
 	void			sendHeadliners(int);				// send headliners in passed fd
+	void			setAllowMethods(std::string types);	// set allowed methods
 	std::string 	getAnswer(std::string str);
 };

@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/23 09:29:57 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/31 22:31:29 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/11/01 22:05:12 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -775,4 +775,26 @@ std::map<int, Response_2*>*	Server::getRequestContainerPointer()
 int							Server::getMaxBodySize()
 {
 	return (atoi(_vars->max_body_size.c_str()));
+}
+
+std::string					Server::getAllowMethods(std::string key)
+{
+#ifdef DEBUG
+	std::cout	<< "Server::getAllowMethods start: key = |" << key << std::endl;
+#endif
+	std::string ret;
+
+	std::vector<std::string>::iterator it_2 = (locations[key]).allowed_methods.begin();
+	std::vector<std::string>::iterator it_3 = (locations[key]).allowed_methods.end();
+
+	while (it_2 != it_3)
+	{
+		ret += *it_2;
+		ret += " ";
+		it_2++;
+	}
+#ifdef DEBUG
+	std::cout	<< "Server::getAllowMethods end: ret = | " << ret << std::endl;
+#endif
+	return (ret);
 }

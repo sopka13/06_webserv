@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/11/01 10:25:02 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/11/01 21:36:35 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -382,7 +382,22 @@ void				Response_2::sendFile(std::string full_path)
 	ret = 1;
 	char	temp_buf[32000];
 	if (info.st_size < 32000)
-		ret = sendfile(_fd, fd_from, &offset, info.st_size);
+	{
+		if ((ret = sendfile(_fd, fd_from, &offset, info.st_size)) < 0)
+		{
+			if (epoll_ctl(_server->getEpollFd(), EPOLL_CTL_DEL, _fd, _server->getEpollEvent()) == -1)
+				throw Exeption("ERROR in Response_2::readRequest: Epoll_ctl del error");
+			Response_2* itt = (_server->getRequestContainerPointer())->operator[](_fd);
+			(_server->getRequestContainerPointer())->operator[](_fd) = NULL;
+			if ((ret = close(_fd)) == -1)
+				std::cerr << "FAIL!!!" << std::endl;
+			(_server->getRequestContainerPointer())->erase((_server->getRequestContainerPointer())->find(_fd));
+			delete (itt);
+			
+			std::string strrr = "ERROR in sendfile: Send data error;";
+			throw Exeption(strrr);
+		}
+	}
 	else
 	{
 		while (ret > 0 && offset < info.st_size)
@@ -412,8 +427,17 @@ void				Response_2::sendFile(std::string full_path)
 					(rt = send(_fd, temp_buf, ret, 0)) == -1 ||
 					(rt = send(_fd, "\r\n", 2, 0)) == -1)
 				{
-					std::cerr << "ERROR in sendfile: Send data error; strerror = " << strerror(errno) << "; errno = " << errno << std::endl;
-					break ;
+					if (epoll_ctl(_server->getEpollFd(), EPOLL_CTL_DEL, _fd, _server->getEpollEvent()) == -1)
+						throw Exeption("ERROR in Response_2::readRequest: Epoll_ctl del error");
+					Response_2* itt = (_server->getRequestContainerPointer())->operator[](_fd);
+					(_server->getRequestContainerPointer())->operator[](_fd) = NULL;
+					if ((ret = close(_fd)) == -1)
+						std::cerr << "FAIL!!!" << std::endl;
+					(_server->getRequestContainerPointer())->erase((_server->getRequestContainerPointer())->find(_fd));
+					delete (itt);
+					
+					std::string strrr = "ERROR in sendfile: Send data error;";
+					throw Exeption(strrr);
 				}
 				if ((rt = lseek(fd_from, offset, SEEK_SET)) == -1)
 				{
@@ -425,7 +449,18 @@ void				Response_2::sendFile(std::string full_path)
 		if ((ret = send(_fd, "0", 1, 0)) == -1 ||
 			(ret = send(_fd, "\r\n", 2, 0)) == -1 ||
 			(ret = send(_fd, "\r\n", 2, 0)) == -1)
-			std::cerr << "ERROR in sendfile: Send last data error" << std::endl;
+		{
+			if (epoll_ctl(_server->getEpollFd(), EPOLL_CTL_DEL, _fd, _server->getEpollEvent()) == -1)
+				throw Exeption("ERROR in Response_2::readRequest: Epoll_ctl del error");
+			Response_2* itt = (_server->getRequestContainerPointer())->operator[](_fd);
+			(_server->getRequestContainerPointer())->operator[](_fd) = NULL;
+			if ((ret = close(_fd)) == -1)
+				std::cerr << "FAIL!!!" << std::endl;
+			(_server->getRequestContainerPointer())->erase((_server->getRequestContainerPointer())->find(_fd));
+			delete (itt);
+			std::string strrr = "ERROR in sendfile: Send last data error";
+			throw Exeption(strrr);
+		}
 		else
 			std::cerr << "Sendfile ok; ret = " << ret << std::endl;
 	}
@@ -522,9 +557,14 @@ void				Response_2::postHandle(Response *response)
 	if (!_server->getMethods(path, method)/* && !(haveCGI(temp_1) && _server->getCGI_format() == ".bla")*/)
 	{
 		Headliners resp(std::string("HTTP/1.1"), std::string("405"));
+		resp.setAllowMethods(_server->getAllowMethods(path));
+		std::cerr << "1" << std::endl;
 		resp.setCloseConnection(false);
+		std::cerr << "2" << std::endl;
 		resp.setContentLeigth(0);
+		std::cerr << "3" << std::endl;
 		resp.sendHeadliners(_fd);
+		std::cerr << "4" << std::endl;
 		return ;
 	}
 
@@ -665,6 +705,7 @@ int					Response_2::sendResponse()
 #endif
 	// step 1: Init data
 	int						ret = 0;
+	int						flag_405 = 0;
 	std::string				path;
 	std::string				tile;
 	std::string::iterator	slesh;
@@ -729,8 +770,21 @@ int					Response_2::sendResponse()
 			resp.sendHeadliners(_fd);
 			
 			std::cout << "str_of_redirect = " << str_of_redirect << std::endl;
-			send(_fd, str_of_redirect.c_str(), str_of_redirect.size(), 0);
-			return (1);
+			if ((ret = send(_fd, str_of_redirect.c_str(), str_of_redirect.size(), 0)) < 0)
+			{
+				if (epoll_ctl(_server->getEpollFd(), EPOLL_CTL_DEL, _fd, _server->getEpollEvent()) == -1)
+					throw Exeption("ERROR in Response_2::send response: Epoll_ctl del error");
+				Response_2* itt = (_server->getRequestContainerPointer())->operator[](_fd);
+				(_server->getRequestContainerPointer())->operator[](_fd) = NULL;
+				if ((ret = close(_fd)) == -1)
+					std::cerr << "FAIL!!!" << std::endl;
+				(_server->getRequestContainerPointer())->erase((_server->getRequestContainerPointer())->find(_fd));
+				delete (itt);
+				
+				std::string strrr = "ERROR in send response: Send data error;";
+				throw Exeption(strrr);
+			}
+			// return (1);
 		}
 		
 		std::reverse(tile.begin(), tile.end());
@@ -742,6 +796,7 @@ int					Response_2::sendResponse()
 		{
 			std::string full_path = ft_remove_underscore(_server->getLocations(path), tile);
 			ret = sendingResponseGet(&response, full_path, is_a_dir, path);
+			flag_405 = 1;
 		}
 
 		m = "PUT";
@@ -777,6 +832,7 @@ int					Response_2::sendResponse()
 				resp.setContentLeigth(0);
 				resp.sendHeadliners(_fd);
 			}
+			flag_405 = 1;
 		}
 		m = "DELETE";
 		if (response.getMetod() == 4 &&
@@ -794,6 +850,15 @@ int					Response_2::sendResponse()
 				Headliners resp(std::string("HTTP/1.1"), std::string("500"));
 				resp.sendHeadliners(_fd);
 			}
+			flag_405 = 1;
+		}
+		if (flag_405 == 0)
+		{
+			Headliners resp(std::string("HTTP/1.1"), std::string("405"));
+			resp.setAllowMethods(_server->getAllowMethods(path));
+			resp.setCloseConnection(false);
+			resp.setContentLeigth(0);
+			resp.sendHeadliners(_fd);
 		}
 	}
 	catch(const std::exception& e)
@@ -808,12 +873,12 @@ int					Response_2::sendResponse()
 	{
 		if (epoll_ctl(_server->getEpollFd(), EPOLL_CTL_DEL, _fd, _server->getEpollEvent()) == -1)
 			throw Exeption("ERROR in Response_2::readRequest: Epoll_ctl del error");
-		((_server->getRequestContainerPointer())->operator[](_fd))->~Response_2();
-		delete ((_server->getRequestContainerPointer())->operator[](_fd));
-		(_server->getRequestContainerPointer())->erase(_fd);
-
+		Response_2* itt = (_server->getRequestContainerPointer())->operator[](_fd);
+		(_server->getRequestContainerPointer())->operator[](_fd) = NULL;
 		if ((ret = close(_fd)) == -1)
 			std::cerr << "FAIL!!!" << std::endl;
+		(_server->getRequestContainerPointer())->erase((_server->getRequestContainerPointer())->find(_fd));
+		delete (itt);
 
 		std::string str("ERROR in Response_2::sendFile: Closes connection flag");
 		throw Exeption(str);
@@ -834,6 +899,7 @@ void				Response_2::readRequest()
 	int				ret = 1;
 	std::string		data;
 	int				cycle = 1;
+	// int				flag = 5;
 
 	// step 2: Change fd mode
 	fcntl(_fd, F_SETFL, O_NONBLOCK);
@@ -842,10 +908,18 @@ void				Response_2::readRequest()
 	while (ret || cycle)
 	{
 		if (TEST)
-			usleep(300);
+			usleep(200);
 
 		// step 3.1: Read
 		ret = recv(_fd, _buff, sizeof(_buff), 0);
+
+		// step x: If no data in chanel
+		// if (ret <= 0 && data.size() == 0 && flag > 0)
+		// {
+		// 	usleep(100);
+		// 	flag--;
+		// 	continue ;
+		// }
 
 		// step 3.2: If first cycle and ret == 0
 		if (ret <= 0 && data.size() == 0)
@@ -1022,31 +1096,7 @@ int					Response_2::sendingResponseGet(Response *response, std::string full_path
 			}
 			// step 2.2.2: If autoindex on - get directory list
 			else
-			{
-				// if (TEST)	// if start test
-				// {
-				// 	rezult_path = _server->getErrPage();
-				// 	Headliners resp(std::string("HTTP/1.1"), std::string("404"));
-				// 	resp.setCloseConnection(false);
-
-				// 	// step x: Get info about target file
-				// 	struct stat	info;
-				// 	stat(rezult_path.c_str(), &info);
-
-				// 	resp.setContentLeigth(info.st_size);
-				// 	resp.sendHeadliners(_fd);
-
-				// 	// step 6: Send body
-				// 	int		fd_from;
-				// 	fd_from = open(rezult_path.c_str(), O_RDONLY);
-				// 	ret = sendfile(_fd, fd_from, NULL, info.st_size);
-				// 	return (ret);
-				// }
-				// else		// else
-					rezult_path = ft_get_dir_list(full_path);
-					// std::cerr << "; full path 1 = " << full_path << std::endl;
-				// handler for create dirrect_list
-			}
+				rezult_path = ft_get_dir_list(full_path);
 		}
 
 		else
@@ -1093,13 +1143,6 @@ int					Response_2::sendingResponseGet(Response *response, std::string full_path
 		resp.sendHeadliners(_fd);
 
 		sendFile(_server->getErrPage());
-		// Headliners resp(std::string("HTTP/1.1"), std::string("404"));
-		// resp.sendHeadliners(_fd);
-
-		// std::ifstream err_404((_server->getErrPage()).c_str());
-		// std::string str;
-		// while(std::getline(err_404, str))
-		// 	send(_fd, str.c_str(), str.size(), 0);
 
 		std::cerr	<< "ERROR in sendingResponseGet: Target file open error" << std::endl;
 		return (-1);
@@ -1120,7 +1163,20 @@ int					Response_2::sendingResponseGet(Response *response, std::string full_path
 	}
 
 	// std::cerr << "rezult_path = " << rezult_path << std::endl;
-	ret = sendfile(_fd, fd_from, NULL, info.st_size);
+	if ((ret = sendfile(_fd, fd_from, NULL, info.st_size)) < 0)
+	{
+		if (epoll_ctl(_server->getEpollFd(), EPOLL_CTL_DEL, _fd, _server->getEpollEvent()) == -1)
+			throw Exeption("ERROR in Response_2::sending response get: Epoll_ctl del error");
+		Response_2* itt = (_server->getRequestContainerPointer())->operator[](_fd);
+		(_server->getRequestContainerPointer())->operator[](_fd) = NULL;
+		if ((ret = close(_fd)) == -1)
+			std::cerr << "FAIL!!!" << std::endl;
+		(_server->getRequestContainerPointer())->erase((_server->getRequestContainerPointer())->find(_fd));
+		delete (itt);
+
+		std::string str("ERROR in Response_2::sending response get: Closes connection flag");
+		throw Exeption(str);
+	}
 	// std::string str;
 	// while(std::getline(fileIndex, str))
 	// {
