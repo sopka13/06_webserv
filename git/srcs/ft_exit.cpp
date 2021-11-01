@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/16 09:09:14 by eyohn             #+#    #+#             */
-/*   Updated: 2021/10/31 22:37:22 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/11/01 08:28:40 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,15 @@ void	ft_exit(t_vars *vars)
 	// 	delete vars->fd_identify_socket;
 	// }
 	if (vars->request_container->size()) {			// need clean all Response_2 pointer memeory
-		for (std::map<int, Response_2*>::iterator i = vars->request_container->begin(); i != vars->request_container->end(); ++i)
+		for (std::map<int, Response_2*>::iterator i = vars->request_container->begin();
+				vars->request_container->size();
+				i = vars->request_container->begin())
 		{
-			delete ((*i).second);
+			Response_2* itt = (*i).second;
+			(*i).second = NULL;
+			close((*i).first);
 			vars->request_container->erase(i);
+			delete (itt);
 		}
 		delete vars->request_container;
 	}
