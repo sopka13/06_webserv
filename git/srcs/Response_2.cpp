@@ -6,7 +6,7 @@
 /*   By: eyohn <sopka13@mail.ru>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 08:56:56 by eyohn             #+#    #+#             */
-/*   Updated: 2021/11/01 21:36:35 by eyohn            ###   ########.fr       */
+/*   Updated: 2021/11/02 10:04:52 by eyohn            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -558,13 +558,9 @@ void				Response_2::postHandle(Response *response)
 	{
 		Headliners resp(std::string("HTTP/1.1"), std::string("405"));
 		resp.setAllowMethods(_server->getAllowMethods(path));
-		std::cerr << "1" << std::endl;
 		resp.setCloseConnection(false);
-		std::cerr << "2" << std::endl;
 		resp.setContentLeigth(0);
-		std::cerr << "3" << std::endl;
 		resp.sendHeadliners(_fd);
-		std::cerr << "4" << std::endl;
 		return ;
 	}
 
